@@ -1,0 +1,66 @@
+{% extends 'index.html' %}
+{% load staticfiles %}
+
+{% block main_content %}
+
+    <!-- Main content -->
+    <section class="content">
+
+      <!-- /.table -->
+      <div class="box">
+        <div class="box-header with-border">
+          <h3 class="box-title">用户列表</h3>
+            <a class="btn btn-success col-lg-offset-10" href="/GWS/user-add"><i class="fa fa-plus"></i> &nbsp;添加用户</a>
+          <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
+          </div>
+        </div>
+            <!-- /.box-header -->
+        <div class="box-body" style="overflow-x: auto">
+          <div class="row">
+            <div class="col-xs-12">
+                <table id="example1" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>名字</th>
+                            <th>公司</th>
+                            <th>最近登录</th>
+                            <th>允许登录</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in user_list %}
+                            <tr>
+                                {% if item.id == request.user.id or item.name == 'SuperROOT' or item.name == 'CreateROOT' %}
+                                    <td>{{ item.name }}</td>
+                                {% else %}
+                                    <td><a href="{% url 'user_edit' item.id %}">{{ item.name }}</a></td>
+                                {% endif %}
+                                <td>{{ item.gateway__Enterprise }}</td>
+                                <td>{{ item.last_login }}</td>
+                                <td>{{ item.is_active }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+          <!-- /.box-body -->
+          </div>
+        <!-- /.col -->
+        </div>
+        <!-- /.row -->
+      </div>
+      <!-- /.box -->
+
+    </section>
+    <!-- /.content -->
+
+
+{% endblock %}
+
+{% block script %}
+
+
+{% endblock %}
+

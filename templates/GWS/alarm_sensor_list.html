@@ -1,0 +1,90 @@
+{% extends 'index.html' %}
+{% load staticfiles %}
+
+{% block main_content %}
+
+    <!-- Main content -->
+    <section class="content">
+
+      <!-- /.table -->
+      <div class="box box-solid box-danger">
+        <div class="box-header with-border">
+          <h3 class="box-title">报警信息</h3>
+          <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
+          </div>
+        </div>
+            <!-- /.box-header -->
+        <div class="box-body">
+          <div class="row">
+            <div class="col-xs-12" style="overflow-x: auto">
+                <table id="example1" class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <tr>
+                                <th>名称</th>
+                                <th>报警信息</th>
+                                <th>报警值</th>
+                                <th>当前值</th>
+                                <th>报警时间</th>
+                                <th>网络号</th>
+                                <th>数据详情</th>
+                            </tr>
+                        </tr>
+                    </thead>
+                    <tbody>
+                            {% for row in all_alarm_sensor_list %}
+                                <tr>
+                                    {% for alias, item_val in row.items %}
+                                        <td>{{ alias }}</td>
+                                        {% for k, v in item_val.items %}
+                                            {% if k == 'network_id' %}
+                                                <td>{{ v }}</td>
+                                                <td><a href="/GWS/sensor-data-info-{{ v }}" style="cursor: pointer;"><i class="fa fa-pencil"></i> 数据详情</a></td>
+                                            {% else %}
+                                                <td>{{ v }}</td>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                </table>
+            </div>
+          <!-- /.box-body -->
+          </div>
+        <!-- /.col -->
+        </div>
+        <!-- /.row -->
+      </div>
+      <!-- /.box -->
+
+    </section>
+    <!-- /.content -->
+
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+
+        $(function () {
+
+        //Date range picker
+        $('#reservation').daterangepicker();
+
+        $('#example1').DataTable();
+
+
+        });
+
+
+
+
+
+    </script>
+
+{% endblock %}
+

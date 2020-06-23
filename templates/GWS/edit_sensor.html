@@ -1,0 +1,346 @@
+
+{% extends 'index.html' %}
+{% load staticfiles %}
+
+{% block main_content %}
+
+    <!-- Main content -->
+    <section class="content" id="loading">
+
+      <!-- /.table -->
+      <div class="box">
+        <div class="box-header with-border">
+          <h3 class="box-title">编辑信息</h3>
+          <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
+          </div>
+        </div>
+            <!-- /.box-header -->
+        <div class="box-body">
+              <div class="row">
+                  <div class="col-xs-6 col-md-4 col-md-offset-1">
+                    <div class="form-group">
+                        <label for="sensor-id">传感器ID</label>
+                        <input type="text" class="form-control" name="sensor-id" id="sensor-id" value="{{ sensor_obj.sensor_id }}" disabled>
+                    </div>
+                </div>
+                <div class="col-xs-6 col-md-4 col-md-offset-1">
+                    <div class="form-group">
+                        <label for="alias">传感器名称</label>
+                        <input type="text" class="form-control" name="alias" id="alias" value="{{ sensor_obj.alias }}">
+                    </div>
+                </div>
+                <div class="col-xs-6 col-md-4 col-md-offset-1">
+                    <div class="form-group">
+                        <label for="network_id">传感器网络号</label>
+                        <input type="text" class="form-control" name="network_id" id="network_id" value="{{ sensor_obj.network_id }}" disabled>
+                    </div>
+                </div>
+                  <div class="col-xs-6 col-md-4 col-md-offset-1">
+                    <div class="form-group">
+                        <label for="sensor_type">传感器类型</label>
+                        <select class="form-control select2" name="sensor_type" id="sensor_type" style="width: 100%;">
+                          {% for k, v in sensor_type.items %}
+                              <option value="{{ v }}">{{ k }}</option>
+                          {% endfor %}
+                        </select>
+                    </div>
+                </div>
+              <div class="col-xs-6 col-md-4 col-md-offset-1">
+                    <div class="form-group">
+                        <label for="Importance">重要性</label>
+                        <select class="form-control select2" name="Importance" id="Importance" style="width: 100%;">
+                          {% for k, v in Importance.items %}
+                              <option value="{{ v }}">{{ k }}</option>
+                          {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                  <div class="col-xs-3 col-md-2 col-md-offset-1">
+                        <div class="form-group">
+                            <label for="material">材料</label>
+                            <select class="form-control select2" name="material" id="material" style="width: 100%;">
+                              {% for item in material %}
+                                  <option value="{{ item.id }}">{{ item.name }}</option>
+                              {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                  <div class="col-xs-3 col-md-2">
+                        <div class="form-group">
+                            <label for="material">声速</label>
+                            <input type="text" class="form-control" name="sound-V" id="sound-V" value="">
+                        </div>
+                    </div>
+                  <div class="col-xs-6 col-md-4 col-md-offset-1">
+                    <div class="form-group">
+                        <label for="area">所在区域</label>
+                        <input type="text" class="form-control" name="area" id="area" value="{{ sensor_obj.area }}">
+                    </div>
+                </div>
+                  <div class="col-xs-6 col-md-4 col-md-offset-1">
+                    <div class="form-group">
+                        <label for="location">所在位置</label>
+                        <input type="text" class="form-control" name="location" id="location" value="{{ sensor_obj.location }}">
+                    </div>
+                </div>
+                  <div class="col-xs-6 col-md-4 col-md-offset-1">
+                    <div class="form-group">
+                        <label for="longitude">所在位置经度 <a href="https://lbs.amap.com/console/show/picker" target="_blank" style="opacity: 60%;">点击查找经纬度，不需要填写0</a></label>
+                        <input type="text" class="form-control" name="longitude" id="longitude" value="{{ sensor_obj.longitude }}">
+                    </div>
+                </div>
+                  <div class="col-xs-6 col-md-4 col-md-offset-1">
+                    <div class="form-group">
+                        <label for="latitude">所在位置纬度 <a href="https://lbs.amap.com/console/show/picker" target="_blank" style="opacity: 60%;">点击查找经纬度，不需要填写0</a></label>
+                        <input type="text" class="form-control" name="latitude" id="latitude" value="{{ sensor_obj.latitude }}">
+                    </div>
+                </div>
+                  <div class="col-xs-6 col-md-4 col-md-offset-1">
+                    <div class="form-group">
+                        <label for="date_of_installation">安装日期</label>
+                        <input type="text" class="form-control" name="date_of_installation" id="date_of_installation" value="{{ date_of_installation }}">
+                    </div>
+                </div>
+                  <div class="col-xs-6 col-md-4 col-md-offset-1">
+                    <div class="form-group">
+                        <label for="assembly_crewman">安装人员</label>
+                        <input type="text" class="form-control" name="assembly_crewman" id="assembly_crewman" value="{{ sensor_obj.assembly_crewman }}">
+                    </div>
+                </div>
+                  <div class="col-xs-6 col-md-4 col-md-offset-1">
+                    <div class="form-group">
+                        <label for="description">描述</label>
+                        <textarea style="height: 80px; width: 100%;" name="description" id="description" value="{{ sensor_obj.description }}">{{ sensor_obj.description }}</textarea>
+                    </div>
+                </div>
+                  <div class="col-xs-6 col-md-4 col-md-offset-1">
+                    <div class="form-group">
+                        <label for="location_img_path">所在位置图片</label>
+                        <div style="position: relative">
+                            <img id="exist-img-path" src="/{{ sensor_obj.location_img_path }}" alt="" style="display: inline-block; width: 100px;">
+                            <input type="file" name="location_img_path" id="location_img_path" style="display: inline-block">
+                        </div>
+                    </div>
+                </div>
+              </div>
+            <!-- /.col -->
+              <div class="row">
+                <h3 class="col-xs-6 col-md-4 col-md-offset-1">设置传感器采样时间（必填项）<b style="color: red;">*</b></h3>
+                <h4 class="col-xs-6 col-md-4 col-md-offset-1"><b style="opacity: 0.8;">说明：未填写的时间字段表示每个单位时间都触发，例如月份字段未填写，表示每个月都执行</b></h4>
+              </div>
+              <div class="row">
+                <div class="col-xs-6 col-md-4 col-md-offset-1">
+                    <div class="form-group">
+                        <label for="month">月份：</label>
+                        <select class="form-control select2" multiple="multiple"
+                               name="month" id="month" style="width: 100%;">
+                          {% for item in context.month_cron %}
+                              <option value="{{ item }}">{{ item }}</option>
+                          {% endfor %}
+                        </select>
+                    </div>
+                      <!-- /.form-group -->
+                </div>
+                <div class="col-xs-6 col-md-4 col-md-offset-1">
+                    <div class="form-group">
+                        <label for="day">天：</label>
+                        <select class="form-control select2" multiple="multiple"
+                               name="day" id="day" style="width: 100%;">
+                          {% for item in context.day_cron %}
+                              <option value="{{ item }}">{{ item }}</option>
+                          {% endfor %}
+                        </select>
+                    </div>
+                      <!-- /.form-group -->
+                </div>
+              </div>
+            <!-- /.col -->
+              <div class="row">
+                <div class="col-xs-6 col-md-4 col-md-offset-1">
+                    <div class="form-group">
+                        <label for="hour">时：</label>
+                        <select class="form-control select2" multiple="multiple"
+                               name="hour" id="hour" style="width: 100%;">
+                          {% for item in context.hour_cron %}
+                              <option value="{{ item }}">{{ item }}</option>
+                          {% endfor %}
+                        </select>
+                    </div>
+                      <!-- /.form-group -->
+                </div>
+                <div class="col-xs-6 col-md-4 col-md-offset-1">
+                    <div class="form-group">
+                        <label for="mins">分钟：</label>
+                        <select class="form-control select2" multiple="multiple"
+                               name="mins" id="mins" style="width: 100%;">
+                          {% for item in context.minute_cron %}
+                              <option value="{{ item }}">{{ item }}</option>
+                          {% endfor %}
+                        </select>
+                    </div>
+                      <!-- /.form-group -->
+                </div>
+              </div>
+            <!-- /.col -->
+            <div class="row">
+                <div class="col-md-4 col-md-offset-4">
+                  <div class="form-group" style="margin-top: 10px">
+                      <span id="update_sensor" style="color: red;"></span>
+                  </div>
+                </div>
+                <div class="col-md-1 col-xs-2">
+                  <div class="form-group">
+                      <a href="javascript:history.go(-1);" type="button" class="btn btn-default">返回</a>
+                  </div>
+                </div>
+                <div class="col-md-1 col-xs-2">
+                  <div class="form-group">
+                      <button type="button" class="btn btn-success" onclick="Update()">更新</button>
+                  </div>
+                </div>
+            </div>
+        <!-- /.row -->
+      </div>
+      <!-- /.box -->
+    </div>
+    </section>
+
+
+{% endblock %}
+{% block script %}
+
+    <script>
+
+        console.log(document.referrer);
+
+        $(function () {
+            $('.select2').select2();
+
+            // 当材料被选中时，显示其对应的声速
+            $('#material').on("select2:select", function (e) {
+                SelectToShowSoundV();
+            });
+
+            ShowOriginData();
+
+        });
+
+        //刷新页面保留上次数据
+        function ShowOriginData() {
+
+            var month = "{{ received_time_data.month }}";
+            month = month.split(',');
+            $('#month').val(month).trigger("change");
+            var day = "{{ received_time_data.day }}";
+            day = day.split(',');
+            $('#day').select2("val", [day]);
+            var hour = "{{ received_time_data.hour }}";
+            hour = hour.split(',');
+            $('#hour').select2("val", [hour]);
+            var mins = "{{ received_time_data.mins }}";
+            mins = mins.split(',');
+            $('#mins').select2("val", [mins]);
+
+            var sensor_type = "{{ sensor_obj.sensor_type }}";
+            sensor_type = sensor_type.split(',');
+            $('#sensor_type').select2("val", [sensor_type]);
+            var Importance = "{{ sensor_obj.Importance }}";
+            Importance = Importance.split(',');
+            $('#Importance').select2("val", [Importance]);
+            var material = "{{ sensor_obj.material }}";
+            material = material.split(',');
+            $('#material').select2("val", [material]);
+
+            ShowSoundV({{ sensor_obj.material }})
+
+
+        }
+
+        function Update() {
+            {#ShowLoading();#}
+
+            $('#update_sensor').html('正在更新数据，请稍等...');
+
+            var fd = new FormData();
+            var sensor_id = $('#sensor-id').val();
+            var alias = $('#alias').val();
+            var network_id = $('#network_id').val();
+            var sensor_type = $('#sensor_type').val();
+            var Importance = $('#Importance').val();
+            var material = $('#material').val();
+            var date_of_installation = $('#date_of_installation').val();
+            var area = $('#area').val();
+            var location = $('#location').val();
+            var longitude = $('#longitude').val();
+            var latitude = $('#latitude').val();
+            var assembly_crewman = $('#assembly_crewman').val();
+            var location_img_obj = $('#location_img_path')[0].files[0];
+            var description = $('#description').val();
+            var month = $('#month').val();
+            var day = $('#day').val();
+            var hour = $('#hour').val();
+            var mins = $('#mins').val();
+            var received_time_data = {'month': month, 'day': day, 'hour': hour, 'mins': mins};
+
+            var gwntid = network_id.split('.').slice(0, 3).join('.') + '.0';
+            SetTimeToShowTimeOutMSG("update_sensor", gwntid);
+
+            // 判断src是否为空
+            var exist_img_path = '';
+            if ($('#exist-img-path').attr('src').length !== 0) {
+                exist_img_path = $('#exist-img-path')[0].src;
+            }
+
+            var data = JSON.stringify({'received_time_data': received_time_data, 'sensor_id': sensor_id, 'alias': alias,
+                'network_id': network_id, 'choice': 'update', 'sensor_type': sensor_type, 'Importance': Importance,
+                'material': material, 'date_of_installation': date_of_installation, 'area': area, 'location': location,
+                'latitude': latitude, 'longitude': longitude, 'assembly_crewman': assembly_crewman,
+                'description': description, 'exist_img_path': exist_img_path});
+            fd.append('data', data);
+            fd.append('location_img_obj', location_img_obj);
+
+            $.ajax({
+                url: '/GWS/send-server-data',
+                type:'POST',
+                data: fd,
+                processData: false,
+                contentType: false,
+                success:function (arg) {
+                    {#$('#loading').busyLoad("hide");#}
+                    {#var args = JSON.parse(arg);#}
+                    {#$('#update_sensor').html(args.msg);#}
+                    {#if (args.status){#}
+                    {#    ClearMSG('#update_sensor')#}
+                    {# }#}
+
+                }
+            })
+        }
+
+        // 选中材料显示声速
+        function SelectToShowSoundV() {
+            var selected_material_id = $('#material').val();
+            ShowSoundV(selected_material_id);
+        }
+
+        // 显示声速
+        function ShowSoundV(selected_material_id) {
+            $.ajax({
+                url: '/GWS/show-soundV-json',
+                data: {'selected_material_id': selected_material_id},
+                type: 'POST',
+                dataType: 'JSON',
+                success: function (arg) {
+                    var soundV = arg['soundV'];
+                    $('#sound-V').val(soundV + 'm/s');
+                }
+            })
+        }
+
+
+
+    </script>
+
+{% endblock %}

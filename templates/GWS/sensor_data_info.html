@@ -1,0 +1,590 @@
+{% extends 'index.html' %}
+{% load staticfiles %}
+{% load GWS_tags %}
+
+{% block main_content %}
+
+    <!-- Main content -->
+    <section class="content">
+
+    <!-- Modal -->
+    <div class="modal fade" id="showBigImgModel" tabindex="-1" role="dialog" aria-labelledby="showBigImgModelLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="showBigImgModelLabel">显示大图</h4>
+          </div>
+          <div class="modal-body">
+              <img style="height: 300px;" id="show-big-img" src="" alt="">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">确定</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+        <!-- 传感器详细信息 -->
+        <div class="box">
+            <div class="box-header with-border">
+              <h3 class="box-title">传感器详细信息</h3>
+              <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
+              </div>
+            </div>
+        <!-- /.box-header -->
+            <div class="box-body">
+              <div class="row">
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">名称</label>
+                      <h4 style="color: #000;" id="alias">{{ sensor_obj.alias }}</h4>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">运行状态</label>
+                      <h4 style="color: green;">
+                          {% for sensor_run_status_item in sensor_run_status.get_choices %}
+                              {% if sensor_run_status_item.0 == sensor_obj.sensor_run_status and sensor_run_status_item.0 == 1 %}
+                                    <h4 style="color: green;">
+                                        {{ sensor_run_status_item.1 }}
+                                    </h4>
+                                {% elif sensor_run_status_item.0 == sensor_obj.sensor_run_status and sensor_run_status_item.0 == 0 %}
+                                    <h4 style="color: red;">
+                                        {{ sensor_run_status_item.1 }}
+                                    </h4>
+                                {% endif %}
+                          {% endfor %}
+                      </h4>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">在线状态</label>
+                          {% for sensor_online_status_item in sensor_online_status.get_choices %}
+                                {% if sensor_online_status_item.0 == sensor_obj.sensor_online_status and sensor_online_status_item.0 == 1 %}
+                                    <h4 style="color: green;">
+                                        {{ sensor_online_status_item.1 }}
+                                    </h4>
+                                {% elif sensor_online_status_item.0 == sensor_obj.sensor_online_status and sensor_online_status_item.0 == 0 %}
+                                    <h4 style="color: red;">
+                                        {{ sensor_online_status_item.1 }}
+                                    </h4>
+                                {% endif %}
+                          {% endfor %}
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">重要性</label>
+                      <h4 style="color: #000;">
+                          {% for Importance_item in Importance.get_choices %}
+                                {% if Importance_item.0 == sensor_obj.Importance %}
+                                    {{ Importance_item.1 }}
+                                {% endif %}
+                          {% endfor %}
+                      </h4>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">类型</label>
+                      <h4 style="color: #000;">
+                          {% for sensor_type_item in sensor_type.get_choices %}
+                                {% if sensor_type_item.0 == sensor_obj.sensor_type %}
+                                    {{ sensor_type_item.1 }}
+                                {% endif %}
+                          {% endfor %}
+                      </h4>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">材料</label>
+                      <h4 style="color: #000;">
+                          {{ material }}
+                      </h4>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">序列号</label>
+                      <h4 style="color: #000;">{{ sensor_obj.sensor_id }}</h4>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">网络号</label>
+                      <h4 style="color: #000;" id="network-id">{{ sensor_obj.network_id }}</h4>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">当前厚度(mm)</label>
+                        {% if now_thickness or now_thickness == 0 %}
+                            <h4 style="color: #000;">{{ now_thickness }}</h4>
+                        {% else %}
+                            <h4>--------</h4>
+                        {% endif %}
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">报警厚度(mm)</label>
+                        {% if sensor_obj.alarm_thickness %}
+                            <h4 style="color: #000;">{{ sensor_obj.alarm_thickness }}</h4>
+                        {% else %}
+                            <h4>--------</h4>
+                        {% endif %}
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">标准厚度(mm)</label>
+                        {% if sensor_obj.initial_thickness %}
+                            <h4 style="color: #000;">{{ sensor_obj.initial_thickness }}</h4>
+                        {% else %}
+                            <h4>--------</h4>
+                        {% endif %}
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">腐蚀速率(mm/年)</label>
+                      <h4 style="color: #000;" id="corrosion-rate">--------</h4>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">当前电量</label>
+                        {% if battery or battery == 0 %}
+                            <h4 style="color: #000;">{{ battery }}</h4>
+                        {% else %}
+                            <h4>--------</h4>
+                        {% endif %}
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">报警电量</label>
+                        {% if sensor_obj.alarm_battery %}
+                            <h4 style="color: #000;">{{ sensor_obj.alarm_battery }}</h4>
+                        {% else %}
+                            <h4>--------</h4>
+                        {% endif %}
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">上次测量温度(℃)</label>
+                        {% if temperature or temperature == 0 %}
+                            <h4 style="color: #000;">{{ temperature }}</h4>
+                        {% else %}
+                            <h4>--------</h4>
+                        {% endif %}
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">报警温度(℃)</label>
+                        {% if sensor_obj.alarm_temperature %}
+                            <h4 style="color: #000;">{{ sensor_obj.alarm_temperature }}</h4>
+                        {% else %}
+                            <h4>--------</h4>
+                        {% endif %}
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">所在区域经度</label>
+                        <h4 style="color: #000;">{{ sensor_obj.longitude }}</h4>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">所在位置纬度</label>
+                        <h4 style="color: #000;">{{ sensor_obj.latitude }}</h4>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">所在区域</label>
+                        {% if sensor_obj.area %}
+                            <h4 style="color: #000;">{{ sensor_obj.area }}</h4>
+                        {% else %}
+                            <h4>--------</h4>
+                        {% endif %}
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">所在位置</label>
+                        {% if sensor_obj.location %}
+                            <h4 style="color: #000;">{{ sensor_obj.location }}</h4>
+                        {% else %}
+                            <h4>--------</h4>
+                        {% endif %}
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">累计数据量(条)</label>
+                        {% if data_count %}
+                            <h4 style="color: #000;">{{ data_count }}</h4>
+                        {% else %}
+                            <h4>--------</h4>
+                        {% endif %}
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">绑定网关</label>
+                        <h4 style="color: #000;">{{ gateway_name }}</h4>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">安装时间</label>
+                        <h4 style="color: #000;">{{ sensor_obj.date_of_installation }}</h4>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">最近采样时间</label>
+                        {% if time_tamp %}
+                            <h4 style="color: #000;">{{ time_tamp }}</h4>
+                        {% else %}
+                            <h4>--------</h4>
+                        {% endif %}
+                    </div>
+                  </div>
+                </div>
+{#                <div class="col-lg-2 col-md-3 col-xs-6">#}
+{#                  <div class="small-box bg-white">#}
+{#                    <div class="inner">#}
+{#                      <label style="color: #000;">采样时间</label>#}
+{#                        <h4 style="color: #000; word-break:break-all">{% render_run_time sensor_obj.received_time_data %}</h4>#}
+{#                    </div>#}
+{#                  </div>#}
+{#                </div>#}
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000; display: block">传感器位置图片</label>
+                        <img style="height: 60px" src="/{{ sensor_obj.location_img_path }}" alt="" onclick="ShowBigImg(this)" data-toggle="modal" data-target="#showBigImgModel">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-12 col-md-12 col-xs-12">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">描述</label>
+                        {% if sensor_obj.description %}
+                            <h4 style="color: #000; word-break:break-all">{{ sensor_obj.description }}</h4>
+                        {% else %}
+                            <h4 style="color: #000;">--------</h4>
+                        {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <!-- /.col -->
+            </div>
+        <!-- /.row -->
+        </div>
+
+        <!-- 传感器采集时间 -->
+        <div class="box">
+            <div class="box-header with-border">
+              <h3 class="box-title">传感器采样时间</h3>
+              <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
+              </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-xs-12">
+                      <div class="small-box bg-white">
+                        <div class="inner">
+                            <h4 style="color: #000; word-break:break-all">{% render_run_time sensor_obj.received_time_data %}</h4>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+
+
+            <!-- /.col -->
+            </div>
+            <!-- /.row -->
+          </div>
+
+        <!-- 传感器参数信息 -->
+        <div class="box">
+            <div class="box-header with-border">
+              <h3 class="box-title">传感器参数信息</h3>
+              <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
+              </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+              <div class="row">
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">频率</label>
+                      <h4 style="color: #000;">{{ sensor_obj.Hz }}</h4>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">周波数</label>
+                      <h4 style="color: #000;">{{ sensor_obj.cHz }}</h4>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">增益</label>
+                      <h4 style="color: #000;">{{ sensor_obj.gain }}</h4>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">平均次数</label>
+                      <h4 style="color: #000;">{{ sensor_obj.avg_time }}</h4>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">采样深度</label>
+                      <h4 style="color: #000;">{{ sensor_obj.Sample_depth }}</h4>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-xs-6">
+                  <div class="small-box bg-white">
+                    <div class="inner">
+                      <label style="color: #000;">采样频率</label>
+                      <h4 style="color: #000;">{{ sensor_obj.Sample_Hz }}</h4>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <!-- /.col -->
+            </div>
+        <!-- /.row -->
+        </div>
+
+        <div class="box">
+            <div class="box-header with-border">
+              <h3 class="box-title">变化趋势</h3>
+              <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
+              </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <div class="nav-tabs-custom">
+                <!-- Tabs within a box -->
+                <ul class="nav nav-tabs pull-right">
+                  <li class="pull-left active"><a href="#thickness-report" data-toggle="tab">厚度</a></li>
+                </ul>
+                <div class="tab-content no-padding">
+                  <!-- Morris chart - Sales -->
+                    <div class="chart tab-pane active" id="thickness-report"></div>
+                </div>
+              </div>
+              <!-- /.nav-tabs-custom -->
+            </div>
+        </div>
+
+    </section>
+    <!-- /.content -->
+
+
+{% endblock %}
+
+{% block script %}
+    <script>
+
+    $(function () {
+        //Initialize Select2 Elements
+        $('.select2').select2();
+
+        Thickness_report();
+
+        Corrosion_rate();
+
+      });
+
+
+    // thickness report
+    function Thickness_report() {
+            var config = {
+                chart: {
+                    type: 'spline',
+                    shadow: true,
+                    zoomType: 'xy',
+                    panning: true,
+			        panKey: 'shift',
+                },
+                tooltip: {
+                    followTouchMove: true,
+                },
+                title: {
+                    text: ''
+                },
+                xAxis: {
+                    type: 'category',
+                   },
+                yAxis: {
+                    tickInterval: 0.1,
+                    min: 0,
+                    title: {
+                        text: '值'
+                    },
+                },
+                legend: {
+                    enabled: false
+                },
+                lang:{
+                   contextButtonTitle:"图表导出菜单",
+                   downloadJPEG:"下载JPEG图片",
+                   downloadPDF:"下载PDF文件",
+                   downloadPNG:"下载PNG文件",
+                   downloadSVG:"下载SVG文件",
+                   printChart:"打印图表",
+                   resetZoom:"恢复缩放",
+                   resetZoomTitle:"恢复图表",
+                },
+                exporting: {
+                    enabled: true
+                },
+                series: [
+                    {
+                        name: '',
+                        data: [
+                            {y: 9.354, name: "2020-03-26 09:23:16"},
+                            {y: 9.354, name: "2020-03-27 09:23:16"},
+                            ]
+                    }
+                ]
+            };
+            var network_id = $('#network-id').html();
+            $.ajax({
+            url: '/GWS/thickness-json-report',
+            type:'GET',
+            data:{'network_id': network_id},
+            dataType: 'JSON',
+            success:function(arg){
+                    config['series'] = arg['datas'];
+                    config['title']['text'] = arg['alias'];
+                    config['yAxis']['max'] = arg['yAxis_max_limit'];
+                    $('#thickness-report').highcharts(config);
+                    if(arg['datas'][0]['data'].length===0){
+                        $('#show-thickness-msg').text('当前传感器暂无数据！');
+                        // ClearMSG('show-thickness-msg')
+                }
+
+                }
+             })
+        }
+
+    function Corrosion_rate() {
+        var network_id = $('#network-id').html();
+        $.ajax({
+        url: '/GWS/corrosion-rate-json-report',
+        type:'GET',
+        data:{'network_id': network_id},
+        dataType: 'JSON',
+        success:function(arg){
+            $('#corrosion-rate').html(arg);
+            }
+         })
+    }
+
+    function ShowBigImg(ths) {
+        var img_path = $(ths).attr('src');
+        console.log(img_path);
+        $('#show-big-img').attr('src', img_path);
+    }
+
+
+    //清除提示信息
+    {#function ClearMSG(nid) {#}
+    {#    setTimeout(function () {#}
+    {#        $("#"+nid).text('')#}
+    {#    }, 3000);#}
+    {# }#}
+
+
+
+    </script>
+
+{% endblock %}
+
+
+

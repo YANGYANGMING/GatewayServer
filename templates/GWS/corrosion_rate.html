@@ -1,0 +1,86 @@
+{% extends 'index.html' %}
+{% load staticfiles %}
+{% load GWS_tags %}
+
+{% block main_content %}
+
+    <!-- Main content -->
+    <section class="content">
+
+      <!-- /.table -->
+      <div class="box">
+        <div class="box-header with-border">
+          <h3 class="box-title">传感器腐蚀速率</h3>
+          <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
+          </div>
+        </div>
+            <!-- /.box-header -->
+        <div class="box-body">
+            <table id="example1" class="table table-bordered table-striped table-hover" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th>序列号</th>
+                        <th>网络号</th>
+                        <th>名称</th>
+                        <th>网关名称</th>
+                        <th>材料</th>
+                        <th>腐蚀速率（mm/年）</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in all_sensor_list %}
+                        <tr>
+                            <td><p style="width: 70px;">{{ row.sensor_id }}</p></td>
+                            <td><p style="width: 70px;">{{ row.network_id }}</p></td>
+                            <td><p style="width: 50px;">{{ row.alias }}</p></td>
+                            <td><p style="width: 80px;">{{ row.gateway__name }}</p></td>
+                            <td>
+                                {% for k, v in material.items %}
+                                    {% if v == row.material %}
+                                        <p style="width: 50px;">{{ k }}</p>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td><p style="width: 100px;">{{ row.corrosion_rate }}</p></td>
+
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!-- /.row -->
+      </div>
+      <!-- /.box -->
+
+    </section>
+    <!-- /.content -->
+
+
+{% endblock %}
+
+{% block script %}
+    <script>
+
+    $(function () {
+        //Initialize Select2 Elements
+        $('.select2').select2();
+        $('#example1').DataTable({
+            scrollX: true,          // 固定列
+            fixedColumns: {
+                    leftColumns: 1  // 固定第1列
+                },
+        });
+
+      });
+
+
+
+
+    </script>
+
+{% endblock %}
+
+
+

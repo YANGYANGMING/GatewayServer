@@ -1,0 +1,274 @@
+{% extends 'index.html' %}
+{% load staticfiles %}
+
+{% block main_content %}
+
+    <!-- Main content -->
+    <section class="content">
+      <!-- BAR CHART -->
+      <div class="box box-success">
+        <div class="box-header with-border">
+          <h3 class="box-title">单个传感器厚度曲线</h3>
+
+          <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+          </div>
+        </div>
+        <!-- 曲线图 -->
+        <div class="box-body">
+            <div class="row">
+                <!-- form start -->
+                <div class="col-xs-12 col-md-3">
+                    <div class="form-group">
+                        <label>网关：</label>
+                        <select class="form-control select2" id="selected-gateway-id" data-placeholder="网关">
+                            <option value=""></option>
+                            {% for gateway_item in gateway_obj %}
+                                <option value="{{ gateway_item.network_id }}">{{ gateway_item.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                  <div class="col-xs-12 col-md-3">
+                    <div class="form-group">
+                        <label>传感器：</label>
+                        <select class="form-control select2" id="selected-sensor-id" data-placeholder="传感器"></select>
+                    </div>
+                 </div>
+                  <div class="col-xs-12 col-md-3">
+                    <div class="form-group">
+                        <label>&nbsp; </label>
+                        <button type="submit" class="btn btn-primary col-lg-offset-1" id="show-thickness" style="display: block">确定</button>
+                        <span id="show-thickness-msg" style="color: red;"></span>
+                    </div>
+                 </div>
+                </div>
+
+                <div id="thickness-report-contaner">
+                </div>
+
+                <div id="data-2048-contaner">
+                </div>
+
+        </div>
+        <!-- /.box-body -->
+      </div>
+      <!-- /.box -->
+
+    </section>
+    <!-- /.content -->
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+
+      $(function () {
+          ShowThickness();
+
+        //Initialize Select2 Elements
+        $('.select2').select2();
+
+        // 当网关下拉框内的网关被选择时，触发此函数
+          $('#selected-gateway-id').on('select2:select', function (e) {
+                gateway_associated_sensors_json();
+          });
+
+      });
+
+        function ShowThickness() {
+            var config = {
+                chart: {
+                    type: 'spline',
+                    shadow: true,
+                    zoomType: 'xy',
+                    panning: true,
+			        panKey: 'shift',
+                },
+                tooltip: {
+                    followTouchMove: true,
+                },
+                title: {
+                    text: null
+                },
+                xAxis: {
+                    type: 'category',
+                   },
+                yAxis: {
+                    tickInterval: 0.1,
+                    min: 0,
+                    title: {
+                        text: '值'
+                    },
+                },
+                legend: {
+                    enabled: false
+                },
+                lang:{
+                   contextButtonTitle:"图表导出菜单",
+                   downloadJPEG:"下载JPEG图片",
+                   downloadPDF:"下载PDF文件",
+                   downloadPNG:"下载PNG文件",
+                   downloadSVG:"下载SVG文件",
+                   printChart:"打印图表",
+                   resetZoom:"恢复缩放",
+                   resetZoomTitle:"恢复图表",
+                },
+                exporting: {
+                    enabled: true
+                },
+                plotOptions: {
+                    series: {
+                        cursor: 'pointer',
+                        events: {
+                            click: function (event) {
+                                var data_id_and_time = event.point.series.chart.hoverPoint.name;
+                                var data_id = data_id_and_time.split(':')[0];
+                                GetData(data_id)
+                            }
+                        }
+                    }  
+                },
+                series: [
+                    {
+                        name: '',
+                        data: [
+                            ]
+                    }
+                ]
+            };
+            $('#thickness-report-contaner').highcharts(config);
+            $('#show-thickness').click(function () {
+                var network_id = $('#selected-sensor-id').val();
+                $.ajax({
+                url: '/GWS/thickness-json-report',
+                type:'GET',
+                data:{'network_id': network_id},
+                dataType: 'JSON',
+                success:function(arg){
+                    config['series'] = arg['datas'];
+                    config['title']['text'] = arg['alias'];
+                    config['yAxis']['max'] = arg['yAxis_max_limit'];
+                    $('#thickness-report-contaner').highcharts(config);
+                    if(arg['datas'][0]['data'].length===0){
+                        $('#show-thickness-msg').text('当前传感器暂无数据！');
+                        ClearMSG('show-thickness-msg')
+                    }
+
+                }
+             })
+
+            })
+        }
+
+
+        function gateway_associated_sensors_json() {
+            var selected_gateway_ntid = $('#selected-gateway-id').val();
+              $.ajax({
+                  url: '/GWS/gateway-associated-sensors-json',
+                  data: {'gateway_network_id': selected_gateway_ntid, 'manual_get_bit': 0},
+                  type: 'POST',
+                  async:false,
+                  dataType: 'JSON',
+                  success: function (arg) {
+                      var status = arg['status'] ;
+                      var sensor_list = arg['msg'] ;
+                      if (status) {
+                          var sensor_ele = "<option value=\"\"></option>";
+                          for (var i in sensor_list) {
+                              sensor_ele += "<option value=\"" + sensor_list[i].network_id + "\">" + sensor_list[i].alias + "</option>";
+                          }
+                          $('#selected-sensor-id').html(sensor_ele);
+                      }
+                  }
+              });
+        }
+
+        // 点击后去虚线中的单个数据，获取此数据的波形图
+        function GetData(nid) {
+            var config = {
+                chart: {
+                    type: 'spline',
+                    shadow: true,
+                    zoomType: 'x',
+                    panning: true,
+			        panKey: 'shift',
+                },
+                title: {
+                    text: null
+                },
+                xAxis: {
+                    type: 'linear'
+                },
+                yAxis: {
+                    endOnTick: false, //对数Y轴不强制结束于标线
+                    title: {
+                        text: '值'
+                    },
+                    plotLines: [{
+                        value: 0,
+                        width: 1,
+                        color: '#808080'
+                    }]
+                },
+                tooltip: {
+                    followTouchMove: true,
+                    formatter: function () {
+                        return '<b>' + this.series.name + '</b><br/>' +
+                                Highcharts.numberFormat(this.x) + '<br/>' +
+                                Highcharts.numberFormat(this.y, 2);
+                    }
+                },
+                legend: {
+                    enabled: false
+                },
+                lang:{
+                   contextButtonTitle:"图表导出菜单",
+                   downloadJPEG:"下载JPEG图片",
+                   downloadPDF:"下载PDF文件",
+                   downloadPNG:"下载PNG文件",
+                   downloadSVG:"下载SVG文件",
+                   printChart:"打印图表",
+                   resetZoom:"恢复缩放",
+                   resetZoomTitle:"恢复图表",
+                },
+                exporting: {
+                    enabled: true
+                },
+                series: [
+                    {
+                        name: '',
+                        data: [
+                        ]
+                    },
+                ]
+            };
+            {#$('#data-2048-contaner').highcharts(config);#}
+            // 数据库中获取
+            $.ajax({
+                url: '/GWS/data-json-report-'+nid,
+                type:'GET',
+                dataType: 'JSON',
+                success:function(arg){
+                    config['series'] = arg;
+                    config['title']['text'] = arg[0]['name'];
+                    $('#data-2048-contaner').highcharts(config);
+                }
+             })
+        }
+
+
+        //清除提示信息
+        {#function ClearMSG(nid) {#}
+        {#    setTimeout(function () {#}
+        {#        $("#"+nid).text('')#}
+        {#    }, 3000);#}
+        {# }#}
+
+    </script>
+
+{% endblock %}
+

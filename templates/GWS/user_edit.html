@@ -1,0 +1,138 @@
+{% extends 'index.html' %}
+{% load staticfiles %}
+
+{% block main_content %}
+    <section class="content">
+
+      <div class="box box-info">
+            <div class="box-header with-border">
+                <h3 class="box-title">编辑用户</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <div class="row">
+                <form method="post">{% csrf_token %}
+                        <div class="col-xs-12 col-md-6 col-md-offset-1">
+                            <div class="form-group">
+                                <label for="name">用户名</label>
+                                <input type="text" class="form-control" name="name" id="name" value="{{ cur_name }}"  onblur="JudgeExist()">
+                                <p id="user-msg" style="color: red;"></p>
+                            </div>
+                        </div>
+                        <div  class="col-xs-12 col-md-6 col-md-offset-1">
+                            <div class="form-group">
+                                <label for="role">角色</label>
+                                <select name="role" id="role" class="form-control" multiple="multiple" >
+                                    {% for role_item in roles_obj %}
+                                        <option value="{{ role_item.id }}">{{ role_item.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div  class="col-xs-12 col-md-6 col-md-offset-1">
+                            <div class="form-group">
+                                <label for="groups">权限组</label>
+                                <select name="groups" id="groups" class="form-control" multiple="multiple" >
+                                    {% for group_item in groups_obj %}
+                                        <option value="{{ group_item.id }}">{{ group_item.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div  class="col-xs-12 col-md-6 col-md-offset-1">
+                            <div class="form-group">
+                                <label for="gateway">网关</label>
+                                <select name="gateway" id="gateway" class="form-control" multiple="multiple" >
+                                    {% for gateway_item in gateway_obj %}
+                                        <option value="{{ gateway_item.id }}">{{ gateway_item.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div  class="col-xs-12 col-md-6 col-md-offset-1">
+                            <div class="form-group">
+                                <label for="user_permissions">用户权限</label>
+                                <select name="user_permissions" id="user_permissions" class="form-control " multiple="multiple" style="height: 150px;">
+                                    {% for user_permissions_item in cur_user_all_permissions_list %}
+                                        <option value="{{ user_permissions_item.permissions__id }}">{{ user_permissions_item.permissions__name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Prevent the enterprise root user from setting himself / herself as non login -->
+{#                        {% if nid != request.user.id %}#}
+                            <div class="col-xs-12 col-md-6 col-md-offset-1">
+                                <div class="form-group">
+                                    <label for="is_active">允许登录</label>
+                                    <input type="checkbox" name="is_active" id="is_active" class="flat-green">
+                                </div>
+                            </div>
+{#                        {% endif %}#}
+                        <div  class="col-xs-12 col-md-6 col-md-offset-1">
+                            <div class="form-group">
+                                <a style="cursor: pointer" class="btn btn-danger col-md-offset-2" href="{% url 'user_delete' nid %}">Delete</a>
+                                <button type="submit" class="btn btn-info col-md-offset-6">Save</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+              </div>
+          </div>
+
+    </section>
+{% endblock %}
+
+{% block script %}
+<script>
+
+    $(function () {
+        //Initialize Select2 Elements
+        $('.select2').select2();
+
+        //Flat red color scheme for iCheck
+        $('input[type="checkbox"].flat-green').iCheck({
+            checkboxClass: 'icheckbox_flat-green',
+        });
+
+        //刷新页面后显示原来的值
+        ShowOriginData();
+
+    });
+
+    function ShowOriginData() {
+
+        var is_active = '{{ is_active }}';
+        if (is_active === 'True') {
+            $('#is_active').iCheck('check');
+         }
+
+        $('#role').val({{ role_list }});
+        $('#gateway').val({{ gateway_list }});
+        $('#groups').val({{ group_list }});
+        $('#user_permissions').val({{ selected_user_permissions_list }});
+
+    }
+
+    function JudgeExist() {
+        var name = $('#name').val();
+        $.ajax({
+            url: '/GWS/judge-username-exist-json',
+            data: {'name': name, 'previous_name': "{{ cur_name }}"},
+            type: 'POST',
+            dataType: 'JSON',
+            success: function (arg) {
+                if (arg.status) {
+                    $('#user-msg').html(arg.msg)
+                }
+
+            }
+        })
+
+    }
+
+
+
+</script>
+
+{% endblock %}
+

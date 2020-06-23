@@ -1,0 +1,42 @@
+
+{% extends 'index.html' %}
+{% load staticfiles %}
+
+{% block main_content %}
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        403 Forbidden
+      </h1>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="error-page">
+        <h2 class="headline text-yellow"> 403</h2>
+
+        <div class="error-content">
+          <h3><i class="fa fa-warning text-yellow"></i> 您的权限不足</h3>
+
+          <p>
+            您可以联系管理员调整权限以便访问该页面, 您也可以 <a href="/GWS/index">返回主页</a>。
+          </p>
+
+        </div>
+        <!-- /.error-content -->
+      </div>
+      <!-- /.error-page -->
+    </section>
+    <!-- /.content -->
+
+
+
+{% endblock %}
+
+{% block script %}
+
+
+{% endblock %}
+
+
+

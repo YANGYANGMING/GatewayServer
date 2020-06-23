@@ -1,0 +1,114 @@
+{% extends 'index.html' %}
+{% load staticfiles %}
+{% load GWS_tags %}
+
+{% block main_content %}
+
+    <!-- Main content -->
+    <section class="content">
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="delModel" tabindex="-1" role="dialog" aria-labelledby="delModelLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="delModelLabel">删除警告</h4>
+          </div>
+          <div class="modal-body">
+              <h4 style="color: red;" id="remove-alias"></h4>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            <a onclick="Delete()" type="button" class="btn btn-primary">确认删除</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+      <!-- /.table -->
+      <div class="box">
+        <div class="box-header with-border">
+          <h3 class="box-title">网关列表</h3>
+          <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
+          </div>
+        </div>
+            <!-- /.box-header -->
+        <div class="box-body" style="overflow: auto">
+            <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                        <tr>
+                            <th>网络号</th>
+                            <th>名称</th>
+                            <th>公司</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                <tbody>
+                    {% for row in gateway_obj %}
+                        <tr>
+                            <td>{{ row.network_id }}</td>
+                            <td>{{ row.name }}</td>
+                            <td>{{ row.Enterprise }}</td>
+                            <td>
+                                {% for k, v in gw_status.items %}
+                                    {% if v == row.gw_status and row.gw_status == 1 %}
+                                        <p style="color: green; font-weight: bolder; font-size: larger;">{{ k }}</p>
+                                    {% elif v == row.gw_status and row.gw_status == 0 %}
+                                        <p style="color: red; font-weight: bolder; font-size: larger;">{{ k }}</p>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                <a href="/GWS/edit-gateway-{{ row.network_id }}" onclick=";">
+                                    <button type="button" class="btn btn-success">
+                                        <i class="fa fa-pencil"></i>
+                                        编辑
+                                    </button>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!-- /.row -->
+      </div>
+      <!-- /.box -->
+
+    </section>
+    <!-- /.content -->
+
+
+{% endblock %}
+
+{% block script %}
+    <script>
+
+    $(function () {
+        //Initialize Select2 Elements
+        $('.select2').select2();
+        $('#example1').DataTable();
+
+        //Flat red color scheme for iCheck
+        $('input[type="checkbox"].flat-red, input[type="radio"].flat-red').iCheck({
+          checkboxClass: 'icheckbox_flat-green',
+          radioClass   : 'iradio_flat-green'
+        });
+      });
+
+
+
+
+
+    </script>
+
+{% endblock %}
+
+
+

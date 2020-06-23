@@ -1,0 +1,328 @@
+{% extends 'index.html' %}
+{% load staticfiles %}
+
+{% block main_content %}
+
+    <!-- Main content -->
+    <section class="content">
+
+      <!-- 手动设置传感器-->
+      <div class="box box-default">
+        <div class="box-header with-border">
+          <h3 class="box-title">手动获取节点数据</h3>
+          <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
+          </div>
+        </div>
+        <div class="box-body">
+            <div class="row">
+                <div class="col-xs-12 col-md-3">
+                    <div class="form-group">
+                        <label>网关&nbsp;：</label>
+                        <select class="form-control select2" id="selected-gateway-id" data-placeholder="网关">
+                            <option value=""></option>
+                            {% for gateway_item in gateway_obj %}
+                                <option value="{{ gateway_item.network_id }}">{{ gateway_item.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                  <div class="col-xs-12 col-md-3">
+                    <div class="form-group">
+                        <label>传感器：</label>
+                        <select class="form-control select2" id="selected-sensor-id" data-placeholder="传感器"></select>
+                    </div>
+                 </div>
+                  <div class="col-xs-6 col-md-6">
+                    <div class="form-group">
+                        <label>&nbsp; </label>
+                        <button type="submit" class="btn btn-primary" id="refresh-data-manual" style="display: block">手动获取</button>
+                        <span id="gwdata" style="color: red; display: inline;"></span>
+                    </div>
+                 </div>
+             </div>
+        </div>
+      </div>
+
+      <!-- 选中数据曲线图 -->
+      <div class="box">
+        <div class="box-header with-border">
+          <h3 class="box-title">最新数据曲线图</h3>
+          <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
+          </div>
+        </div>
+        <div class="box-body">
+            <!-- 曲线图 -->
+            <div id="container">
+            </div>
+        </div>
+    </div>
+
+      <!-- 最新数据 -->
+      <div class="box">
+        <div class="box-header with-border">
+          <h3 class="box-title">最新数据</h3>
+          <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
+          </div>
+        </div>
+            <!-- /.box-header -->
+        <div class="box-body">
+            <table id="example1" class="table table-bordered table-striped table-hover" style="width: 100%;">
+                <thead>
+                        <tr>
+                            <th>名称</th>
+                            <th style="display: none">id</th>
+                            <th>时间</th>
+                            <th>电量</th>
+                            <th>温度</th>
+                            <th>增益</th>
+                            <th>厚度值</th>
+                            <th>数据详情</th>
+                        </tr>
+                    </thead>
+                <tbody>
+                    {% for row in latest_data %}
+                        <tr>
+{#                            <td>{{ row.network_id__alias }}</td>#}
+{#                            <td style="display: none">{{ row.id }}</td>#}
+{#                            <td>{{ row.time_tamp }}</td>#}
+{#                            <td>{{ row.battery }}</td>#}
+{#                            <td>{{ row.temperature }}</td>#}
+{#                            <td>{{ row.thickness }}</td>#}
+{#                            <td><a href="javascript:;" onclick="GetData(this);"><i class="fa fa-pencil"></i> 数据详情</a></td>#}
+                            <td><p style="width: 50px;">{{ row.network_id__alias }}</p></td>
+                            <td style="display: none">{{ row.id }}</td>
+                            <td><p style="width: 75px;">{{ row.time_tamp }}</p></td>
+                            <td><p style="width: 50px;">{{ row.battery }}</p></td>
+                            <td><p style="width: 50px;">{{ row.temperature }}</p></td>
+                            <td><p style="width: 50px;">{{ row.gain }}</p></td>
+                            <td><p style="width: 60px;">{{ row.thickness }}</p></td>
+                            <td><a href="javascript:;" onclick="GetData(this);"><p style="width: 80px;"><i class="fa fa-pencil"></i> 数据详情</p></a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!-- /.row -->
+      </div>
+
+    </section>
+    <!-- /.content -->
+
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+
+      $(function () {
+        //Initialize Select2 Elements
+        $('.select2').select2();
+
+        $('#example1').DataTable({
+            bPaginate: false,
+            bSort: false,
+            bFilter: false,
+            scrollX: true,          // 固定列
+            fixedColumns: {
+                    leftColumns: 1  // 固定第1列
+                },
+        });
+
+        //Flat red color scheme for iCheck
+        $('input[type="checkbox"].flat-red, input[type="radio"].flat-red').iCheck({
+          checkboxClass: 'icheckbox_flat-green',
+          radioClass   : 'iradio_flat-green'
+        });
+
+        // 当网关下拉框内的网关被选择时，触发此函数
+          $('#selected-gateway-id').on('select2:select', function (e) {
+                gateway_associated_sensors_json();
+          });
+
+        //手动获取
+        RefreshDataManual();
+
+        ShowOriginData();
+
+        {#var test_s = {{ request.user }};#}
+        {#console.log(test_s)#}
+
+      });
+
+    //手动获取数据
+    button_sample = false;
+    function RefreshDataManual() {
+        $('#refresh-data-manual').click(function () {
+            $('#gwdata').html('已经加入采样队列，请稍等...');
+
+            var gateway_network_id = $('#selected-gateway-id').val();
+            var sensor_network_id = $('#selected-sensor-id').val();
+
+            if (sensor_network_id) {
+                if (button_sample === false) {
+                    button_sample = true;
+
+                    $.ajax({
+                        url: '/GWS/manual-config',
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {'sensor_network_id': sensor_network_id, 'gateway_network_id': gateway_network_id},
+                        success: function (arg) {
+                            {#console.log(arg);#}
+                            {#if (arg.status) {#}
+                            {#    $('#gwdata').text(arg.msg);#}
+                            {#    ClearMSG('#gwdata')#}
+                            {# }else{#}
+                            {#    $('#gwdata').text(arg.msg);#}
+                                {#btn_sample = false;#}
+                            {# }#}
+                        },
+                        error: function (arg) {
+                            button_sample = false;
+                        }
+                    });
+                }else{
+                    $('#gwdata').text('已经加入采样队列，可以刷新页面查看结果后，再手动取数。');
+                    }
+                }else {
+                    $('#gwdata').text('未选择传感器！');
+                    ClearMSGNOTReload('#gwdata');
+                }
+             })
+            }
+
+    //初始化heightchart
+     function GetData(ths) {
+            var config = {
+                chart: {
+                    type: 'spline',
+                    shadow: true,
+                    zoomType: 'x',
+                    panning: true,
+			        panKey: 'shift',
+                },
+                title: {
+                    text: null
+                },
+                xAxis: {
+                    type: 'linear'
+                },
+                yAxis: {
+                    endOnTick: false, //对数Y轴不强制结束于标线
+                    title: {
+                        text: '值'
+                    },
+                    plotLines: [{
+                        value: 0,
+                        width: 1,
+                        color: '#808080'
+                    }]
+                },
+                tooltip: {
+                    followTouchMove: true,
+                    formatter: function () {
+                        return '<b>' + this.series.name + '</b><br/>' +
+                                Highcharts.numberFormat(this.x) + '<br/>' +
+                                Highcharts.numberFormat(this.y, 2);
+                    }
+                },
+                legend: {
+                    enabled: false
+                },
+                lang:{
+                   contextButtonTitle:"图表导出菜单",
+                   downloadJPEG:"下载JPEG图片",
+                   downloadPDF:"下载PDF文件",
+                   downloadPNG:"下载PNG文件",
+                   downloadSVG:"下载SVG文件",
+                   printChart:"打印图表",
+                   resetZoom:"恢复缩放",
+                   resetZoomTitle:"恢复图表",
+                },
+                exporting: {
+                    enabled: true
+                },
+                series: [
+                    {
+                        name: '',
+                        data: [
+                        ]
+                    },
+                ]
+            };
+            {#$('#container').highcharts(config);#}
+            // 数据库中获取
+            var nid = $(ths).parent().parent().children().eq(1).text();
+            console.log(nid);
+            $.ajax({
+                url: '/GWS/data-json-report-'+nid,
+                type:'GET',
+                dataType: 'JSON',
+                success:function(arg){
+                    config['series'] = arg;
+                    config['title']['text'] = arg[0]['name'];
+                    $('#container').highcharts(config);
+                }
+             })
+        }
+
+    // 保留上次数据
+    function ShowOriginData() {
+
+        $('#selected-gateway-id').select2('val', ["{{ last_time_gwntid }}"]);
+        gateway_associated_sensors_json();
+        $('#selected-sensor-id').select2('val', ["{{ last_time_snrntid }}"]);
+
+    }
+
+
+    function gateway_associated_sensors_json() {
+        var selected_gateway_ntid = $('#selected-gateway-id').val();
+          $.ajax({
+              url: '/GWS/gateway-associated-sensors-json',
+              data: {'gateway_network_id': selected_gateway_ntid, 'manual_get_bit': 1},
+              type: 'POST',
+              async:false,
+              dataType: 'JSON',
+              success: function (arg) {
+                  var status = arg['status'] ;
+                  var sensor_list = arg['msg'] ;
+                  if (status) {
+                      var sensor_ele = "<option value=\"\"></option>";
+                      for (var i in sensor_list) {
+                          sensor_ele += "<option value=\"" + sensor_list[i].network_id + "\">" + sensor_list[i].alias + "</option>";
+                      }
+                      $('#selected-sensor-id').html(sensor_ele);
+                  }
+              }
+          });
+    }
+
+
+    //清除提示信息
+    {#function ClearMSG(ele_id) {#}
+    {#    setTimeout(function () {#}
+            {#btn_sample = false;#}
+    {#        $(ele_id).html('');#}
+            {#window.location.reload();#}
+    {#    }, 3000);#}
+    {# }#}
+
+    function ClearMSGNOTReload(ele_id) {
+        setTimeout(function () {
+            $(ele_id).html('');
+            {#btn_sample = false;#}
+        }, 2000);
+    }
+
+    </script>
+
+{% endblock %}
+

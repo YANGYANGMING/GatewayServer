@@ -1,0 +1,120 @@
+{% extends 'index.html' %}
+{% load staticfiles %}
+
+{% block main_content %}
+
+    <!-- Main content -->
+    <section class="content">
+      <!-- BAR CHART -->
+      <div class="box box-success">
+        <div class="box-header with-border">
+          <h3 class="box-title">导出数据</h3>
+
+          <div class="box-tools pull-right">
+            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+            </button>
+            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+          </div>
+        </div>
+
+        <div class="box-body">
+            <div class="row">
+                <div class="col-xs-12 col-md-3">
+                    <div class="form-group">
+                        <label>&nbsp; </label>
+                        <button type="submit" class="btn btn-primary col-lg-offset-1" id="export-all-data" style="display: block">导出全部数据</button>
+                        <span id="export-all-data-msg" style="color: red;"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- form start -->
+                <div class="col-xs-12 col-md-3">
+                    <div class="form-group">
+                        <label>公司：</label>
+                        <select class="form-control select2" id="selected-company-id" data-placeholder="公司">
+                            <option value=""></option>
+                            {% for company_item in company_obj %}
+                                <option value="{{ company_item.id }}">{{ company_item.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-xs-12 col-md-3">
+                    <div class="form-group">
+                        <label>网关：</label>
+                        <select class="form-control select2" id="selected-gateway-id" data-placeholder="网关">
+                            <option value=""></option>
+                            <select class="form-control select2" id="selected-gateway-id" data-placeholder="网关"></select>
+                        </select>
+                    </div>
+                </div>
+              <div class="col-xs-12 col-md-3">
+                <div class="form-group">
+                    <label>传感器：</label>
+                    <select class="form-control select2" id="selected-sensor-id" data-placeholder="传感器"></select>
+                </div>
+             </div>
+              <div class="col-xs-12 col-md-3">
+                <div class="form-group">
+                    <label>&nbsp; </label>
+                    <button type="submit" class="btn btn-primary col-lg-offset-1" id="export-data" style="display: block">导出</button>
+                    <span id="export-data-msg" style="color: red;"></span>
+                </div>
+             </div>
+            </div>
+
+
+        </div>
+        <!-- /.box-body -->
+      </div>
+      <!-- /.box -->
+
+    </section>
+    <!-- /.content -->
+
+{% endblock %}
+
+{% block script %}
+
+    <script>
+
+      $(function () {
+
+        //Initialize Select2 Elements
+        $('.select2').select2();
+
+        // 当网关下拉框内的网关被选择时，触发此函数
+          $('#selected-gateway-id').on('select2:select', function (e) {
+                gateway_associated_sensors_json();
+          });
+
+      });
+
+        function gateway_associated_sensors_json() {
+            var selected_gateway_ntid = $('#selected-gateway-id').val();
+              $.ajax({
+                  url: '/GWS/gateway-associated-sensors-json',
+                  data: {'gateway_network_id': selected_gateway_ntid, 'manual_get_bit': 0},
+                  type: 'POST',
+                  async:false,
+                  dataType: 'JSON',
+                  success: function (arg) {
+                      var status = arg['status'] ;
+                      var sensor_list = arg['msg'] ;
+                      if (status) {
+                          var sensor_ele = "<option value=\"\"></option>";
+                          for (var i in sensor_list) {
+                              sensor_ele += "<option value=\"" + sensor_list[i].network_id + "\">" + sensor_list[i].alias + "</option>";
+                          }
+                          $('#selected-sensor-id').html(sensor_ele);
+                      }
+                  }
+              });
+        }
+
+    </script>
+
+{% endblock %}
+

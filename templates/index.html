@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <link rel="icon" href="/static/images/favicon.png" type="shortcut icon">
+  <title>零声科技</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <!-- Bootstrap 3.3.7 -->
+  <link rel="stylesheet" href="/static/bower_components/bootstrap/dist/css/bootstrap.min.css" media="all">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="/static/bower_components/font-awesome/css/font-awesome.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="/static/bower_components/Ionicons/css/ionicons.min.css">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="/static/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="/static/bower_components/select2/dist/css/select2.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="/static/dist/css/AdminLTE.min.css">
+  <!-- AdminLTE Skins. Choose a skin from the css/skins
+       folder instead of downloading all of them to reduce the load. -->
+  <link rel="stylesheet" href="/static/dist/css/skins/_all-skins.min.css">
+  <!-- Daterange picker -->
+  <link rel="stylesheet" href="/static/bower_components/bootstrap-daterangepicker/daterangepicker.css">
+  <!-- iCheck for checkboxes and radio inputs -->
+  <link rel="stylesheet" href="/static/plugins/iCheck/all.css">
+  <link href="/static/plugins/busy-load/app.min.css" rel="stylesheet">
+  <!-- map -->
+    <link rel="stylesheet" href="/static/plugins/map/scanboard.css">
+
+    <link rel="stylesheet" href="/static/plugins/FixedColumns-3.3.1/css/fixedColumns.dataTables.css">
+    <link rel="stylesheet" href="/static/plugins/FixedColumns-3.3.1/css/fixedColumns.bootstrap.min.css">
+
+</head>
+<body class="hold-transition skin-black sidebar-mini">
+{% load staticfiles %}
+{% load GWS_tags %}
+
+
+<div class="wrapper">
+
+    <header class="main-header">
+    <!-- Logo -->
+    <a href="/GWS/index" class="logo">
+      <!-- mini logo for sidebar mini 50x50 pixels -->
+      <span class="logo-mini">ORS</span>
+      <!-- logo for regular state and mobile devices -->
+      <!-- <span class="logo-lg">ORISONIC</span> -->
+        <img style="width: 155px; height: 55px;" src="/static/images/loginlogo.png" alt="">
+    </a>
+    <!-- Header Navbar: style can be found in header.less -->
+    <nav class="navbar navbar-static-top">
+      <!-- Sidebar toggle button-->
+      <a href="" class="sidebar-toggle" data-toggle="push-menu" role="button">
+        <span class="sr-only">Toggle navigation</span>
+      </a>
+      <div class="navbar-custom-menu">
+        <ul class="nav navbar-nav">
+          <!-- User Account: style can be found in dropdown.less -->
+          <li class="dropdown user user-menu">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <img src="/static/images/avatar/default.png" class="user-image" alt="User Image">
+              <span id="user" class="hidden-xs">{{ user }}</span>
+            </a>
+              <ul class="dropdown-menu">
+              <!-- User image -->
+              <li class="user-header">
+                <img src="/static/images/avatar/default.png" class="img-circle" alt="User Image">
+                <p>
+                  {{ user }}
+                </p>
+              </li>
+              <!-- Menu Body -->
+              <!-- Menu Footer-->
+              <li class="user-footer">
+                <div class="pull-left">
+                  <a href="/GWS/user-profile" class="btn btn-default btn-flat">Profile</a>
+                </div>
+                <div class="pull-right">
+                  <a href="{% url 'logout' %}" class="btn btn-default btn-flat">Sign out</a>
+                </div>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    </header>
+    <!-- Left side column. contains the logo and sidebar -->
+    <aside class="main-sidebar">
+            <!-- sidebar: style can be found in sidebar.less -->
+            <section class="sidebar">
+              <!-- Sidebar user panel -->
+              <div class="user-panel">
+{#                <div class="pull-left image">#}
+{#                  <img src="/static/images/favicon.png" class="img-circle" alt="User Image">#}
+{#                </div>#}
+                <div class="image">
+                  <p style="font-size: 20px; color: #fff;">零声科技监测服务系统</p>
+                </div>
+              </div>
+
+              <ul class="sidebar-menu" data-widget="tree">
+
+                {% render_menus_tree request %}
+
+{#                  {% for role in user.role.select_related %}#}
+{#                      {% for menu in role.menus.select_related %}#}
+{#                          {% if request.path == menu.url_name %}#}
+{#                              <li class="active">#}
+{#                                  <a href="{% if menu.url_type == 0 %}{{ menu.url_name }}{% else %}{% url menu.url_name 'new' %}{% endif %}"><span>{{ menu.name }}</span></a>#}
+{#                              </li>#}
+{#                          {% else %}#}
+{#                              <li>#}
+{#                                  <a href="{% if menu.url_type == 0 %}{{ menu.url_name }}{% else %}{% url menu.url_name 'new' %}{% endif %}"><span>{{ menu.name }}</span></a>#}
+{#                              </li>#}
+{#                          {% endif %}#}
+{#                      {% endfor %}#}
+{#                   {% endfor %}#}
+
+              </ul>
+            </section>
+          </aside>
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        {% block main_content %}
+            <!-- Content Header (Page header) -->
+            <section class="content-header">
+              <h1>
+                Dashboard
+                <small>Control panel</small>
+              </h1>
+            </section>
+
+            <!-- Main content -->
+            <section class="content">
+              <!-- 设置调试时间 -->
+              <div class="row">
+                <form action="/GWS/alarm-sensor-list" method="post">
+                    <input type="text" style="display: none" name="all_alarm_sensor_list" value="{{ all_alarm_sensor_list }}">
+                    <div class="col-lg-3 col-xs-6">
+                      <!-- small box -->
+                      <a href="">
+                          <div class="small-box bg-red" style="position: relative">
+                            <div class="inner">
+                              <h4>报警信息：<p style="font-size: large; font-weight: bolder; display: inline">{{ all_alarm_sensor_count }}</p>条</h4>
+
+                              <p>Warning</p>
+                            </div>
+                            <div class="icon">
+                              <i class="ion ion-gear-b"></i>
+                            </div>
+                            <p class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></p>
+                              <button type="submit" class="col-lg-12 col-xs-12" style="opacity: 0; height: 115px; position: absolute; top: 0; left: 0;">sdsds</button>
+                          </div>
+                        </a>
+
+                    </div>
+                </form>
+                <!-- 全部数据 -->
+                <div class="col-lg-3 col-xs-6">
+                  <!-- small box -->
+                  <a href="/GWS/all-data-report">
+                      <div class="small-box bg-green">
+                        <div class="inner">
+                          <h4>全部数据</h4>
+
+                          <p>all data</p>
+                        </div>
+                        <div class="icon">
+                          <i class="ion ion-stats-bars"></i>
+                        </div>
+                        <p class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></p>
+                      </div>
+                  </a>
+                </div>
+                <!-- ./col -->
+                <div class="col-lg-3 col-xs-6">
+                  <!-- small box -->
+                  <a href="/GWS/thickness-report">
+                      <div class="small-box bg-yellow">
+                        <div class="inner">
+                          <h4>厚度曲线</h4>
+
+                          <p>thickness report</p>
+                        </div>
+                        <div class="icon">
+                          <i class="ion ion-clipboard"></i>
+                        </div>
+                        <p class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></p>
+                      </div>
+                  </a>
+                </div>
+                <!-- ./col -->
+                <div class="col-lg-3 col-xs-6">
+                  <!-- small box -->
+                  <a href="/GWS/sensor-manage">
+                      <div class="small-box bg-aqua">
+                        <div class="inner">
+                          <h4>传感器总数：<p style="font-size: large; font-weight: bolder; display: inline">{{ all_sensor_count }}</p>个</h4>
+
+                          <p>Total number of sensors</p>
+                        </div>
+                        <div class="icon">
+                          <i class="ion ion-arrow-graph-up-right"></i>
+                        </div>
+                            <p class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></p>
+                      </div>
+                  </a>
+                </div>
+              </div>
+              <div class="row">
+                <section class="col-lg-7 connectedSortable">
+
+                  <!-- 传感器状态 -->
+                  <div class="box box-solid box-success">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">传感器状态</h3>
+
+                      <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                      </div>
+                    </div>
+                    <div class="box-body" style="overflow-x: auto; height: 250px;">
+                        <table id="example1" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>网络号</th>
+                                    <th>名称</th>
+                                    <th>绑定网关</th>
+                                    <th>运行状态</th>
+                                    <th>在线状态</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in all_sensor_list %}
+                                    <tr>
+                                        <td>{{ row.network_id }}</td>
+                                        <td>{{ row.alias }}</td>
+                                        <td>{{ row.gateway__name }}</td>
+                                        <td id="sensor-run-status">
+                                            {% for k, v in sensor_run_status.items %}
+                                                    {% if v == row.sensor_run_status and row.sensor_run_status == 1 %}
+                                                        <p style="color: green; font-weight: bolder; font-size: larger;">{{ k }}</p>
+                                                    {% elif v == row.sensor_run_status and row.sensor_run_status == 0 %}
+                                                        <p style="color: red; font-weight: bolder; font-size: larger;">{{ k }}</p>
+                                                    {% endif %}
+                                            {% endfor %}
+                                        </td>
+                                        <td id="sensor-online-status">
+                                            {% for k, v in sensor_online_status.items %}
+                                                    {% if v == row.sensor_online_status and row.sensor_online_status == 1 %}
+                                                        <p style="color: green; font-weight: bolder; font-size: larger;">{{ k }}</p>
+                                                    {% elif v == row.sensor_online_status and row.sensor_online_status == 0 %}
+                                                        <p style="color: red; font-weight: bolder; font-size: larger;">{{ k }}</p>
+                                                    {% endif %}
+                                            {% endfor %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                      </div>
+                  </div>
+                  <!-- 地图 -->
+                  <div class="box box-solid box-success">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">地图</h3>
+                      <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
+                                title="Collapse">
+                          <i class="fa fa-minus"></i></button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove">
+                          <i class="fa fa-times"></i></button>
+                      </div>
+                    </div>
+                    <div class="box-body">
+                        <div id="myMap" style="height: 400px; width: 100%;"></div>
+                    </div>
+                  </div>
+
+                </section>
+
+                <section class="col-lg-5 connectedSortable">
+
+                  <!-- 网关状态 -->
+                  <div class="box box-solid box-success">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">网关状态</h3>
+
+                      <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                      </div>
+                    </div>
+                    <div class="box-body" style="overflow-x: auto; height: 250px;">
+                        <table id="example1" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>网络号</th>
+                                    <th>名称</th>
+                                    <th>公司</th>
+                                    <th>状态</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in gateway_obj %}
+                                    <tr>
+                                        <td>{{ row.network_id }}</td>
+                                        <td>{{ row.name }}</td>
+                                        <td>{{ row.Enterprise }}</td>
+                                        <td>
+                                            {% for k, v in gw_status.items %}
+                                                {% if v == row.gw_status and row.gw_status == 1 %}
+                                                    <p style="color: green; font-weight: bolder; font-size: larger;">{{ k }}</p>
+                                                {% elif v == row.gw_status and row.gw_status == 0 %}
+                                                    <p style="color: red; font-weight: bolder; font-size: larger;">{{ k }}</p>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                      </div>
+                  </div>
+                  <!-- 报警信息 -->
+                  <div class="box box-solid box-danger">
+                        <div class="box-header with-border">
+                          <h3 class="box-title">报警设备</h3>
+                          <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                      </div>
+                        </div>
+                        <!-- 滚动列表 -->
+                        <div class="box-body">
+                            <div id="review_box" style="height: 250px; overflow: hidden;">
+                             <ul id="comment1" style="list-style: none; margin: 0; padding: 0">
+                                {% for alarm_sensor_item in all_alarm_sensor_list %}
+                                     {% for alias, value in alarm_sensor_item.items %}
+                                         <li>
+                                            <p style="opacity: 50%;">------------------------------------------------------------------------------------</p>
+                                            <div style="display: inline-block">
+                                              <p><a href="/GWS/sensor-data-info-{{ value.network_id }}">{{ alias }}：</a></p>
+                                                <p style="opacity: 0">p</p>
+                                                <p style="opacity: 0">p</p>
+                                            </div>
+                                            <div style="display: inline-block">
+                                              {% for k, v in value.items %}
+                                                 {% if k == '报警信息：' %}
+                                                    <p style="color: red;">{{ k }}{{ v }}</p>
+                                                 {% elif k == 'network_id' %}
+                                                 {% else %}
+                                                    <p>{{ k }}{{ v }}</p>
+                                                 {% endif %}
+                                             {% endfor %}
+                                            </div>
+                                          </li>
+                                     {% endfor %}
+                                {% endfor %}
+
+
+                                 </ul>
+                             <ul id="comment2" style="list-style: none; margin: 0; padding: 0"></ul>
+                            </div>
+                        </div>
+                    <!-- /.box-body -->
+                      </div>
+
+                </section>
+
+                <!-- right col -->
+              </div>
+              <!-- /.row (main row) -->
+            </section>
+            <!-- /.content -->
+        {% endblock %}
+    
+    </div>
+              <!-- /.content-wrapper -->
+     <footer class="main-footer">
+        <div class="pull-right hidden-xs">
+          <b>Version</b> 0.0.1
+        </div>
+        <strong>零声科技监测服务器系统 <a href="http://www.orisonic.com">ORISONIC</a>.</strong> 零声科技（苏州）有限公司
+      </footer>
+</div>
+<!-- jQuery 3 -->
+<script type="text/javascript" src="/static/bower_components/jquery/dist/jquery.min.js"></script>
+<!-- jQuery UI 1.11.4 -->
+<script src="/static/bower_components/jquery-ui/jquery-ui.min.js"></script>
+<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+<script>
+  $.widget.bridge('uibutton', $.ui.button);
+
+    gwntid_list = {{ request.session.gwntid_list | safe }};
+
+</script>
+{#<!-- IE兼容ES6基本语法 -->#}
+{#<script src="/static/browser/browser.min.js"></script>#}
+{#<!-- 转换 Iterator、Generator、Set、Maps、Proxy、Reflect、Symbol、Promise等语法 -->#}
+{#<script src="/static/browser/browser-polyfill.min.js"></script>#}
+{#<!-- mqtt -->#}
+{#<script type="text/babel" src="/static/plugins/mqtt/mqtt.min.js"></script>#}
+{#<script type="text/babel" src="/static/plugins/mqtt/mqtt_client.js"></script>#}
+{#<script type="text/babel" src="/static/plugins/clear_msg.js"></script>#}
+<!-- mqtt -->
+<script src="/static/plugins/mqtt/mqtt.min.js"></script>
+<script src="/static/plugins/mqtt/mqtt_client.js"></script>
+<script src="/static/plugins/clear_msg.js"></script>
+<!-- Bootstrap 3.3.7 -->
+<script src="/static/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<!-- hightchart -->
+<script src="/static/plugins/highcharts/highcharts.js"></script>
+<script src="/static/plugins/highcharts/grid.js"></script>
+<script src="/static/plugins/highcharts/modules/exporting.js"></script>
+<!-- daterangepicker -->
+<script src="/static/bower_components/moment/min/moment.min.js"></script>
+<script src="/static/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
+<!-- Slimscroll -->
+<script src="/static/bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+<!-- AdminLTE App -->
+<script src="/static/dist/js/adminlte.min.js"></script>
+<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+<script src="/static/dist/js/pages/dashboard.js"></script>
+<!-- Select2 -->
+<script src="/static/bower_components/select2/dist/js/select2.full.min.js"></script>
+<!-- iCheck 1.0.1 -->
+<script src="/static/plugins/iCheck/icheck.min.js"></script>
+<!-- DataTables -->
+<script src="/static/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="/static/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="/static/dist/js/demo.js"></script>
+<!-- busyLoad -->
+<script src="/static/plugins/busy-load/app.min.js"></script>
+<script src="/static/plugins/busy-load/loading.js"></script>
+<!-- map -->
+<!-- <script src="/static/plugins/map/scanboard.js"></script> -->
+<script src="/static/plugins/map/map.js"></script>
+
+<script src="/static/plugins/FixedColumns-3.3.1/js/dataTables.fixedColumns.min.js"></script>
+
+{% block script %}
+    <script>
+
+    // 滚动函数
+    window.onload = roll(50);
+     function roll(t) {
+      var ul1 = document.getElementById("comment1");
+      var ul2 = document.getElementById("comment2");
+      var ulbox = document.getElementById("review_box");
+      if (ul1.children.length >= 2) {
+            ul2.innerHTML = ul1.innerHTML;
+      }
+      ulbox.scrollTop = 0; // 开始无滚动时设为0
+      var timer = setInterval(rollStart, t); // 设置定时器，参数t用在这为间隔时间（单位毫秒），参数t越小，滚动速度越快
+      // 鼠标移入div时暂停滚动
+      ulbox.onmouseover = function () {
+       clearInterval(timer);
+      };
+      // 鼠标移出div后继续滚动
+      ulbox.onmouseout = function () {
+       timer = setInterval(rollStart, t);
+      }
+     }
+     // 开始滚动函数
+     function rollStart() {
+      // 上面声明的DOM对象为局部对象需要再次声明
+      var ul1 = document.getElementById("comment1");
+      var ul2 = document.getElementById("comment2");
+      var ulbox = document.getElementById("review_box");
+      // 正常滚动不断给scrollTop的值+1,当滚动高度大于列表内容高度时恢复为0
+      if (ulbox.scrollTop >= ul1.scrollHeight) {
+       ulbox.scrollTop = 0;
+      } else {
+       ulbox.scrollTop++;
+      }
+     }
+
+     $(function(){
+        var coordinate_list = new Array();
+        var all_sensor_list = JSON.parse("{{ all_sensor_list_json|escapejs }}");
+        console.log(all_sensor_list);
+
+        for (var i = 0; i < all_sensor_list.length; i++) {
+            var temp_list = new Array();
+            temp_list.push(all_sensor_list[i]['longitude']);
+            temp_list.push(all_sensor_list[i]['latitude']);
+            if (temp_list[0] && temp_list[1]) {
+                coordinate_list.push(temp_list)
+            }
+         }
+        console.log(coordinate_list);
+
+        //高德地图
+        var myMap = new AMap.Map('myMap',{
+            resizeEnable: true,
+            zoom: 20,
+            // mapStyle: 'amap://styles/darkblue',
+            center: coordinate_list[0],
+        });
+
+        var point = coordinate_list;
+        // var maker;
+        for (var i = 0; i < point.length; i++) {
+            var marker = new AMap.Marker({
+                position: point[i],
+                map: myMap,
+                icon:'/static/plugins/map/sensor.png',
+            });
+            marker.content='<p>名称：' + all_sensor_list[i].alias + '</p>'+
+                    '<p>绑定网关：' + all_sensor_list[i].gateway__name + '</p>'+
+                    '<p>网络号：' + all_sensor_list[i].network_id + '</p>'+
+                    '<p>运行状态：' + $('#sensor-run-status').children().html()+ '</p>'+
+                    '<p>在线状态：' + $('#sensor-online-status').children().html() + '</p>';
+            marker.on('click', markerClick);
+            //map.setFitView();
+        }
+        var infoWindow = new AMap.InfoWindow({
+            offset: new AMap.Pixel(16, -36)
+        });
+        function markerClick(e){
+            infoWindow.setContent(e.target.content);
+            infoWindow.open(myMap,e.target.getPosition());
+        }
+        myMap.on('click',function(){
+            infoWindow.close();
+        });
+
+    });
+
+
+
+    </script>
+{% endblock %}
+
+</body>
+</html>
