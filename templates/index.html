@@ -94,32 +94,13 @@
             <section class="sidebar">
               <!-- Sidebar user panel -->
               <div class="user-panel">
-{#                <div class="pull-left image">#}
-{#                  <img src="/static/images/favicon.png" class="img-circle" alt="User Image">#}
-{#                </div>#}
                 <div class="image">
                   <p style="font-size: 20px; color: #fff;">零声科技监测服务系统</p>
                 </div>
               </div>
 
               <ul class="sidebar-menu" data-widget="tree">
-
                 {% render_menus_tree request %}
-
-{#                  {% for role in user.role.select_related %}#}
-{#                      {% for menu in role.menus.select_related %}#}
-{#                          {% if request.path == menu.url_name %}#}
-{#                              <li class="active">#}
-{#                                  <a href="{% if menu.url_type == 0 %}{{ menu.url_name }}{% else %}{% url menu.url_name 'new' %}{% endif %}"><span>{{ menu.name }}</span></a>#}
-{#                              </li>#}
-{#                          {% else %}#}
-{#                              <li>#}
-{#                                  <a href="{% if menu.url_type == 0 %}{{ menu.url_name }}{% else %}{% url menu.url_name 'new' %}{% endif %}"><span>{{ menu.name }}</span></a>#}
-{#                              </li>#}
-{#                          {% endif %}#}
-{#                      {% endfor %}#}
-{#                   {% endfor %}#}
-
               </ul>
             </section>
           </aside>
@@ -225,7 +206,7 @@
                         <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
                       </div>
                     </div>
-                    <div class="box-body" style="overflow-x: auto; height: 250px;">
+                    <div class="box-body" style="overflow-x: auto; height: 300px;">
                         <table id="example1" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
@@ -400,7 +381,7 @@
 <script>
   $.widget.bridge('uibutton', $.ui.button);
 
-    gwntid_list = {{ request.session.gwntid_list | safe }};
+    {#gwntid_list = {{ request.session.gwntid_list | safe }};#}
 
 </script>
 {#<!-- IE兼容ES6基本语法 -->#}

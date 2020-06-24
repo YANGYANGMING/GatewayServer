@@ -15,32 +15,49 @@
             <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
           </div>
         </div>
-        <div class="box-body">
-            <div class="row">
-                <div class="col-xs-12 col-md-3">
-                    <div class="form-group">
-                        <label>网关&nbsp;：</label>
-                        <select class="form-control select2" id="selected-gateway-id" data-placeholder="网关">
-                            <option value=""></option>
-                            {% for gateway_item in gateway_obj %}
-                                <option value="{{ gateway_item.network_id }}">{{ gateway_item.name }}</option>
-                            {% endfor %}
-                        </select>
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-xs-12 col-md-3">
+                        <div class="form-group">
+                            <label>网关&nbsp;：</label>
+                            <select class="form-control select2" id="selected-gateway-id" data-placeholder="网关">
+                                <option value=""></option>
+                                {% for gateway_item in gateway_obj %}
+                                    <option value="{{ gateway_item.network_id }}">{{ gateway_item.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
                     </div>
-                </div>
                   <div class="col-xs-12 col-md-3">
                     <div class="form-group">
                         <label>传感器：</label>
                         <select class="form-control select2" id="selected-sensor-id" data-placeholder="传感器"></select>
                     </div>
-                 </div>
-                  <div class="col-xs-6 col-md-6">
-                    <div class="form-group">
-                        <label>&nbsp; </label>
-                        <button type="submit" class="btn btn-primary" id="refresh-data-manual" style="display: block">手动获取</button>
-                        <span id="gwdata" style="color: red; display: inline;"></span>
+                  </div>
+                    <div class="col-xs-12 col-md-2">
+                        <div class="form-group">
+                            <label>&nbsp; </label>
+                            <button type="submit" class="btn btn-primary" id="refresh-data-manual" style="display: block">手动获取</button>
+                            <span id="gwdata" style="color: red; display: inline;"></span>
+                        </div>
                     </div>
-                 </div>
+                <div class="col-xs-12 col-md-3">
+                    <p>返回信息：</p>
+                    <ul style="list-style: none; height: 100px; overflow: auto">
+                        {% for item in request.session.gwntid_list %}
+                            <li style="color: green;">[23/Jun/2020 15:37:06] [{{ item }}] 获取成功</li>
+                        {% endfor %}
+                        <li style="color: green;">[23/Jun/2020 15:37:06] [0.0.2.6] 获取成功</li>
+                        <li style="color: green;">[23/Jun/2020 14:37:06] [0.0.2.6] 获取成功</li>
+                        <li style="color: green;">[23/Jun/2020 14:37:06] [0.0.2.6] 获取成功</li>
+                        <li style="color: green;">[23/Jun/2020 14:37:06] [0.0.2.6] 获取成功</li>
+                        <li style="color: green;">[23/Jun/2020 14:37:06] [0.0.2.6] 获取成功</li>
+                        <li style="color: green;">[23/Jun/2020 14:37:06] [0.0.2.6] 获取成功</li>
+                        <li style="color: red;">[23/Jun/2020 13:37:06] [0.0.2.6] 获取失败</li>
+                        <li style="color: red;">[23/Jun/2020 12:37:06] [0.0.2.6] 获取失败</li>
+                        <li style="color: red;">[23/Jun/2020 11:37:06] [0.0.2.6] 获取失败</li>
+                    </ul>
+                </div>
              </div>
         </div>
       </div>
@@ -88,13 +105,6 @@
                 <tbody>
                     {% for row in latest_data %}
                         <tr>
-{#                            <td>{{ row.network_id__alias }}</td>#}
-{#                            <td style="display: none">{{ row.id }}</td>#}
-{#                            <td>{{ row.time_tamp }}</td>#}
-{#                            <td>{{ row.battery }}</td>#}
-{#                            <td>{{ row.temperature }}</td>#}
-{#                            <td>{{ row.thickness }}</td>#}
-{#                            <td><a href="javascript:;" onclick="GetData(this);"><i class="fa fa-pencil"></i> 数据详情</a></td>#}
                             <td><p style="width: 50px;">{{ row.network_id__alias }}</p></td>
                             <td style="display: none">{{ row.id }}</td>
                             <td><p style="width: 75px;">{{ row.time_tamp }}</p></td>

@@ -262,11 +262,11 @@
 
 
         //清除提示信息
-        {#function ClearMSG(nid) {#}
-        {#    setTimeout(function () {#}
-        {#        $("#"+nid).text('')#}
-        {#    }, 3000);#}
-        {# }#}
+        function ClearMSG(nid) {
+            setTimeout(function () {
+                $("#"+nid).text('')
+            }, 3000);
+         }
 
     </script>
 

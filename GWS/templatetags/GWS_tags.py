@@ -5,6 +5,7 @@ from GWS import models
 
 register = Library()
 
+
 @register.simple_tag
 def render_run_time(received_time_data):
     ele = ''

@@ -24,7 +24,6 @@ def index(request):
     :param request:
     :return:
     """
-
     gwntid_list = []
     all_sensor_count = 0
     user_obj = models.UserProfile.objects.filter(name=request.user).first()
@@ -53,7 +52,6 @@ def index(request):
     all_sensor_list_json = json.dumps(all_sensor_list)
     # 把gwntid写进session,以便websocket使用
     request.session['gwntid_list'] = gwntid_list
-    print(request.session.get('gwntid_list'))
 
     return render(request, 'index.html', locals())
 
@@ -177,7 +175,7 @@ def edit_sensor_params(request):
         "gain": [gain for gain in range(60, 101)],
         "avg_time": [avg_time for avg_time in range(0, 11)],
         "Hz": [Hz for Hz in range(2, 5)],
-        "Sample_depth": [Sample_depth for Sample_depth in range(2, 7, 2)],
+        "Sample_depth": [Sample_depth for Sample_depth in range(0, 3)],
         "Sample_Hz": [200, 5000],
     }
     user_obj = models.UserProfile.objects.filter(name=request.user).first()

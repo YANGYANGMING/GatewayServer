@@ -9,9 +9,9 @@ class MQTT_Client(object):
     def __init__(self):
         self.sub_list = [('pub', 2)]
         # models.Gateway.objects.values('network_id').all()
-        for i in range(1, 6):
-            temp_sub = ('0.0.%s.0' % i, 2)
-            self.sub_list.append(temp_sub)
+        # for i in range(1, 6):
+        #     temp_sub = ('0.0.%s.0' % i, 2)
+        #     self.sub_list.append(temp_sub)
         self.client = mqtt.Client()
         self.client.on_connect = self.on_connect
         self.client.on_disconnect = self.on_disconnect

@@ -32,7 +32,7 @@
     });
 
     // 订阅列表
-    client.subscribe(gwntid_list, { qos: 2 });
+    client.subscribe('pub', { qos: 2 });
     // 监听接收消息事件
     client.on('message', (topic, message) => {
         // console.log('收到来自', topic, '的消息', message.toString());

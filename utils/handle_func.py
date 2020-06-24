@@ -272,7 +272,6 @@ def send_to_gw(queue_obj):
     :param queue_obj: 每个公司的队列对象
     :return:
     """
-    # response = {'status': False, 'msg': "网关未响应"}
     while True:
         print(queue_obj.queue)
         network_id = queue_obj.get()[1]
@@ -598,7 +597,6 @@ handle_func_obj = HandleFunc()
 def handle_recv_gwdata(payload):
     """
     处理接收到的网关数据
-    :param topic:
     :param payload:
     :return:
     """
