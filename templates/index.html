@@ -365,7 +365,7 @@
         {% endblock %}
     
     </div>
-              <!-- /.content-wrapper -->
+      <!-- /.content-wrapper -->
      <footer class="main-footer">
         <div class="pull-right hidden-xs">
           <b>Version</b> 0.0.1
@@ -381,7 +381,6 @@
 <script>
   $.widget.bridge('uibutton', $.ui.button);
 
-    {#gwntid_list = {{ request.session.gwntid_list | safe }};#}
 
 </script>
 {#<!-- IE兼容ES6基本语法 -->#}
@@ -468,6 +467,7 @@
 
      $(function(){
         var coordinate_list = new Array();
+        var select_sensor_list = new Array();
         var all_sensor_list = JSON.parse("{{ all_sensor_list_json|escapejs }}");
         console.log(all_sensor_list);
 
@@ -476,7 +476,8 @@
             temp_list.push(all_sensor_list[i]['longitude']);
             temp_list.push(all_sensor_list[i]['latitude']);
             if (temp_list[0] && temp_list[1]) {
-                coordinate_list.push(temp_list)
+                coordinate_list.push(temp_list);
+                select_sensor_list.push(all_sensor_list[i]);
             }
          }
         console.log(coordinate_list);
@@ -497,11 +498,11 @@
                 map: myMap,
                 icon:'/static/plugins/map/sensor.png',
             });
-            marker.content='<p>名称：' + all_sensor_list[i].alias + '</p>'+
-                    '<p>绑定网关：' + all_sensor_list[i].gateway__name + '</p>'+
-                    '<p>网络号：' + all_sensor_list[i].network_id + '</p>'+
-                    '<p>运行状态：' + $('#sensor-run-status').children().html()+ '</p>'+
-                    '<p>在线状态：' + $('#sensor-online-status').children().html() + '</p>';
+            marker.content='<p>名称：' + select_sensor_list[i].alias + '</p>'+
+                    '<p>绑定网关：' + select_sensor_list[i].gateway__name + '</p>'+
+                    '<p>网络号：' + select_sensor_list[i].network_id + '</p>'+
+                    '<p>运行状态：' + select_sensor_list[i].sensor_run_status + '</p>'+
+                    '<p>在线状态：' + select_sensor_list[i].sensor_online_status + '</p>';
             marker.on('click', markerClick);
             //map.setFitView();
         }

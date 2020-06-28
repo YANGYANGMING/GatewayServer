@@ -507,22 +507,41 @@ def cal_alarm_val(sensor_item):
     latest_corrosion = corrosion_rate(network_id)
 
     if latest_vals:
+        if not sensor_item['sensor_online_status']:
+            alarm_sensor_list.append(
+                {alias: {'报警信息：': '传感器离线！',
+                         '报警信息1：': '/',
+                         '报警信息2：': '/',
+                          '报警时间：': '/',
+                         'network_id': network_id}})
         if latest_vals.last()['thickness'] < alarm_thickness:
             alarm_sensor_list.append(
-                {alias: {'报警信息：': '厚度报警！（mm）', '报警厚度（mm）：': alarm_thickness, '当前厚度（mm）：': latest_vals.last()['thickness'],
-                          '报警时间：': latest_vals.last()['time_tamp'], 'network_id': network_id}})
+                {alias: {'报警信息：': '厚度报警！（mm）',
+                         '报警厚度（mm）：': alarm_thickness,
+                         '当前厚度（mm）：': latest_vals.last()['thickness'],
+                          '报警时间：': latest_vals.last()['time_tamp'],
+                         'network_id': network_id}})
         if latest_vals.last()['battery'] < alarm_battery:
             alarm_sensor_list.append(
-                {alias: {'报警信息：': '电量报警！（%）', '报警电量（%）：': alarm_battery, '当前电量（%）：': latest_vals.last()['battery'],
-                         '报警时间：': latest_vals.last()['time_tamp'], 'network_id': network_id}})
+                {alias: {'报警信息：': '电量报警！（%）',
+                         '报警电量（%）：': alarm_battery,
+                         '当前电量（%）：': latest_vals.last()['battery'],
+                         '报警时间：': latest_vals.last()['time_tamp'],
+                         'network_id': network_id}})
         if latest_vals.last()['temperature'] > alarm_temperature:
             alarm_sensor_list.append(
-                {alias: {'报警信息：': '温度报警！（℃）', '报警温度（℃）：': alarm_temperature, '当前温度（℃）：': latest_vals.last()['temperature'],
-                         '报警时间：': latest_vals.last()['time_tamp'], 'network_id': network_id}})
+                {alias: {'报警信息：': '温度报警！（℃）',
+                         '报警温度（℃）：': alarm_temperature,
+                         '当前温度（℃）：': latest_vals.last()['temperature'],
+                         '报警时间：': latest_vals.last()['time_tamp'],
+                         'network_id': network_id}})
         if latest_corrosion != '需要更多数据！' and latest_corrosion > alarm_corrosion:
             alarm_sensor_list.append(
-                {alias: {'报警信息：': '腐蚀率报警！（mm/年）', '报警腐蚀率（mm/年）：': alarm_corrosion, '当前腐蚀率（mm/年）：': latest_corrosion,
-                         '报警时间：': latest_vals.last()['time_tamp'], 'network_id': network_id}})
+                {alias: {'报警信息：': '腐蚀率报警！（mm/年）',
+                         '报警腐蚀率（mm/年）：': alarm_corrosion,
+                         '当前腐蚀率（mm/年）：': latest_corrosion,
+                         '报警时间：': latest_vals.last()['time_tamp'],
+                         'network_id': network_id}})
 
     return alarm_sensor_list
 

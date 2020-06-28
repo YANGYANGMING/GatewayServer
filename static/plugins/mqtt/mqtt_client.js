@@ -13,8 +13,8 @@
         // ca: CA,
     };
     
-    const client = mqtt.connect('ws://121.36.220.210:8083/mqtt', options);
-    // const client = mqtt.connect('ws://192.168.0.41:8083/mqtt', options);
+    // const client = mqtt.connect('ws://121.36.220.210:8083/mqtt', options);
+    const client = mqtt.connect('ws://192.168.0.42:8083/mqtt', options);
     // const client = mqtt.connect('ws://www.yymit.cn:8083/mqtt', options);
     // const client = mqtt.connect('wss://www.yymit.cn:8084/mqtt', options);
     // const client = mqtt.connect('wss://121.36.220.210:8084/mqtt', options);
@@ -69,6 +69,7 @@
                 }, 1500);
                 }
             }
+
         }
 
     });

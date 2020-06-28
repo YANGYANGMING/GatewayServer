@@ -148,8 +148,8 @@ CMD_header = {
 heart_time = {'minutes': 0, 'seconds': 30}
 
 # EMQ X SETTINGS
-MQTT_HOST = "121.36.220.210"
-# MQTT_HOST = "192.168.0.41"
+# MQTT_HOST = "121.36.220.210"
+MQTT_HOST = "192.168.0.42"
 MQTT_USERNAME = 'ORISONIC'
 MQTT_PASSWORD = 'ORISONIC2020'
 # crtPath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + r"\crt"

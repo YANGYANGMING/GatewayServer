@@ -24,8 +24,9 @@ def index(request):
     :param request:
     :return:
     """
-    gwntid_list = []
     all_sensor_count = 0
+    all_sensor_list = []
+    all_alarm_sensor_list = []
     user_obj = models.UserProfile.objects.filter(name=request.user).first()
     gateway_obj = user_obj.gateway.all()
     gw_status = {'在线': 1, '离线': 0}
@@ -33,11 +34,8 @@ def index(request):
         sensor_count = models.Sensor.objects.filter(gateway=gw_item, delete_status=0).count()
         all_sensor_count += sensor_count
 
-    all_sensor_list = []
-    all_alarm_sensor_list = []
     for gateway_item in gateway_obj.values('network_id', 'name'):
         gw_network_id = gateway_item['network_id']
-        gwntid_list.append(gw_network_id)
         gw_name = gateway_item['name']
         sensor_obj_list = list(models.Sensor.objects.filter(gateway__network_id=gw_network_id, delete_status=0).\
             values('network_id', 'alias', 'gateway__name', 'sensor_run_status', 'sensor_online_status',
@@ -50,8 +48,6 @@ def index(request):
         all_alarm_sensor_count = len(all_alarm_sensor_list)
         all_sensor_list += sensor_obj_list
     all_sensor_list_json = json.dumps(all_sensor_list)
-    # 把gwntid写进session,以便websocket使用
-    request.session['gwntid_list'] = gwntid_list
 
     return render(request, 'index.html', locals())
 
@@ -291,8 +287,9 @@ def alarm_sensor_list(request):
     """
     if request.method == 'POST':
         all_alarm_sensor_list = eval(request.POST.get('all_alarm_sensor_list'))
+        print(all_alarm_sensor_list)
 
-        return render(request, 'GWS/alarm_sensor_list.html', locals())\
+        return render(request, 'GWS/alarm_sensor_list.html', locals())
 
 
 @login_required
@@ -704,11 +701,14 @@ def heart_ping():
     ping心跳
     :return:
     """
-    result = {'status': True}
-    topic = 'pub'
-    send_data = {'id': 'server', 'header': 'heart_ping', 'result': result}
-    client.publish(topic, json.dumps(send_data), 2)
-    models.Gateway.objects.all().update(gw_status=0)
+    try:
+        result = {'status': True}
+        topic = 'pub'
+        send_data = {'id': 'server', 'header': 'heart_ping', 'result': result}
+        client.publish(topic, json.dumps(send_data), 2)
+        models.Gateway.objects.all().update(gw_status=0)
+    except Exception as e:
+        print(e)
 
 
 # 每分钟执行一次心跳
