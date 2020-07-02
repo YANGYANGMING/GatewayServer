@@ -141,7 +141,7 @@
                             <td><p style="width: 50px;">{{ item.alias }}</p></td>
                             <td><p style="width: 80px;">{{ item.network_id }}</p></td>
                             <td><p style="width: 70px;">{{ item.cHz }}</p></td>
-                            <td><p style="width: 50px;">{{ item.gain }}</p></td>
+                            <td><p style="width: 60px;">{{ item.gain }}</p></td>
                             <td><p style="width: 80px;">{{ item.avg_time }}</p></td>
                             <td><p style="width: 50px;">{{ item.Hz }}</p></td>
                             <td><p style="width: 80px;">{{ item.Sample_depth }}</p></td>
@@ -223,18 +223,14 @@
                data: {'val_dict': JSON.stringify(val_dict)},
                dataType: 'JSON',
                success: function (arg) {
+                   if (arg.status === 'Sample_Hz_error'){
+                       $('#set_sensor_params').text(arg.msg);
+                   }
                }
             });
           })
       }
 
-
-      {#//清除提示信息#}
-      {#  function ClearMSG(nid) {#}
-      {#      setTimeout(function () {#}
-      {#          $("#"+nid).text('')#}
-      {#      }, 3000);#}
-      {#  }#}
 
 
 

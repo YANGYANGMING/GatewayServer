@@ -45,6 +45,7 @@
             // console.log('收到来自', topic, '的消息');
             var status = payload.status;
             $('#' + header).html(msg);
+
             if (header === 'gwdata') {
                 if (status) {
                     ClearMSGAndRefersh('#' + header);
@@ -59,9 +60,8 @@
                 if (status){
                     ClearMSGAndJump('#' + header);
                 }
-            }else if (
-                header === 'set_sensor_params'
-            ) {
+            }else if (header === 'set_sensor_params') {
+
                 if (status){
                     setTimeout(function () {
                     $('#' + header).text('');
@@ -69,7 +69,6 @@
                 }, 1500);
                 }
             }
-
         }
 
     });

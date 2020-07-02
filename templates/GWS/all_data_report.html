@@ -52,22 +52,11 @@
                 <tbody>
                     {% for row in all_data_obj_list %}
                         <tr>
-{#                            <td>{{ row.network_id__alias }}</td>#}
-{#                            <td style="display: none;">{{ row.id }}</td>#}
-{#                            <td>{{ row.network_id }}</td>#}
-{#                            <td>{{ row.time_tamp }}</td>#}
-{#                            <td>{{ row.battery }}</td>#}
-{#                            <td>{{ row.temperature }}</td>#}
-{#                            <td>{{ row.thickness }}</td>#}
-{#                            <td>{{ row.thickness }}</td>#}
-{#                            <td>{{ row.thickness }}</td>#}
-{#                            <td><a href="javascript:;" style="cursor: pointer;" onclick="GetData(this);"><p style="width: 80px;"><i class="fa fa-pencil"></i> 数据详情</p></a></td>#}
-
-                            <td><p style="width: 50px;">{{ row.network_id__alias }}</p></td>
+                            <td><p style="width: 100px;">{{ row.network_id__alias }}</p></td>
                             <td style="display: none;">{{ row.id }}</td>
                             <td><p style="width: 70px;">{{ row.network_id }}</p></td>
-                            <td><p style="width: 75px;">{{ row.time_tamp }}</p></td>
-                            <td><p style="width: 55px;">{{ row.battery }}</p></td>
+                            <td><p style="width: 130px;">{{ row.time_tamp }}</p></td>
+                            <td><p style="width: 60px;">{{ row.battery }}</p></td>
                             <td><p style="width: 50px;">{{ row.temperature }}</p></td>
                             <td><p style="width: 70px;">{{ row.thickness }}</p></td>
                             <td><a href="javascript:;" style="cursor: pointer;" onclick="GetData(this);"><p style="width: 80px;"><i class="fa fa-pencil"></i> 数据详情</p></a></td>

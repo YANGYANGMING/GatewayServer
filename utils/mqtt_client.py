@@ -4,14 +4,10 @@ from GatewayServer import settings
 import json
 
 
-class MQTT_Client(object):
+class MQTTClient(object):
     
     def __init__(self):
         self.sub_list = [('pub', 2)]
-        # models.Gateway.objects.values('network_id').all()
-        # for i in range(1, 6):
-        #     temp_sub = ('0.0.%s.0' % i, 2)
-        #     self.sub_list.append(temp_sub)
         self.client = mqtt.Client()
         self.client.on_connect = self.on_connect
         self.client.on_disconnect = self.on_disconnect
@@ -36,8 +32,6 @@ class MQTT_Client(object):
     def on_message(self, client, userdata, msg):
         payload = json.loads(msg.payload.decode())
         if payload['id'] == 'client':
-            print('-----------------------------------------------------------------------------------')
-            print('msg.topic', msg.topic)
             print('payload............', payload)
             handle_func.handle_recv_gwdata(payload)
 
@@ -54,7 +48,7 @@ class MQTT_Client(object):
 
 
 try:
-    mqtt_client = MQTT_Client()
+    mqtt_client = MQTTClient()
     client = mqtt_client.client
 except Exception as e:
     print(e)

@@ -156,10 +156,10 @@ MQTT_PASSWORD = 'ORISONIC2020'
 # ca_certs = "%s\ca\MyRootCA.pem" % crtPath
 # certfile = "%s\client\MyClient1.pem" % crtPath
 # keyfile = "%s\client\MyClient1.key" % crtPath
-crtPath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + r"/crt"
-ca_certs = "%s/ca/MyRootCA.pem" % crtPath
-certfile = "%s/client/MyClient1.pem" % crtPath
-keyfile = "%s/client/MyClient1.key" % crtPath
+# crtPath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + r"/crt"
+# ca_certs = "%s/ca/MyRootCA.pem" % crtPath
+# certfile = "%s/client/MyClient1.pem" % crtPath
+# keyfile = "%s/client/MyClient1.key" % crtPath
 
 # 错误日志
 ERROR_LOG_FILE = os.path.join(BASE_DIR, "log", 'error.log')

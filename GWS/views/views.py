@@ -115,23 +115,18 @@ def sensor_manage(request):
     :return:
     """
     if request.method == 'GET':
+        all_sensor_list = []
+        sensor_type = {'ETM-100': 0}
+        Importance = {'一般': 0, '重要': 1}
+        material = models.Material.objects.values('id', 'name').all().order_by('id')
+        sensor_run_status = {'开通': 1, '禁止': 0}
+        sensor_online_status = {'在线': 1, '离线': 0}
         user_obj = models.UserProfile.objects.filter(name=request.user).first()
         gateway_obj = user_obj.gateway.all().values('network_id', 'name')
-        all_sensor_list = []
-        last_sample_time_list = []
         for gateway_item in gateway_obj:
             gw_network_id = gateway_item['network_id']
             gw_name = gateway_item['name']
             sensor_obj_list = models.Sensor.objects.filter(gateway__network_id=gw_network_id)
-            for sensor_item in sensor_obj_list:
-                sensor_type = {'ETM-100': 0}
-                Importance = {'一般': 0, '重要': 1}
-                material = models.Material.objects.values('id', 'name').all().order_by('id')
-                sensor_run_status = {'开通': 1, '禁止': 0}
-                sensor_online_status = {'在线': 1, '离线': 0}
-                last_sample_time = sensor_item.waveforms_set.values('network_id', 'time_tamp').last()
-                if last_sample_time:
-                    last_sample_time_list.append(last_sample_time)
             sensor_list = sensor_obj_list.values('sensor_id', 'network_id', 'received_time_data', 'alias', 'battery',
                                                  'location', 'date_of_installation', 'gateway__name', 'area', 'material',
                                                  'sensor_run_status', 'sensor_online_status', 'sensor_type',
@@ -232,15 +227,13 @@ def corrosion_rate_list(request):
     """
     user_obj = models.UserProfile.objects.filter(name=request.user).first()
     gateway_obj = user_obj.gateway.all().values('network_id', 'name')
+    material_list = models.Material.objects.values('id', 'name').all().order_by('id')
     all_sensor_list = []
     for gateway_item in gateway_obj:
         gw_network_id = gateway_item['network_id']
         gw_name = gateway_item['name']
         sensor_obj_list = models.Sensor.objects.filter(gateway__network_id=gw_network_id, delete_status=0)
-        for sensor_item in sensor_obj_list:
-            material = models.Material.objects.values('id', 'name').all().order_by('id')
         sensor_list = list(sensor_obj_list.values('sensor_id', 'network_id', 'alias', 'gateway__name', 'material'))
-        print(sensor_list)
         for item in sensor_list:
             network_id = item['network_id']
             # 计算腐蚀速率
@@ -269,10 +262,9 @@ def add_sensor(request, network_id):
     longitude = 0.0
     latitude = 0.0
     context = {
-        "month_cron": [i for i in range(1, 13)],
-        "day_cron": [i for i in range(1, 29)],
-        "hour_cron": [i for i in range(0, 24)],
-        "minute_cron": [i for i in range(0, 60)],
+        "day_interval": [i for i in range(0, 32)],
+        "hour_interval": [i for i in range(0, 24)],
+        "minute_interval": [i for i in range(0, 60)],
     }
     return render(request, 'GWS/add_sensor.html', locals())
 
@@ -350,16 +342,14 @@ def edit_sensor(request, sensor_id):
         models.Sensor.objects.filter(sensor_id=sensor_id).values('received_time_data')[0]['received_time_data'])
     sensor_obj = models.Sensor.objects.get(sensor_id=sensor_id)
     date_of_installation = str(sensor_obj.date_of_installation)
-    # sensor_type = sensor_obj._meta.get_field('sensor_type')
-    # Importance = sensor_obj._meta.get_field('Importance')
+
     sensor_type = {'ETM-100': 0}
     Importance = {'一般': 0, '重要': 1}
     material = models.Material.objects.values('id', 'name').all().order_by('id')
     context = {
-        "month_cron": [i for i in range(1, 13)],
-        "day_cron": [i for i in range(1, 29)],
-        "hour_cron": [i for i in range(0, 24)],
-        "minute_cron": [i for i in range(0, 60)],
+        "day_interval": [i for i in range(0, 32)],
+        "hour_interval": [i for i in range(0, 24)],
+        "minute_interval": [i for i in range(0, 60)],
     }
 
     return render(request, 'GWS/edit_sensor.html', locals())
@@ -471,8 +461,6 @@ def send_server_data(request):
         server_data = handle_func.handle_img_and_data(request)
 
         sensor_network_id = server_data['network_id']
-        received_time_data = server_data.get('received_time_data')
-        print("received_time_data", received_time_data)
 
         gateway_network_id = sensor_network_id.rsplit('.', 1)[0] + '.0'
 
@@ -640,11 +628,11 @@ def set_sensor_params(request):
     try:
         # 判断Sample_Hz参数是否合法
         if int(val_dict['Sample_Hz']) < 200 or int(val_dict['Sample_Hz']) > 5000:
-            result = {'status': False, 'msg': '采样频率参数范围：200-5000'}
+            result = {'status': 'Sample_Hz_error', 'msg': '采样频率参数范围：200-5000'}
             return HttpResponse(json.dumps(result))
-
     except Exception as e:
         print(e, '设置参数失败')
+
     send_data = {'id': 'server', 'header': 'set_sensor_params', 'val_dict': val_dict, 'network_id': network_id, 'user': str(request.user)}
     topic = network_id.rsplit('.', 1)[0] + '.0'
     client.publish(topic, json.dumps(send_data), 2)

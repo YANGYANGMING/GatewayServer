@@ -469,7 +469,6 @@
         var coordinate_list = new Array();
         var select_sensor_list = new Array();
         var all_sensor_list = JSON.parse("{{ all_sensor_list_json|escapejs }}");
-        console.log(all_sensor_list);
 
         for (var i = 0; i < all_sensor_list.length; i++) {
             var temp_list = new Array();
@@ -480,7 +479,6 @@
                 select_sensor_list.push(all_sensor_list[i]);
             }
          }
-        console.log(coordinate_list);
 
         //高德地图
         var myMap = new AMap.Map('myMap',{
@@ -516,9 +514,7 @@
         myMap.on('click',function(){
             infoWindow.close();
         });
-
     });
-
 
 
     </script>

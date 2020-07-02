@@ -27,7 +27,6 @@
       </div>
     </div>
 
-
       <!-- /.table -->
       <div class="box">
         <div class="box-header with-border">
@@ -48,7 +47,7 @@
                         <th>绑定网关</th>
                         <th>重要性</th>
                         <th>电量</th>
-                        <th>上次采样时间</th>
+                        <th>采样间隔</th>
                         <th>描述</th>
                         <th>运行状态</th>
                         <th>在线状态</th>
@@ -60,24 +59,22 @@
                     {% for row in all_sensor_list %}
                         {% if row.delete_status == '1' %}
                             <tr style="color: #cdcdcd;">
-                                <td><p style="width: 50px;">{{ row.alias }}</p></td>
+                                <td><p style="width: 100px;">{{ row.alias }}</p></td>
                                 <td>{{ row.sensor_id }}</td>
                                 <td><p style="width: 70px;">{{ row.network_id }}</p></td>
                                 <td><p style="width: 80px;">{{ row.gateway__name }}</p></td>
                                 <td>
                                     {% for k, v in Importance.items %}
                                         {% if v == row.Importance %}
-                                            <p style="width: 70px;">{{ k }}</p>
+                                            <p style="width: 65px;">{{ k }}</p>
                                         {% endif %}
                                     {% endfor %}
                                 </td>
-                                <td><p style="width: 50px;">{{ row.battery }}</p></td>
+                                <td><p style="width: 60px;">{{ row.battery }}</p></td>
                                 <td>
-                                    {% for item in last_sample_time_list %}
-                                        {% if item.network_id == row.network_id %}
-                                            <p style="width: 110px;">{{ item.time_tamp }}</p>
-                                        {% endif %}
-                                    {% endfor %}
+                                    <p style="width: 80px;">
+                                        {% render_run_time row.received_time_data %}
+                                    </p>
                                 </td>
                                 <td><p style="overflow: auto; width: 150px; height: 60px;">{{ row.description }}</p></td>
                                 <td>
@@ -112,24 +109,22 @@
                             </tr>
                         {% else %}
                             <tr>
-                                <td><p style="width: 50px;">{{ row.alias }}</p></td>
-                                <td>{{ row.sensor_id }}</td>
+                                <td><p style="width: 100px;">{{ row.alias }}</p></td>
+                                <td><p style="">{{ row.sensor_id }}</p></td>
                                 <td><p style="width: 70px;">{{ row.network_id }}</p></td>
-                                <td><p style="width: 80px;">{{ row.gateway__name }}</p></td>
+                                <td><p style="width: 100px;">{{ row.gateway__name }}</p></td>
                                 <td>
                                     {% for k, v in Importance.items %}
                                         {% if v == row.Importance %}
-                                            <p style="width: 70px;">{{ k }}</p>
+                                            <p style="width: 65px;">{{ k }}</p>
                                         {% endif %}
                                     {% endfor %}
                                 </td>
-                                <td><p style="width: 50px;">{{ row.battery }}</p></td>
+                                <td><p style="width: 60px;">{{ row.battery }}</p></td>
                                 <td>
-                                    {% for item in last_sample_time_list %}
-                                        {% if item.network_id == row.network_id %}
-                                            <p style="width: 110px;">{{ item.time_tamp }}</p>
-                                        {% endif %}
-                                    {% endfor %}
+                                    <p style="width: 80px;">
+                                        {% render_run_time row.received_time_data %}
+                                    </p>
                                 </td>
                                 <td><p style="overflow: auto; width: 150px; height: 60px;">{{ row.description }}</p></td>
                                 <td>

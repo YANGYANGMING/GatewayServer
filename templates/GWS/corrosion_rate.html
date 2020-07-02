@@ -21,9 +21,9 @@
             <table id="example1" class="table table-bordered table-striped table-hover" style="width: 100%;">
                 <thead>
                     <tr>
-                        <th>序列号</th>
-                        <th>网络号</th>
                         <th>名称</th>
+                        <th>网络号</th>
+                        <th>序列号</th>
                         <th>网关名称</th>
                         <th>材料</th>
                         <th>腐蚀速率（mm/年）</th>
@@ -32,18 +32,18 @@
                 <tbody>
                     {% for row in all_sensor_list %}
                         <tr>
-                            <td><p style="width: 70px;">{{ row.sensor_id }}</p></td>
+                            <td><p style="width: 100px;">{{ row.alias }}</p></td>
+                            <td><p>{{ row.sensor_id }}</p></td>
                             <td><p style="width: 70px;">{{ row.network_id }}</p></td>
-                            <td><p style="width: 50px;">{{ row.alias }}</p></td>
-                            <td><p style="width: 80px;">{{ row.gateway__name }}</p></td>
+                            <td><p style="width: 100px;">{{ row.gateway__name }}</p></td>
                             <td>
-                                {% for k, v in material.items %}
-                                    {% if v == row.material %}
-                                        <p style="width: 50px;">{{ k }}</p>
+                                {% for material_item in material_list %}
+                                    {% if material_item.id == row.material %}
+                                        <p style="width: 80px;">{{ material_item.name }}</p>
                                     {% endif %}
                                 {% endfor %}
                             </td>
-                            <td><p style="width: 100px;">{{ row.corrosion_rate }}</p></td>
+                            <td><p style="width: 150px;">{{ row.corrosion_rate }}</p></td>
 
                         </tr>
                     {% endfor %}

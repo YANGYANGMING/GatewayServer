@@ -1,4 +1,7 @@
-import json, os, time, threading
+import json
+import os
+import time
+import threading
 from functools import reduce
 from GWS import models
 from GWS.views import views
@@ -7,7 +10,7 @@ from datetime import datetime
 import numpy as np
 from sklearn.linear_model import LinearRegression
 from PIL import Image
-from queue import PriorityQueue, Queue
+from queue import PriorityQueue
 from pypinyin import lazy_pinyin
 
 
@@ -59,7 +62,7 @@ class HandleFunc(object):
     def heart_ping(self, payload):
         """
         根据心跳更新网关状态
-        :param gwntid:
+        :param payload:
         :return:
         """
         gwntid = payload['gwntid']
@@ -68,6 +71,7 @@ class HandleFunc(object):
     def connect_status(self, payload):
         """
         网关连接状态
+        :param payload:
         :return:
         """
         models.Gateway.objects.filter(network_id=payload['gw_network_id']).update(gw_status=1)
@@ -86,7 +90,7 @@ class HandleFunc(object):
                 # 判断是否存在路径
                 mkdir_path(path=location_img_path)
                 location_img_bytes = eval(json.loads(location_img_json.strip('\r\n')))
-                print('location_img_path_and_name======', location_img_path_and_name)
+                print('location_img_path_and_name == ', location_img_path_and_name)
                 with open(location_img_path_and_name, 'wb') as f:
                     f.write(location_img_bytes)
             models.Sensor.objects.filter(network_id=payload['receive_data']['network_id']).update(
@@ -151,7 +155,11 @@ class HandleFunc(object):
         print('update网关.........')
         if payload['status']:
             gw_network_id = payload['gateway_data']['network_id']
-            models.Gateway.objects.filter(network_id=gw_network_id).update(**payload['gateway_data'])
+            if models.Gateway.objects.filter(network_id=gw_network_id).exists():
+                # 防止网关在未链接服务器的情况下添加网关，连上服务器后可以通过更新网关的操作在服务器端添加网关
+                models.Gateway.objects.filter(network_id=gw_network_id).update(**payload['gateway_data'])
+            else:
+                self.add_gateway(payload)
         # Log
         views.log.log(payload['status'], payload['msg'], payload['gateway_data']['network_id'], payload['user'])
         global update_gw_payload
@@ -168,12 +176,8 @@ class HandleFunc(object):
             models.Gateway.objects.create(**payload['gateway_data'])
             Enterprise = payload['gateway_data']['Enterprise']
             network_id = payload['gateway_data']['network_id']
-            print('Enterprise:', Enterprise)
-            print('network_id:', network_id)
             gateway_nid = models.Gateway.objects.filter(network_id=network_id).values('id')[0]['id']
-            print('gateway_nid:', gateway_nid)
             user_obj_list = models.UserProfile.objects.filter(gateway__Enterprise=Enterprise).all()
-            print('user_obj_list:', user_obj_list)
             for user_item in user_obj_list:
                 user_item.gateway.add(gateway_nid)
         # Log

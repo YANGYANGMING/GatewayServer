@@ -118,7 +118,6 @@
             var alarm_battery = $('#alarm_battery').val();
             var alarm_temperature = $('#alarm-temperature').val();
             var alarm_corrosion = $('#alarm-corrosion').val();
-            {#console.log($('#location_img_path')[0].files[0]);#}
             var location_img_obj = '';
             var exist_img_path = "{{ sensor_obj.location_img_path }}";
             var data = JSON.stringify({'sensor_id': sensor_id, 'alias': alias, 'network_id': network_id, 'choice': 'update',
@@ -126,6 +125,7 @@
                 'alarm_temperature': alarm_temperature,'alarm_corrosion': alarm_corrosion, 'exist_img_path': exist_img_path,});
             fd.append('location_img_obj', location_img_obj);
             fd.append('data', data);
+
             $.ajax({
                 url: '/GWS/send-server-data',
                 type:'POST',

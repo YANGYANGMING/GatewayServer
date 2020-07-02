@@ -128,54 +128,35 @@
             <!-- /.col -->
               <div class="row">
                 <h3 class="col-xs-6 col-md-4 col-md-offset-1">设置传感器采样时间（必填项）<b style="color: red;">*</b></h3>
-                <h4 class="col-xs-6 col-md-4 col-md-offset-1"><b style="opacity: 0.8;">说明：未填写的时间字段表示每个单位时间都触发，例如月份字段未填写，表示每个月都执行</b></h4>
               </div>
-              <div class="row">
-                <div class="col-xs-6 col-md-4 col-md-offset-1">
+            <div class="row">
+                <div class="col-xs-4 col-md-3 col-md-offset-1">
                     <div class="form-group">
-                        <label for="month">月份：</label>
-                        <select class="form-control select2" multiple="multiple"
-                               name="month" id="month" style="width: 100%;">
-                          {% for item in context.month_cron %}
+                        <label for="days">天：</label>
+                        <select class="form-control select2" name="days" id="days" style="width: 100%;">
+                          {% for item in context.day_interval %}
                               <option value="{{ item }}">{{ item }}</option>
                           {% endfor %}
                         </select>
                     </div>
                       <!-- /.form-group -->
                 </div>
-                <div class="col-xs-6 col-md-4 col-md-offset-1">
+                <div class="col-xs-4 col-md-3">
                     <div class="form-group">
-                        <label for="day">天：</label>
-                        <select class="form-control select2" multiple="multiple"
-                               name="day" id="day" style="width: 100%;">
-                          {% for item in context.day_cron %}
+                        <label for="hours">小时：</label>
+                        <select class="form-control select2" name="hours" id="hours" style="width: 100%;">
+                          {% for item in context.hour_interval %}
                               <option value="{{ item }}">{{ item }}</option>
                           {% endfor %}
                         </select>
                     </div>
                       <!-- /.form-group -->
                 </div>
-              </div>
-            <!-- /.col -->
-              <div class="row">
-                <div class="col-xs-6 col-md-4 col-md-offset-1">
+                <div class="col-xs-4 col-md-3">
                     <div class="form-group">
-                        <label for="hour">时：</label>
-                        <select class="form-control select2" multiple="multiple"
-                               name="hour" id="hour" style="width: 100%;">
-                          {% for item in context.hour_cron %}
-                              <option value="{{ item }}">{{ item }}</option>
-                          {% endfor %}
-                        </select>
-                    </div>
-                      <!-- /.form-group -->
-                </div>
-                <div class="col-xs-6 col-md-4 col-md-offset-1">
-                    <div class="form-group">
-                        <label for="mins">分钟：</label>
-                        <select class="form-control select2" multiple="multiple"
-                               name="mins" id="mins" style="width: 100%;">
-                          {% for item in context.minute_cron %}
+                        <label for="minutes">分钟：</label>
+                        <select class="form-control select2" name="minutes" id="minutes" style="width: 100%;">
+                          {% for item in context.minute_interval %}
                               <option value="{{ item }}">{{ item }}</option>
                           {% endfor %}
                         </select>
@@ -183,7 +164,6 @@
                       <!-- /.form-group -->
                 </div>
               </div>
-            <!-- /.col -->
             <div class="row">
                 <div class="col-md-4 col-md-offset-4">
                   <div class="form-group" style="margin-top: 10px">
@@ -230,18 +210,12 @@
         //刷新页面保留上次数据
         function ShowOriginData() {
 
-            var month = "{{ received_time_data.month }}";
-            month = month.split(',');
-            $('#month').val(month).trigger("change");
-            var day = "{{ received_time_data.day }}";
-            day = day.split(',');
-            $('#day').select2("val", [day]);
-            var hour = "{{ received_time_data.hour }}";
-            hour = hour.split(',');
-            $('#hour').select2("val", [hour]);
-            var mins = "{{ received_time_data.mins }}";
-            mins = mins.split(',');
-            $('#mins').select2("val", [mins]);
+            var days = "{{ received_time_data.days }}";
+            $('#days').select2("val", [days]);
+            var hours = "{{ received_time_data.hours }}";
+            $('#hours').select2("val", [hours]);
+            var minutes = "{{ received_time_data.minutes }}";
+            $('#minutes').select2("val", [minutes]);
 
             var sensor_type = "{{ sensor_obj.sensor_type }}";
             sensor_type = sensor_type.split(',');
@@ -278,11 +252,10 @@
             var assembly_crewman = $('#assembly_crewman').val();
             var location_img_obj = $('#location_img_path')[0].files[0];
             var description = $('#description').val();
-            var month = $('#month').val();
-            var day = $('#day').val();
-            var hour = $('#hour').val();
-            var mins = $('#mins').val();
-            var received_time_data = {'month': month, 'day': day, 'hour': hour, 'mins': mins};
+            var days = $('#days').val();
+            var hours = $('#hours').val();
+            var minutes = $('#minutes').val();
+            var received_time_data = {'days': days, 'hours': hours, 'minutes': minutes};
 
             var gwntid = network_id.split('.').slice(0, 3).join('.') + '.0';
             SetTimeToShowTimeOutMSG("update_sensor", gwntid);
@@ -301,22 +274,19 @@
             fd.append('data', data);
             fd.append('location_img_obj', location_img_obj);
 
-            $.ajax({
-                url: '/GWS/send-server-data',
-                type:'POST',
-                data: fd,
-                processData: false,
-                contentType: false,
-                success:function (arg) {
-                    {#$('#loading').busyLoad("hide");#}
-                    {#var args = JSON.parse(arg);#}
-                    {#$('#update_sensor').html(args.msg);#}
-                    {#if (args.status){#}
-                    {#    ClearMSG('#update_sensor')#}
-                    {# }#}
-
-                }
-            })
+            if (received_time_data.days === '0' && received_time_data.hours === '0' && received_time_data.minutes === '0') {
+                $('#update_sensor').html('时间不合法！');
+            }else{
+                $.ajax({
+                    url: '/GWS/send-server-data',
+                    type:'POST',
+                    data: fd,
+                    processData: false,
+                    contentType: false,
+                    success:function (arg) {
+                    }
+                })
+            }
         }
 
         // 选中材料显示声速

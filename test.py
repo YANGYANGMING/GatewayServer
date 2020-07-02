@@ -73,28 +73,28 @@ from GWS import models
 #     db_time_list.append(eval(item['received_time_data']))
 # print(db_time_list)
 
-from queue import PriorityQueue
-from pypinyin import lazy_pinyin
-dic = {}
-generate_queue = locals()
-network_id = '0.0.2.1'
-Enterprise = '中石油'
-level = 2
-HZ_Enterprisea_name = lazy_pinyin(Enterprise)
-# queue_variable_name = "".join((str(i) for i in HZ_Enterprisea_name))
-queue_variable_name = ['zhongshiyou', 'zhongshihua']
-for item in queue_variable_name:
-    if not generate_queue.get(item):
-        generate_queue[item] = PriorityQueue()
-    queue_variable = generate_queue.get(item)
-    # 把network_id加入队列
-    queue_variable.put((level, item))
-    dic[item] = queue_variable
-    # print(queue_variable)
-# print(generate_queue)
-# print(generate_queue['queue_variable_name'])
-# print(dic)
-print(dic['zhongshiyou'].get())
+# from queue import PriorityQueue
+# from pypinyin import lazy_pinyin
+# dic = {}
+# generate_queue = locals()
+# network_id = '0.0.2.1'
+# Enterprise = '中石油'
+# level = 2
+# HZ_Enterprisea_name = lazy_pinyin(Enterprise)
+# # queue_variable_name = "".join((str(i) for i in HZ_Enterprisea_name))
+# queue_variable_name = ['zhongshiyou', 'zhongshihua']
+# for item in queue_variable_name:
+#     if not generate_queue.get(item):
+#         generate_queue[item] = PriorityQueue()
+#     queue_variable = generate_queue.get(item)
+#     # 把network_id加入队列
+#     queue_variable.put((level, item))
+#     dic[item] = queue_variable
+#     # print(queue_variable)
+# # print(generate_queue)
+# # print(generate_queue['queue_variable_name'])
+# # print(dic)
+# print(dic['zhongshiyou'].get())
 
 
 
@@ -125,4 +125,8 @@ print(dic['zhongshiyou'].get())
 # p1.start()
 # c1.start()
 # c2.start()
+
+
+
+
 

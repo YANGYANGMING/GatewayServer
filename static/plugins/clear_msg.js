@@ -2,7 +2,7 @@
     function ShowErrorMSG(nid) {
         setTimeout(function () {
             $(nid).text('操作失败，网关未响应！')
-        }, 5000);
+        }, 6000);
     }
 
 //清除提示信息并跳转
@@ -29,7 +29,7 @@
             client.publish(gwntid, '{"header": ' + ele_id + ', "msg": "操作失败，网关未响应！", "id": "client", "status": 0}', function(error) {
                 console.log(error || '消息发布成功，操作失败，网关未响应！')
             });
-        }, 5000);
+        }, 8000);
      }
 
 

@@ -150,7 +150,7 @@ class Sensor(models.Model):
     """
     sensor_id = models.CharField(max_length=32, unique=True)
     network_id = models.CharField(max_length=32, unique=True)
-    alias = models.CharField(max_length=64, null=False, blank=False, unique=True)
+    alias = models.CharField(max_length=64)
     received_time_data = models.CharField(max_length=128)
     battery = models.CharField(max_length=32, default=100)
     cHz = models.CharField(max_length=32, default='2')
@@ -166,10 +166,6 @@ class Sensor(models.Model):
     sensor_online_status_choices = ((0, '离线'),
                                     (1, '在线'),
                                     )
-    # material_choices = ((0, '未定义'),
-    #                     (1, '碳钢'),
-    #                     (2, '不锈钢'),
-    #                     )
     material = models.SmallIntegerField(default=1)
     sensor_online_status = models.SmallIntegerField(choices=sensor_online_status_choices, default=1)
     sensor_type_choices = ((0, 'ETM-100'),
