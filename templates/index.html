@@ -38,6 +38,9 @@
 {% load staticfiles %}
 {% load GWS_tags %}
 
+{% block css %}
+
+{% endblock %}
 
 <div class="wrapper">
 
@@ -48,7 +51,7 @@
       <span class="logo-mini">ORS</span>
       <!-- logo for regular state and mobile devices -->
       <!-- <span class="logo-lg">ORISONIC</span> -->
-        <img style="width: 155px; height: 55px;" src="/static/images/loginlogo.png" alt="">
+        <img style="width: 155px; height: 55px;" src="/static/images/logo.png" alt="">
     </a>
     <!-- Header Navbar: style can be found in header.less -->
     <nav class="navbar navbar-static-top">
@@ -107,13 +110,6 @@
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         {% block main_content %}
-            <!-- Content Header (Page header) -->
-            <section class="content-header">
-              <h1>
-                Dashboard
-                <small>Control panel</small>
-              </h1>
-            </section>
 
             <!-- Main content -->
             <section class="content">
@@ -148,7 +144,7 @@
                         <div class="inner">
                           <h4>全部数据</h4>
 
-                          <p>all data</p>
+                          <p>All Data</p>
                         </div>
                         <div class="icon">
                           <i class="ion ion-stats-bars"></i>
@@ -165,7 +161,7 @@
                         <div class="inner">
                           <h4>厚度曲线</h4>
 
-                          <p>thickness report</p>
+                          <p>Thickness Report</p>
                         </div>
                         <div class="icon">
                           <i class="ion ion-clipboard"></i>
@@ -182,7 +178,7 @@
                         <div class="inner">
                           <h4>传感器总数：<p style="font-size: large; font-weight: bolder; display: inline">{{ all_sensor_count }}</p>个</h4>
 
-                          <p>Total number of sensors</p>
+                          <p>Total Number Of Sensors</p>
                         </div>
                         <div class="icon">
                           <i class="ion ion-arrow-graph-up-right"></i>
@@ -279,7 +275,7 @@
                         <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
                       </div>
                     </div>
-                    <div class="box-body" style="overflow-x: auto; height: 250px;">
+                    <div class="box-body" style="overflow-x: auto; height: 300px;">
                         <table id="example1" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
@@ -322,12 +318,12 @@
                         </div>
                         <!-- 滚动列表 -->
                         <div class="box-body">
-                            <div id="review_box" style="height: 250px; overflow: hidden;">
+                            <div id="review_box" style="height: 400px; overflow: hidden;">
                              <ul id="comment1" style="list-style: none; margin: 0; padding: 0">
                                 {% for alarm_sensor_item in all_alarm_sensor_list %}
                                      {% for alias, value in alarm_sensor_item.items %}
                                          <li>
-                                            <p style="opacity: 50%;">------------------------------------------------------------------------------------</p>
+                                            <p style="opacity: 50%; overflow: hidden">------------------------------------------------------------------------------------</p>
                                             <div style="display: inline-block">
                                               <p><a href="/GWS/sensor-data-info-{{ value.network_id }}">{{ alias }}：</a></p>
                                                 <p style="opacity: 0">p</p>
@@ -368,7 +364,7 @@
       <!-- /.content-wrapper -->
      <footer class="main-footer">
         <div class="pull-right hidden-xs">
-          <b>Version</b> 0.0.1
+          <b>Version</b> 1.0
         </div>
         <strong>零声科技监测服务器系统 <a href="http://www.orisonic.com">ORISONIC</a>.</strong> 零声科技（苏州）有限公司
       </footer>
@@ -415,7 +411,7 @@
 <!-- iCheck 1.0.1 -->
 <script src="/static/plugins/iCheck/icheck.min.js"></script>
 <!-- DataTables -->
-<script src="/static/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="/static/bower_components/datatables.net/js/jquery.dataTable.min.js"></script>
 <script src="/static/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="/static/dist/js/demo.js"></script>

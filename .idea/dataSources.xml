@@ -30,11 +30,11 @@
         </library>
       </libraries>
     </data-source>
-    <data-source source="LOCAL" name="db2" uuid="1d39b2da-a437-4f15-9019-49173f4b1590">
+    <data-source source="LOCAL" name="db2" uuid="89c50980-c3c0-4490-b53c-9e8ee073df14">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:C:\Users\86186\Desktop\db2.sqlite3</jdbc-url>
+      <jdbc-url>jdbc:sqlite:D:\yym\网关检测服务器\gatewayserver多网关 - MQTT\GatewayServer\db2.sqlite3</jdbc-url>
       <driver-properties>
         <property name="enable_load_extension" value="true" />
       </driver-properties>

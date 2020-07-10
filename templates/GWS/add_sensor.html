@@ -33,7 +33,11 @@
                 <div class="col-xs-3 col-md-2 col-md-offset-1">
                     <div class="form-group">
                         <label for="gateway">所在网关 <b style="color: red;">*</b></label>
+                    {% if network_id == "new" %}
                         <select class="form-control select2" name="gateway" id="gateway" style="width: 100%;">
+                    {% else %}
+                        <select class="form-control select2" name="gateway" id="gateway" style="width: 100%;" disabled>
+                    {% endif %}
                           {% for item in gateway_obj %}
                               <option value="{{ item.network_id }}">{{ item.name }}</option>
                           {% endfor %}
@@ -42,8 +46,12 @@
                 </div>
                 <div class="col-xs-3 col-md-2">
                     <div class="form-group">
-                        <label for="network_id">传感器网络号 <b style="color: red;">*</b></label>
-                        <input type="text" class="form-control" name="network_id" id="network_id" value="">
+                        <label for="network_id">网络号 <b style="color: red;">*</b></label>
+                        {% if network_id == "new" %}
+                            <input type="text" class="form-control" name="network_id" id="network_id" value="">
+                        {% else %}
+                            <input type="text" class="form-control" name="network_id" id="network_id" value="{{ network_id }}" disabled>
+                        {% endif %}
                     </div>
                 </div>
                 <div class="col-xs-3 col-md-2 col-md-offset-1">
@@ -59,12 +67,12 @@
                 <div class="col-xs-3 col-md-2">
                     <div class="form-group">
                         <label for="sound-V">声速</label>
-                        <input type="text" class="form-control" name="sound-V" id="sound-V" value="">
+                        <input type="text" class="form-control" name="sound-V" id="sound-V" value="" disabled>
                     </div>
                 </div>
                 <div class="col-xs-6 col-md-4 col-md-offset-1">
                     <div class="form-group">
-                        <label for="sensor_type">传感网类型</label>
+                        <label for="sensor_type">传感器类型</label>
                         <select class="form-control select2" name="sensor_type" id="sensor_type" style="width: 100%;">
                           {% for k, v in sensor_type.items %}
                               <option value="{{ v }}">{{ k }}</option>
@@ -186,7 +194,6 @@
     </div>
     </section>
 
-
 {% endblock %}
 
 {% block script %}
@@ -200,13 +207,23 @@
             $('#material').on("select2:select", function (e) {
                 SelectToShowSoundV();
             });
+            if ("{{ network_id }}" === 'new'){
+                ShowSoundV({{ material.0.id }});
+            }else{
+                ShowSoundV({{ sensor_obj.material }});
+            }
+
             // 当网关被选中时，显示其对应的网关前缀
             $('#gateway').on("select2:select", function (e) {
                 SelectToShowGatewayPrefix();
-            });
+             });
 
-            ShowSoundV({{ sensor_obj.material }});
-            ShowGatewayPrefix("{{ gateway_obj.0.network_id }}");
+            // 显示网关前缀或者gwntid
+            if ("{{ network_id }}" === 'new'){
+                ShowGatewayPrefix("{{ gateway_obj.0.network_id }}");
+            }else{
+                $('#gateway').select2("val", ["{{ gwntid }}"])
+            }
 
         });
 

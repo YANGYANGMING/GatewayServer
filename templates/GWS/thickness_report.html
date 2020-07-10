@@ -50,13 +50,13 @@
                 </div>
 
                 <div id="data-2048-contaner">
+
                 </div>
 
         </div>
         <!-- /.box-body -->
       </div>
       <!-- /.box -->
-
     </section>
     <!-- /.content -->
 
@@ -98,8 +98,7 @@
                     type: 'category',
                    },
                 yAxis: {
-                    tickInterval: 0.1,
-                    min: 0,
+                    tickInterval: 0.2,
                     title: {
                         text: '值'
                     },
@@ -151,7 +150,9 @@
                 success:function(arg){
                     config['series'] = arg['datas'];
                     config['title']['text'] = arg['alias'];
-                    config['yAxis']['max'] = arg['yAxis_max_limit'];
+                    // config['yAxis']['max'] = arg['yAxis_max_limit'];
+                    config['yAxis']['max'] = arg['thickness_avg'] + 0.1;
+                    config['yAxis']['min'] = arg['thickness_avg'] - 0.1;
                     $('#thickness-report-contaner').highcharts(config);
                     if(arg['datas'][0]['data'].length===0){
                         $('#show-thickness-msg').text('当前传感器暂无数据！');
@@ -187,7 +188,7 @@
               });
         }
 
-        // 点击后去虚线中的单个数据，获取此数据的波形图
+        // 点击厚度曲线中的单个数据，获取此数据的波形图
         function GetData(nid) {
             var config = {
                 chart: {

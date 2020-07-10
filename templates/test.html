@@ -1,13 +1,8 @@
 {% extends 'index.html' %}
 {% load staticfiles %}
 
+
 {% block main_content %}
-
-    <!-- Main content -->
-    <section class="content" id="another-element">
-        <a href="#" onclick="asdf()">sub</a>
-
-    </section>
 
 
 {% endblock %}
@@ -15,13 +10,6 @@
 {% block script %}
 
     <script>
-    function asdf(){
-        $("#another-element").busyLoad("show", {
-        background: "rgba(143,143,143,0.33)",
-        spinner: "circles",
-        animation: "slide"
-    })
-    }
 
 
 

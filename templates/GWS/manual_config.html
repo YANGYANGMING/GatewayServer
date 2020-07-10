@@ -81,27 +81,35 @@
             <table id="example1" class="table table-bordered table-striped table-hover" style="width: 100%;">
                 <thead>
                         <tr>
-                            <th>名称</th>
+                            <th>名&nbsp;称&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
                             <th style="display: none">id</th>
-                            <th>时间</th>
-                            <th>电量</th>
-                            <th>温度</th>
-                            <th>增益</th>
-                            <th>厚度值</th>
-                            <th>数据详情</th>
+                            <th>时&nbsp;间&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                            <th>电&nbsp;量&nbsp;&nbsp;</th>
+                            <th>温&nbsp;度&nbsp;&nbsp;</th>
+                            <th>增&nbsp;益&nbsp;&nbsp;</th>
+                            <th>厚&nbsp;度&nbsp;值&nbsp;&nbsp;</th>
+                            <th>数&nbsp;据&nbsp;详&nbsp;情&nbsp;</th>
                         </tr>
                     </thead>
                 <tbody>
                     {% for row in latest_data %}
                         <tr>
-                            <td><p style="width: 50px;">{{ row.network_id__alias }}</p></td>
+{#                            <td><p style="width: 50px;">{{ row.network_id__alias }}</p></td>#}
+{#                            <td style="display: none">{{ row.id }}</td>#}
+{#                            <td><p style="width: 75px;">{{ row.time_tamp }}</p></td>#}
+{#                            <td><p style="width: 50px;">{{ row.battery }}</p></td>#}
+{#                            <td><p style="width: 50px;">{{ row.temperature }}</p></td>#}
+{#                            <td><p style="width: 50px;">{{ row.gain }}</p></td>#}
+{#                            <td><p style="width: 60px;">{{ row.thickness }}</p></td>#}
+{#                            <td><a href="javascript:;" onclick="GetData(this);"><p style="width: 80px;"><i class="fa fa-pencil"></i> 数据详情</p></a></td>#}
+                            <td>{{ row.network_id__alias }}</td>
                             <td style="display: none">{{ row.id }}</td>
-                            <td><p style="width: 75px;">{{ row.time_tamp }}</p></td>
-                            <td><p style="width: 50px;">{{ row.battery }}</p></td>
-                            <td><p style="width: 50px;">{{ row.temperature }}</p></td>
-                            <td><p style="width: 50px;">{{ row.gain }}</p></td>
-                            <td><p style="width: 60px;">{{ row.thickness }}</p></td>
-                            <td><a href="javascript:;" onclick="GetData(this);"><p style="width: 80px;"><i class="fa fa-pencil"></i> 数据详情</p></a></td>
+                            <td>{{ row.time_tamp }}</td>
+                            <td>{{ row.battery }}</td>
+                            <td>{{ row.temperature }}</td>
+                            <td>{{ row.gain }}</td>
+                            <td>{{ row.thickness }}</td>
+                            <td><a href="javascript:;" onclick="GetData(this);"><i class="fa fa-pencil"></i> 数据详情</a></td>
                         </tr>
                     {% endfor %}
                 </tbody>

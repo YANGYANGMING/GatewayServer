@@ -149,14 +149,14 @@ heart_time = {'minutes': 0, 'seconds': 30}
 
 # EMQ X SETTINGS
 # MQTT_HOST = "121.36.220.210"
-MQTT_HOST = "192.168.0.42"
+MQTT_HOST = "192.168.0.41"
 MQTT_USERNAME = 'ORISONIC'
 MQTT_PASSWORD = 'ORISONIC2020'
-# crtPath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + r"\crt"
+# crtPath = BASE_DIR + r"\crt"
 # ca_certs = "%s\ca\MyRootCA.pem" % crtPath
 # certfile = "%s\client\MyClient1.pem" % crtPath
 # keyfile = "%s\client\MyClient1.key" % crtPath
-# crtPath = os.path.dirname(os.path.dirname(os.path.abspath(__file__))) + r"/crt"
+# crtPath = BASE_DIR + r"/crt"
 # ca_certs = "%s/ca/MyRootCA.pem" % crtPath
 # certfile = "%s/client/MyClient1.pem" % crtPath
 # keyfile = "%s/client/MyClient1.key" % crtPath

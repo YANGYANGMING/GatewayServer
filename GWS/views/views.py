@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q
 from GWS import models
 from GWS import permissions
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -183,25 +184,72 @@ def edit_sensor_params(request):
 
 
 @login_required
+@csrf_exempt
 def all_data_report(request):
     """
     全部数据
     :param request:
     :return:
     """
-    user_obj = models.UserProfile.objects.filter(name=request.user).first()
-    gateway_obj = user_obj.gateway.all().values('network_id')
-    all_sensor_list = []
-    all_data_obj_list = []
-    for gateway_item in gateway_obj:
-        gw_network_id = gateway_item['network_id']
-        sensor_obj_list = models.Sensor.objects.filter(gateway__network_id=gw_network_id)
-        all_sensor_list += sensor_obj_list
-    for sensor_item in all_sensor_list:
-        data_obj = list(models.Waveforms.objects.values('id', 'network_id', 'network_id__alias', 'time_tamp',
-                                               'battery', 'temperature', 'thickness').filter(network_id=sensor_item).order_by('-id'))
-        all_data_obj_list += data_obj
-    return render(request, 'GWS/all_data_report.html', locals())
+    if request.method == "GET":
+        return render(request, 'GWS/all_data_report.html')
+    elif request.method == 'POST':
+        draw = int(request.POST.get('draw'))  # 记录操作次数
+        start = int(request.POST.get('start'))  # 起始位置
+        length = int(request.POST.get('length'))  # 每页显示数据量
+        search_key = request.POST.get('search[value]')  # 搜索关键字
+        order_column_id = request.POST.get('order[0][column]')  # 排序字段索引
+        order_column_rule = request.POST.get('order[0][dir]')  # 排序规则：ase/desc
+
+        # 查找当前用户所拥有的网关和传感器
+        user_obj = models.UserProfile.objects.filter(name=request.user).first()
+        gateway_obj = user_obj.gateway.all().values('network_id')
+        all_sensor_list = []
+        for gateway_item in gateway_obj:
+            gw_network_id = gateway_item['network_id']
+            sensor_obj_list = models.Sensor.objects.filter(gateway__network_id=gw_network_id)
+            all_sensor_list += sensor_obj_list
+        querysets = models.Waveforms.objects.values('id', 'network_id__network_id', 'network_id__alias', 'battery',
+                                                    'time_tamp', 'thickness', 'temperature').filter(network_id__in=all_sensor_list)
+
+        order_column_dict = {'0': 'id', '1': 'network_id__alias', '2': 'network_id__network_id', '3': 'time_tamp',
+                             '4': 'battery', '5': 'temperature', '6': 'thickness'}
+        all_count = querysets.count()
+
+        if search_key:
+            querysets = query_filter(search_key, querysets)
+        if order_column_rule == 'desc':
+            querysets = querysets.order_by('-%s' % order_column_dict[order_column_id])
+        if order_column_rule == 'asc':
+            querysets = querysets.order_by(order_column_dict[order_column_id])
+
+        filter_count = querysets.count()
+        querysets = querysets[start: start + length]
+
+        for oper_item in querysets:
+            oper_item['operation'] = '<a href="javascript:;" style="cursor: pointer;" onclick="GetData(this);">' \
+                                     '<i class="fa fa-pencil"></i> 数据详情</a>'
+
+        dic = {
+            'draw': draw,
+            'recordsTotal': all_count,
+            'recordsFiltered': filter_count,
+            'data': list(querysets),
+        }
+
+        return HttpResponse(json.dumps(dic))
+
+# 搜索
+def query_filter(search_key, querysets):
+    q = Q()
+    q.connector = "OR"
+    filter_field = ['network_id__network_id', 'network_id__alias', 'time_tamp', 'temperature', 'battery',
+                    'thickness']
+    for filter_item in filter_field:
+        q.children.append(("%s__contains" % filter_item, search_key))
+    result = querysets.filter(q)
+
+    return result
 
 
 @login_required
@@ -266,6 +314,7 @@ def add_sensor(request, network_id):
         "hour_interval": [i for i in range(0, 24)],
         "minute_interval": [i for i in range(0, 60)],
     }
+    gwntid = network_id.rsplit('.', 1)[0] + '.0'
     return render(request, 'GWS/add_sensor.html', locals())
 
 
@@ -507,6 +556,7 @@ def thickness_json_report(request):
         response['datas'] = [{'name': '厚度值', 'data': data_list}]
         response['alias'] = alias
         response['yAxis_max_limit'] = thickness_avg * 2
+        response['thickness_avg'] = thickness_avg
     except Exception as e:
         print(e)
 
@@ -710,8 +760,10 @@ except Exception as e:
 
 
 def test(request):
-
     return render(request, 'test.html')
+
+
+
 
 
 

@@ -198,7 +198,7 @@
         $('.select2').select2();
         $('#example1').DataTable({
             order: [[ 2, "desc" ]], // 第3列倒序
-            bAutoWidth: false,
+            {#bAutoWidth: false,#}
             scrollX: true,          // 固定列
             fixedColumns: {
                     leftColumns: 1  // 固定第一列

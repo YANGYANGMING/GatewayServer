@@ -124,29 +124,37 @@
             <table id="data-param" class="table table-bordered table-striped table-hover" style="width: 100%;">
                 <thead>
                     <tr>
-                        <th>名称</th>
-                        <th>网络号</th>
-                        <th>周波数</th>
-                        <th>增益</th>
-                        <th>平均次数</th>
-                        <th>Hz</th>
-                        <th>采样深度</th>
-                        <th>采样频率</th>
-                        <th>编辑参数</th>
+                        <th>名&nbsp;称&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                        <th>网&nbsp;络&nbsp;号&nbsp;&nbsp;</th>
+                        <th>周&nbsp;波&nbsp;数</th>
+                        <th>增&nbsp;益</th>
+                        <th>平&nbsp;均&nbsp;次&nbsp;数</th>
+                        <th>频&nbsp;率</th>
+                        <th>采&nbsp;样&nbsp;深&nbsp;度</th>
+                        <th>采&nbsp;样&nbsp;频&nbsp;率</th>
+                        <th>编&nbsp;辑&nbsp;参&nbsp;数</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for item in all_sensor_list %}
                         <tr>
-                            <td><p style="width: 50px;">{{ item.alias }}</p></td>
-                            <td><p style="width: 80px;">{{ item.network_id }}</p></td>
-                            <td><p style="width: 70px;">{{ item.cHz }}</p></td>
-                            <td><p style="width: 60px;">{{ item.gain }}</p></td>
-                            <td><p style="width: 80px;">{{ item.avg_time }}</p></td>
-                            <td><p style="width: 50px;">{{ item.Hz }}</p></td>
-                            <td><p style="width: 80px;">{{ item.Sample_depth }}</p></td>
-                            <td><p style="width: 80px;">{{ item.Sample_Hz }}</p></td>
-                            <td><a href="#" data-toggle="modal" data-target="#modal-default" onclick="ShowModel(this);"><button type="button" class="btn btn-success"><p style="width: 80px;"><i class="fa fa-pencil fa-fw"></i>编辑</p></button></a></td>
+{#                            <td><p style="width: 50px;">{{ item.alias }}</p></td>#}
+{#                            <td><p style="width: 80px;">{{ item.network_id }}</p></td>#}
+{#                            <td><p style="width: 70px;">{{ item.cHz }}</p></td>#}
+{#                            <td><p style="width: 60px;">{{ item.gain }}</p></td>#}
+{#                            <td><p style="width: 80px;">{{ item.avg_time }}</p></td>#}
+{#                            <td><p style="width: 50px;">{{ item.Hz }}</p></td>#}
+{#                            <td><p style="width: 80px;">{{ item.Sample_depth }}</p></td>#}
+{#                            <td><p style="width: 80px;">{{ item.Sample_Hz }}</p></td>#}
+                            <td>{{ item.alias }}</td>
+                            <td>{{ item.network_id }}</td>
+                            <td>{{ item.cHz }}</td>
+                            <td>{{ item.gain }}</td>
+                            <td>{{ item.avg_time }}</td>
+                            <td>{{ item.Hz }}</td>
+                            <td>{{ item.Sample_depth }}</td>
+                            <td>{{ item.Sample_Hz }}</td>
+                            <td><a href="#" data-toggle="modal" data-target="#modal-default" onclick="ShowModel(this);"><button type="button" class="btn btn-success"><i class="fa fa-pencil fa-fw"></i>编辑</button></a></td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -175,6 +183,7 @@
                     leftColumns: 1  // 固定第1列
                 },
         });
+          SaveModalParam();
 
       });
 
@@ -201,7 +210,6 @@
           $("#modal-Sample-hz").val(Sample_hz);
 
           $('#set_sensor_params').text('');
-          SaveModalParam();
       }
 
       function SaveModalParam() {

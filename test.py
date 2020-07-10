@@ -127,6 +127,76 @@ from GWS import models
 # c2.start()
 
 
+# print(random.uniform(-0.03, 0.01))
+# print(round(0.0232, 3))
+
+# import numpy as np
+# import matplotlib.pyplot as plt
+# from sklearn.linear_model import LinearRegression
+#
+# n = 101
+#
+# x = np.linspace(0, 10, n)
+# noise = np.random.randn(n)
+# y = 2.5 * x + 0.8 + 2.0 * noise
+#
+#
+# def self_func(steps=100, alpha=0.01):
+#     w = 0.5
+#     b = 0
+#     alpha = 0.01
+#     for i in range(steps):
+#         y_hat = w * x + b
+#         dy = 2.0 * (y_hat - y)
+#         dw = dy * x
+#         db = dy
+#         w = w - alpha * np.sum(dw) / n
+#         b = b - alpha * np.sum(db) / n
+#         e = np.sum((y_hat - y) ** 2) / n
+#         # print (i,'W=',w,'\tb=',b,'\te=',e)
+#     print('self_func:\tW =', w, '\n\tb =', b)
+#     plt.scatter(x, y)
+#     plt.plot(np.arange(0, 10, 1), w * np.arange(0, 10, 1) + b, color='r', marker='o',
+#              label='self_func(steps=' + str(steps) + ', alpha=' + str(alpha) + ')')
+#
+#
+# def skl_func():
+#     lr = LinearRegression()
+#     lr.fit(x.reshape(-1, 1), y)
+#     y_hat = lr.predict(np.arange(0, 10, 0.75).reshape(-1, 1))
+#     print('skl_fun:\tW = %f\n\tb = %f' % (lr.coef_, lr.intercept_))
+#     plt.plot(np.arange(0, 10, 0.75), y_hat, color='g', marker='x', label='skl_func')
+#
+#
+# self_func(10000)
+# skl_func()
+# plt.legend(loc='upper left')
+# plt.show()
+
+# # interval_val = 0.03
+# #
+# w_obj = list(models.Waveforms.objects.values('id').filter(network_id='0.0.2.1'))
+# thickness = 10.117
+# interval = 0.001
+# noise = (-0.002, 0.001)
+# day = 1
+# for item in w_obj:
+#     thickness = round(thickness + random.uniform(-0.002, 0.001), 3)
+#     # print(day, '：', thickness)
+#     # day += 1
+#
+#     models.Waveforms.objects.filter(id=item['id']).update(thickness=thickness)
+#     # models.Waveforms.objects.filter(id=item['id']).update(time_tamp=temp, thickness=round((10.02 + random.uniform(-0.03, 0.01)), 3))
+#
+a = list(models.Waveforms.objects.values('id', 'time_tamp').all())
+b = models.Waveforms.objects.values('id', 'time_tamp').all()[2:3]
+print(a.order_by('-id')[:2])
+print(b)
+
+
+
+
+
 
 
 
