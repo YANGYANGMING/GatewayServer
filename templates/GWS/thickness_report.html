@@ -6,57 +6,55 @@
     <!-- Main content -->
     <section class="content">
       <!-- BAR CHART -->
-      <div class="box box-success">
-        <div class="box-header with-border">
-          <h3 class="box-title">单个传感器厚度曲线</h3>
+        <div class="box box-success">
+            <div class="box-header with-border">
+              <h3 class="box-title">单个传感器厚度曲线</h3>
 
-          <div class="box-tools pull-right">
-            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-            </button>
-            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-          </div>
+              <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+              </div>
+            </div>
+            <!-- 曲线图 -->
+            <div class="box-body">
+                <div class="row">
+                    <!-- form start -->
+                    <div class="col-xs-12 col-md-3">
+                        <div class="form-group">
+                            <label>网关：</label>
+                            <select class="form-control select2" id="selected-gateway-id" data-placeholder="网关">
+                                <option value=""></option>
+                                {% for gateway_item in gateway_obj %}
+                                    <option value="{{ gateway_item.network_id }}">{{ gateway_item.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                      <div class="col-xs-12 col-md-3">
+                        <div class="form-group">
+                            <label>传感器：</label>
+                            <select class="form-control select2" id="selected-sensor-id" data-placeholder="传感器"></select>
+                        </div>
+                     </div>
+                      <div class="col-xs-12 col-md-3">
+                        <div class="form-group">
+                            <label>&nbsp; </label>
+                            <button type="submit" class="btn btn-primary col-lg-offset-1" id="show-thickness" style="display: block">确定</button>
+                            <span id="show-thickness-msg" style="color: red;"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="thickness-report-contaner">
+            </div>
+
+            <div id="data-2048-contaner">
+            </div>
+
         </div>
-        <!-- 曲线图 -->
-        <div class="box-body">
-            <div class="row">
-                <!-- form start -->
-                <div class="col-xs-12 col-md-3">
-                    <div class="form-group">
-                        <label>网关：</label>
-                        <select class="form-control select2" id="selected-gateway-id" data-placeholder="网关">
-                            <option value=""></option>
-                            {% for gateway_item in gateway_obj %}
-                                <option value="{{ gateway_item.network_id }}">{{ gateway_item.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-                  <div class="col-xs-12 col-md-3">
-                    <div class="form-group">
-                        <label>传感器：</label>
-                        <select class="form-control select2" id="selected-sensor-id" data-placeholder="传感器"></select>
-                    </div>
-                 </div>
-                  <div class="col-xs-12 col-md-3">
-                    <div class="form-group">
-                        <label>&nbsp; </label>
-                        <button type="submit" class="btn btn-primary col-lg-offset-1" id="show-thickness" style="display: block">确定</button>
-                        <span id="show-thickness-msg" style="color: red;"></span>
-                    </div>
-                 </div>
-                </div>
 
-                <div id="thickness-report-contaner">
-                </div>
-
-                <div id="data-2048-contaner">
-
-                </div>
-
-        </div>
-        <!-- /.box-body -->
-      </div>
-      <!-- /.box -->
     </section>
     <!-- /.content -->
 
@@ -68,7 +66,6 @@
 
       $(function () {
           ShowThickness();
-
         //Initialize Select2 Elements
         $('.select2').select2();
 
@@ -122,6 +119,7 @@
                 plotOptions: {
                     series: {
                         cursor: 'pointer',
+                        lineWidth: 1.5,
                         events: {
                             click: function (event) {
                                 var data_id_and_time = event.point.series.chart.hoverPoint.name;
@@ -151,8 +149,8 @@
                     config['series'] = arg['datas'];
                     config['title']['text'] = arg['alias'];
                     // config['yAxis']['max'] = arg['yAxis_max_limit'];
-                    config['yAxis']['max'] = arg['thickness_avg'] + 0.1;
-                    config['yAxis']['min'] = arg['thickness_avg'] - 0.1;
+                    config['yAxis']['max'] = arg['thickness_avg'] + 1;
+                    config['yAxis']['min'] = arg['thickness_avg'] - 1;
                     $('#thickness-report-contaner').highcharts(config);
                     if(arg['datas'][0]['data'].length===0){
                         $('#show-thickness-msg').text('当前传感器暂无数据！');
@@ -209,11 +207,11 @@
                     title: {
                         text: '值'
                     },
-                    plotLines: [{
-                        value: 0,
-                        width: 1,
-                        color: '#808080'
-                    }]
+                },
+                plotOptions: {
+                    series: {
+                        lineWidth: 1.5,
+                    }
                 },
                 tooltip: {
                     followTouchMove: true,
@@ -247,7 +245,7 @@
                     },
                 ]
             };
-            {#$('#data-2048-contaner').highcharts(config);#}
+            $('#data-2048-contaner').highcharts(config);
             // 数据库中获取
             $.ajax({
                 url: '/GWS/data-json-report-'+nid,

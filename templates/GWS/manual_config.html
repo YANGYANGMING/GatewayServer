@@ -142,12 +142,6 @@
                 },
         });
 
-        //Flat red color scheme for iCheck
-        $('input[type="checkbox"].flat-red, input[type="radio"].flat-red').iCheck({
-          checkboxClass: 'icheckbox_flat-green',
-          radioClass   : 'iradio_flat-green'
-        });
-
         // 当网关下拉框内的网关被选择时，触发此函数
           $('#selected-gateway-id').on('select2:select', function (e) {
                 gateway_associated_sensors_json();
@@ -226,11 +220,11 @@
                     title: {
                         text: '值'
                     },
-                    plotLines: [{
-                        value: 0,
-                        width: 1,
-                        color: '#808080'
-                    }]
+                },
+                plotOptions: {
+                    series: {
+                        lineWidth: 1.5,
+                    }
                 },
                 tooltip: {
                     followTouchMove: true,

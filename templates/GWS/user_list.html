@@ -25,6 +25,7 @@
                         <tr>
                             <th>名字</th>
                             <th>公司</th>
+                            <th>角色</th>
                             <th>最近登录</th>
                             <th>允许登录</th>
                         </tr>
@@ -38,8 +39,15 @@
                                     <td><a href="{% url 'user_edit' item.id %}">{{ item.name }}</a></td>
                                 {% endif %}
                                 <td>{{ item.gateway__Enterprise }}</td>
+                                <td>{{ item.role__name }}</td>
                                 <td>{{ item.last_login }}</td>
-                                <td>{{ item.is_active }}</td>
+                                <td>
+                                    {% if item.is_active %}
+                                        <p style="color: green;">允许</p>
+                                    {% else %}
+                                        <p style="color: red;">禁止</p>
+                                    {% endif %}
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -60,6 +68,14 @@
 {% endblock %}
 
 {% block script %}
+
+    <script>
+        $('#example1').DataTable({
+            order: [[ 1, "desc" ]],  // 初始化倒序排列
+
+             });
+
+    </script>
 
 
 {% endblock %}

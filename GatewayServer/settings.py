@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'GWS.apps.GwsConfig',
+    # 'werkzeug_debugger_runserver',
+    # 'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -115,6 +117,8 @@ USE_L10N = True
 
 USE_TZ = False
 
+# SECURE_SSL_REDIRECT = True
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
@@ -149,14 +153,16 @@ heart_time = {'minutes': 0, 'seconds': 30}
 
 # EMQ X SETTINGS
 # MQTT_HOST = "121.36.220.210"
-MQTT_HOST = "192.168.0.41"
+MQTT_HOST = "192.168.0.42"
 MQTT_USERNAME = 'ORISONIC'
 MQTT_PASSWORD = 'ORISONIC2020'
-# crtPath = BASE_DIR + r"\crt"
-# ca_certs = "%s\ca\MyRootCA.pem" % crtPath
-# certfile = "%s\client\MyClient1.pem" % crtPath
-# keyfile = "%s\client\MyClient1.key" % crtPath
-# crtPath = BASE_DIR + r"/crt"
+
+crtPath = BASE_DIR + r"\crt_new"
+
+ca_certs = "%s\ca\MyRootCA.pem" % crtPath
+certfile = "%s\client\MyClient1.pem" % crtPath
+keyfile = "%s\client\MyClient1.key" % crtPath
+
 # ca_certs = "%s/ca/MyRootCA.pem" % crtPath
 # certfile = "%s/client/MyClient1.pem" % crtPath
 # keyfile = "%s/client/MyClient1.key" % crtPath

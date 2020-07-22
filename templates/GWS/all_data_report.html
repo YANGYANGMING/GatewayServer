@@ -76,8 +76,6 @@
     <script>
 
         $(function () {
-        //Date range picker
-        $('#reservation').daterangepicker();
 
         $('#example1').DataTable({
             order: [[ 3, "desc" ]],  // 初始化倒序排列
@@ -139,13 +137,12 @@
                     title: {
                         text: '值'
                     },
-                    plotLines: [{
-                        value: 0,
-                        width: 1,
-                        color: '#808080'
-                    }]
                 },
-                lineWidth: 1,
+                plotOptions: {
+                    series: {
+                        lineWidth: 1.5,
+                    }
+                },
                 tooltip: {
                     followTouchMove: true,
                     formatter: function () {

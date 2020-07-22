@@ -328,7 +328,6 @@ def alarm_sensor_list(request):
     """
     if request.method == 'POST':
         all_alarm_sensor_list = eval(request.POST.get('all_alarm_sensor_list'))
-        print(all_alarm_sensor_list)
 
         return render(request, 'GWS/alarm_sensor_list.html', locals())
 
@@ -686,8 +685,6 @@ def set_sensor_params(request):
     send_data = {'id': 'server', 'header': 'set_sensor_params', 'val_dict': val_dict, 'network_id': network_id, 'user': str(request.user)}
     topic = network_id.rsplit('.', 1)[0] + '.0'
     client.publish(topic, json.dumps(send_data), 2)
-
-    log.log(result['status'], result['msg'], network_id, str(request.user))
 
     return HttpResponse(json.dumps(result))
 

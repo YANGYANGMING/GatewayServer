@@ -17,44 +17,36 @@
         </div>
             <!-- /.box-header -->
         <div class="box-body">
-          <div class="row">
-            <div class="col-xs-12" style="overflow-x: auto">
-                <table id="example1" class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
+            <table id="example1" class="table table-bordered table-striped table-hover" style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th>名&nbsp;称&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                        <th>报&nbsp;警&nbsp;信&nbsp;息&nbsp;</th>
+                        <th>报&nbsp;警&nbsp;值&nbsp;</th>
+                        <th>当&nbsp;前&nbsp;值&nbsp;</th>
+                        <th>报&nbsp;警&nbsp;时&nbsp;间&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                        <th>网&nbsp;络&nbsp;号&nbsp;&nbsp;</th>
+                        <th>数&nbsp;据&nbsp;详&nbsp;情&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody>
+                        {% for row in all_alarm_sensor_list %}
                             <tr>
-                                <th>名称</th>
-                                <th>报警信息</th>
-                                <th>报警值</th>
-                                <th>当前值</th>
-                                <th>报警时间</th>
-                                <th>网络号</th>
-                                <th>数据详情</th>
-                            </tr>
-                        </tr>
-                    </thead>
-                    <tbody>
-                            {% for row in all_alarm_sensor_list %}
-                                <tr>
-                                    {% for alias, item_val in row.items %}
-                                        <td>{{ alias }}</td>
-                                        {% for k, v in item_val.items %}
-                                            {% if k == 'network_id' %}
-                                                <td>{{ v }}</td>
-                                                <td><a href="/GWS/sensor-data-info-{{ v }}" style="cursor: pointer;"><i class="fa fa-pencil"></i> 数据详情</a></td>
-                                            {% else %}
-                                                <td>{{ v }}</td>
-                                            {% endif %}
-                                        {% endfor %}
+                                {% for alias, item_val in row.items %}
+                                    <td>{{ alias }}</td>
+                                    {% for k, v in item_val.items %}
+                                        {% if k == 'network_id' %}
+                                            <td>{{ v }}</td>
+                                            <td><a href="/GWS/sensor-data-info-{{ v }}" style="cursor: pointer;"><i class="fa fa-pencil"></i> 数据详情</a></td>
+                                        {% else %}
+                                            <td>{{ v }}</td>
+                                        {% endif %}
                                     {% endfor %}
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                </table>
-            </div>
-          <!-- /.box-body -->
-          </div>
-        <!-- /.col -->
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+            </table>
         </div>
         <!-- /.row -->
       </div>
@@ -72,10 +64,15 @@
 
         $(function () {
 
-        //Date range picker
-        $('#reservation').daterangepicker();
+            $('#example1').DataTable({
+                order: [[ 4, "desc" ]], // 第3列倒序
+                {#bAutoWidth: false,#}
+                scrollX: true,          // 固定列
+                fixedColumns: {
+                        leftColumns: 1  // 固定第一列
+                    },
 
-        $('#example1').DataTable();
+            });
 
 
         });

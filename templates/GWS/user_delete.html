@@ -25,7 +25,13 @@
                                 <td>{{ obj.name }}</td>
                                 <td>{{ role }}</td>
                                 <td>{{ obj.last_login }}</td>
-                                <td>{{ obj.is_active }}</td>
+                                <td>
+                                    {% if obj.is_active %}
+                                        <p style="color: green;">允许</p>
+                                    {% else %}
+                                        <p style="color: red;">禁止</p>
+                                    {% endif %}
+                                </td>
                             </tr>
                     </tbody>
                 </table>

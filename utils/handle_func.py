@@ -356,7 +356,10 @@ class HandleImgs(object):
         """
         im = Image.open(infile)
         x, y = im.size
+        print('x', x)
+        print('y', y)
         y_s = int(y * x_s / x)
+        print('y_s', y_s)
         out = im.resize((x_s, y_s), Image.ANTIALIAS)
         outfile = self.get_outfile(infile, outfile)
         out.save(outfile)
@@ -561,7 +564,7 @@ def judge_user_id(request, nid):
     cur_user_obj = models.UserProfile.objects.filter(id=request.user.id)
     cur_role = cur_user_obj[0].role.values('name').all()
     role_list = [item['name'] for item in cur_role]
-    if 'super_root' not in role_list and 'create_root' not in role_list:
+    if '超级管理员' not in role_list and '用户管理员' not in role_list:
         cur_user_enterprise = cur_user_obj[0].gateway.values('Enterprise')[0]['Enterprise']
         cur_enterprise_user_list = models.UserProfile.objects.filter(gateway__Enterprise=cur_user_enterprise).values('id')
         cur_enterprise_user_id_list = [item['id'] for item in cur_enterprise_user_list]

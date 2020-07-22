@@ -175,23 +175,40 @@ from GWS import models
 
 # # interval_val = 0.03
 # #
-# w_obj = list(models.Waveforms.objects.values('id').filter(network_id='0.0.2.1'))
-# thickness = 10.117
-# interval = 0.001
-# noise = (-0.002, 0.001)
-# day = 1
-# for item in w_obj:
-#     thickness = round(thickness + random.uniform(-0.002, 0.001), 3)
-#     # print(day, '：', thickness)
-#     # day += 1
+w_obj = list(models.Waveforms.objects.values('id').filter(network_id='0.0.2.1'))
+thickness = 10.087
+interval = 0.0005
+init = 0
+noise = (-0.002, 0.001)
+for item in w_obj:
+    new_thickness = round(thickness + random.uniform(-0.009, 0.009) - init, 3)
+    init += interval
+    # print(day, '：', thickness)
+    # day += 1
+
+    models.Waveforms.objects.filter(id=item['id']).update(thickness=new_thickness)
+    # models.Waveforms.objects.filter(id=item['id']).update(time_tamp=temp, thickness=round((10.02 + random.uniform(-0.03, 0.01)), 3))
+
+
+# # 生成二维码
+# import qrcode
+# # 实例化二维码生成类
+# qr = qrcode.QRCode(
+#     version=1,
+#     error_correction=qrcode.constants.ERROR_CORRECT_L,
+#     box_size=10,
+#     border=4,
+# )
+# # 设置二维码数据
+# data = "https://www.baidu.com"
+# qr.add_data(data=data)
 #
-#     models.Waveforms.objects.filter(id=item['id']).update(thickness=thickness)
-#     # models.Waveforms.objects.filter(id=item['id']).update(time_tamp=temp, thickness=round((10.02 + random.uniform(-0.03, 0.01)), 3))
+# # 启用二维码颜色设置
+# qr.make(fit=True)
+# img = qr.make_image(fill_color="green", back_color="white")
 #
-a = list(models.Waveforms.objects.values('id', 'time_tamp').all())
-b = models.Waveforms.objects.values('id', 'time_tamp').all()[2:3]
-print(a.order_by('-id')[:2])
-print(b)
+# # 显示二维码
+# img.show()
 
 
 
