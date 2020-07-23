@@ -175,19 +175,19 @@ from GWS import models
 
 # # interval_val = 0.03
 # #
-w_obj = list(models.Waveforms.objects.values('id').filter(network_id='0.0.2.1'))
-thickness = 10.087
-interval = 0.0005
-init = 0
-noise = (-0.002, 0.001)
-for item in w_obj:
-    new_thickness = round(thickness + random.uniform(-0.009, 0.009) - init, 3)
-    init += interval
-    # print(day, '：', thickness)
-    # day += 1
-
-    models.Waveforms.objects.filter(id=item['id']).update(thickness=new_thickness)
-    # models.Waveforms.objects.filter(id=item['id']).update(time_tamp=temp, thickness=round((10.02 + random.uniform(-0.03, 0.01)), 3))
+# w_obj = list(models.Waveforms.objects.values('id').filter(network_id='0.0.2.1'))
+# thickness = 10.087
+# interval = 0.0005
+# init = 0
+# noise = (-0.002, 0.001)
+# for item in w_obj:
+#     new_thickness = round(thickness + random.uniform(-0.009, 0.009) - init, 3)
+#     init += interval
+#     # print(day, '：', thickness)
+#     # day += 1
+#
+#     models.Waveforms.objects.filter(id=item['id']).update(thickness=new_thickness)
+#     # models.Waveforms.objects.filter(id=item['id']).update(time_tamp=temp, thickness=round((10.02 + random.uniform(-0.03, 0.01)), 3))
 
 
 # # 生成二维码
@@ -210,10 +210,7 @@ for item in w_obj:
 # # 显示二维码
 # img.show()
 
-
-
-
-
-
+a = models.UserProfile.objects.filter(name='test').exists()
+print(a)
 
 

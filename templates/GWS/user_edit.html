@@ -16,7 +16,7 @@
                             <div class="form-group">
                                 <label for="name">用户名</label>
                                 <input type="text" class="form-control" name="name" id="name" value="{{ cur_name }}"  onblur="JudgeExist()">
-                                <p id="user-msg" style="color: red;"></p>
+                                <p id="name-msg" style="color: red;"></p>
                             </div>
                         </div>
                         <div  class="col-xs-12 col-md-6 col-md-offset-1">
@@ -27,6 +27,7 @@
                                         <option value="{{ role_item.id }}">{{ role_item.name }}</option>
                                     {% endfor %}
                                 </select>
+                                <p id="role-msg" style="color: red;"></p>
                             </div>
                         </div>
                         <div  class="col-xs-12 col-md-6 col-md-offset-1">
@@ -37,6 +38,7 @@
                                         <option value="{{ group_item.id }}">{{ group_item.name }}</option>
                                     {% endfor %}
                                 </select>
+                                <p id="groups-msg" style="color: red;"></p>
                             </div>
                         </div>
                         <div  class="col-xs-12 col-md-6 col-md-offset-1">
@@ -47,31 +49,33 @@
                                         <option value="{{ gateway_item.id }}">{{ gateway_item.name }}</option>
                                     {% endfor %}
                                 </select>
+                                <p id="gateway-msg" style="color: red;"></p>
                             </div>
                         </div>
                         <div  class="col-xs-12 col-md-6 col-md-offset-1">
                             <div class="form-group">
                                 <label for="user_permissions">用户权限</label>
-                                <select name="user_permissions" id="user_permissions" class="form-control " multiple="multiple" style="height: 150px;">
+                                <select name="user_permissions" id="user-permissions" class="form-control " multiple="multiple" style="height: 150px;">
                                     {% for user_permissions_item in cur_user_all_permissions_list %}
                                         <option value="{{ user_permissions_item.permissions__id }}">{{ user_permissions_item.permissions__name }}</option>
                                     {% endfor %}
                                 </select>
+                                <p id="user-permissions-msg" style="color: red;"></p>
                             </div>
                         </div>
                         <!-- Prevent the enterprise root user from setting himself / herself as non login -->
-{#                        {% if nid != request.user.id %}#}
-                            <div class="col-xs-12 col-md-6 col-md-offset-1">
-                                <div class="form-group">
-                                    <label for="is_active">允许登录</label>
-                                    <input type="checkbox" name="is_active" id="is_active" class="flat-green">
-                                </div>
+
+                        <div class="col-xs-12 col-md-6 col-md-offset-1">
+                            <div class="form-group">
+                                <label for="is_active">允许登录</label>
+                                <input type="checkbox" name="is_active" id="is_active" class="flat-green">
                             </div>
-{#                        {% endif %}#}
+                        </div>
+
                         <div  class="col-xs-12 col-md-6 col-md-offset-1">
                             <div class="form-group">
                                 <a style="cursor: pointer" class="btn btn-danger col-md-offset-2" href="{% url 'user_delete' nid %}">Delete</a>
-                                <button type="submit" class="btn btn-info col-md-offset-6">Save</button>
+                                <button type="button" class="btn btn-info col-md-offset-6" onfocus="JudgeNotNULL(this)">Save</button>
                             </div>
                         </div>
                     </form>
@@ -109,7 +113,7 @@
         $('#role').val({{ role_list }});
         $('#gateway').val({{ gateway_list }});
         $('#groups').val({{ group_list }});
-        $('#user_permissions').val({{ selected_user_permissions_list }});
+        $('#user-permissions').val({{ selected_user_permissions_list }});
 
     }
 
@@ -122,11 +126,53 @@
             dataType: 'JSON',
             success: function (arg) {
                 if (arg.status) {
-                    $('#user-msg').html(arg.msg)
+                    $('#name-msg').html(arg.msg)
+                }else {
+                    $('#name-msg').html(arg.msg)
                 }
-
             }
         })
+
+    }
+
+    // 判断是否有未填写的选项
+    function JudgeNotNULL(ths) {
+
+        if ($('#name').val()[0]){
+            $('#name-msg').html("");
+        }else{
+            $('#name-msg').html("姓名不能为空！");
+        }
+        if ($('#role').val()[0]){
+            $('#role-msg').html("");
+        }else{
+            $('#role-msg').html("角色不能为空！");
+        }
+        if ($('#groups').val()[0]){
+            $('#groups-msg').html("");
+        }else{
+            $('#groups-msg').html("权限组不能为空！");
+        }
+        if ($('#gateway').val()[0]){
+            $('#gateway-msg').html("");
+        }else{
+            $('#gateway-msg').html("网关不能为空！");
+        }
+        if ($('#user-permissions').val()[0]){
+            $('#user-permissions-msg').html("");
+        }else{
+            $('#user-permissions-msg').html("用户权限不能为空！");
+        }
+
+        if ($('#name').val()[0] &&
+            $('#role').val()[0] &&
+            $('#groups').val()[0] &&
+            $('#gateway').val()[0] &&
+            $('#user-permissions').val()[0]
+        ){
+            $(ths).attr('type', 'submit');
+         }
+
 
     }
 
