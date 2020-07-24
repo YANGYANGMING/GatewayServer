@@ -20,34 +20,55 @@
   			<div class="login-content">
   				<h1 class="login-image"><img style="width: 250px; height: 80px;" src="/static/images/logo.png" alt=""></h1>
   				<form method="post" role="form" id="form_login" class="login_padding">
-				<div class="form-group clearfix">
 
+                <div class="form-group clearfix">
 					<div class="input-group">
 						<div class="input-group-addon">
 							<i class="icon_user"></i>
 						</div>
-
-						<input type="text" class="form-control" name="username" id="username" placeholder="用户名" autocomplete="off">
+						<input type="text" class="form-control" name="username" id="username" placeholder="用户名" autocomplete="off" oninput="CheckRole()">
 					</div>
-
 				</div>
 
 				<div class="form-group clearfix">
-
 					<div class="input-group">
 						<div class="input-group-addon">
 							<i class="icon_password"></i>
 						</div>
-
 						<input type="password" class="form-control" name="password" id="password" placeholder="密码" autocomplete="off">
 					</div>
-
 				</div>
-                      <div>
-                        <label style="color: white;">
-                          <input type="checkbox" name="rmb" class="flat-red" checked> Remember Me
-                        </label>
-                      </div>
+
+                <div class="form-group clearfix" style="display: none;">
+					<div class="input-group">
+						<div class="input-group-addon">
+							<i class="icon_phone"></i>
+						</div>
+						<input type="text" class="form-control" name="PhoneNumbers" id="PhoneNumbers" placeholder="手机号" autocomplete="off">
+                    </div>
+                    <p style="color: red;" id="phone-num-error-msg"></p>
+				</div>
+
+				<div class="form-group clearfix" style="display: none;">
+					<div class="input-group" style="width: 55%">
+						<div class="input-group-addon">
+							<i class="icon_password"></i>
+						</div>
+						<input type="text" class="form-control" name="sms_code" id="sms-code" placeholder="验证码" autocomplete="off">
+					</div>
+                    <div class="input-group" style="float: right">
+                        <button href="javascript:;" type="button" class="btn btn-success btn-block" id="get-sms-code" onclick="GetSMSCode()">
+						<i class="fa fa-sign-in"></i>
+						获取验证码
+					    </button>
+                    </div>
+				</div>
+
+                  <div>
+                    <label style="color: white;">
+                      <input type="checkbox" name="rmb" class="flat-red" checked> Remember Me
+                    </label>
+                  </div>
 {#					<div><a href="#" class="forget">忘记密码？</a></div>#}
                   <div class="tishi" style="color: white;"></div>
 				<div class="form-group">
@@ -84,8 +105,75 @@
         $('input[type="checkbox"].flat-red, input[type="radio"].flat-red').iCheck({
           checkboxClass: 'icheckbox_flat-red',
           radioClass   : 'iradio_flat-red'
+        });
+
+    });
+
+    // 检查用户角色
+    function CheckRole() {
+        var username = $('#username').val();
+
+        $.ajax({
+           url: "/GWS/check-role",
+           type: "GET",
+           data: {"username": username},
+           dataType: "JSON",
+           success: function (arg) {
+               if (arg === "超级管理员") {
+                   $('#PhoneNumbers').parent().parent().css("display", "inline-block");
+                   $('#sms-code').parent().parent().css("display", "inline-block");
+               }else{
+                   $('#PhoneNumbers').parent().parent().css("display", "none");
+                   $('#sms-code').parent().parent().css("display", "none");
+               }
+           }
         })
-    })
+    }
+
+    // 获取验证码
+    function GetSMSCode() {
+        var PhoneNumbers = $('#PhoneNumbers').val();
+        if (isPhoneNum(PhoneNumbers)){
+           $.ajax({
+               url: "/GWS/send-sms-verification-code-to-phone",
+               type: "POST",
+               data: {"PhoneNumbers": PhoneNumbers},
+               success: function (arg) {
+                   console.log(arg)
+               }
+           });
+           setTime($("#get-sms-code"));
+        }
+    }
+
+    //60s倒计时实现逻辑
+    var countdown = 60;
+    function setTime(obj) {
+        if (countdown == 0) {
+            obj.prop('disabled', false);
+            obj.text("获取验证码");
+            countdown = 60;//60秒过后button上的文字初始化,计时器初始化;
+            return;
+        } else {
+            obj.prop('disabled', true);
+            obj.text("("+countdown+"s)后重新发送") ;
+            countdown--;
+        }
+        setTimeout(function() { setTime(obj) },1000) //每1000毫秒执行一次
+    }
+
+    //校验手机号是否合法
+    function isPhoneNum(PhoneNumbers){
+        var reg = /^1[3456789]\d{9}$/;
+        if(!reg.test(PhoneNumbers)){
+            $('#phone-num-error-msg').html("请输入有效的手机号码！");
+            return false;
+        }else{
+            $('#phone-num-error-msg').html("");
+            return true;
+        }
+    }
+
 
 </script>
 

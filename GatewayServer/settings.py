@@ -167,6 +167,14 @@ keyfile = "%s\client\MyClient1.key" % crtPath
 # certfile = "%s/client/MyClient1.pem" % crtPath
 # keyfile = "%s/client/MyClient1.key" % crtPath
 
+
+# aliyunsdkcore
+accessKeyId = "LTAI4GFZWVdSy1NcZQBVwYpu"
+accessSecret = "M1f91JauHHANpThCDgWM1o8eE6hspt"
+TemplateCode = "SMS_197610886"
+
+
+
 # 错误日志
 ERROR_LOG_FILE = os.path.join(BASE_DIR, "log", 'error.log')
 # 运行日志

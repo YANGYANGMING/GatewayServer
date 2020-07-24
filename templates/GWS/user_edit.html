@@ -125,11 +125,7 @@
             type: 'POST',
             dataType: 'JSON',
             success: function (arg) {
-                if (arg.status) {
-                    $('#name-msg').html(arg.msg)
-                }else {
-                    $('#name-msg').html(arg.msg)
-                }
+                $('#name-msg').html(arg.msg)
             }
         })
 

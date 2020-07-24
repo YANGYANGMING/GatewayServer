@@ -592,10 +592,7 @@ def judge_username_exist_json(request):
     response = {'status': False, 'msg': ''}
     name = request.POST.get('name')
     previous_name = request.POST.get('previous_name')
-    if name == "":
-        user_is_exist = None
-        response['msg'] = '用户名不能为空！'
-    elif name == previous_name:  # 判断是否修改了用户名
+    if name == previous_name:  # 判断是否修改了用户名
         user_is_exist = None
     else:
         user_is_exist = models.UserProfile.objects.filter(name=name).exists()

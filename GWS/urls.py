@@ -35,6 +35,8 @@ urlpatterns = [
     re_path(r'^user-list$', account.user_list, name="user_list"),
     re_path(r'^user-profile$', account.user_profile),
     re_path(r'^change-pwd$', account.change_pwd),
+    re_path(r'^send-sms-verification-code-to-phone$', account.send_sms_verification_code_to_phone),
+    re_path(r'^check-role$', account.check_role),
 
     re_path(r'^data-json-report-(.*)$', views.data_json_report),
     re_path(r'^sensor-data-info-(.*)$', views.sensor_data_info),
