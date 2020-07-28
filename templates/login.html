@@ -119,7 +119,7 @@
            data: {"username": username},
            dataType: "JSON",
            success: function (arg) {
-               if (arg === "超级管理员") {
+               if (arg === "超级管理员" || arg === "用户管理员") {
                    $('#PhoneNumbers').parent().parent().css("display", "inline-block");
                    $('#sms-code').parent().parent().css("display", "inline-block");
                }else{

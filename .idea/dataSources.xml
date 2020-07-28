@@ -88,5 +88,11 @@
         </library>
       </libraries>
     </data-source>
+    <data-source source="LOCAL" name="gws_test1@localhost" uuid="a037a8f9-996f-4885-9f7a-cea43a2a785e">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://localhost:5432/gws_test1</jdbc-url>
+    </data-source>
   </component>
 </project>

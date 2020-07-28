@@ -61,6 +61,7 @@
                     <label>&nbsp; </label>
                     <button type="submit" class="btn btn-primary col-lg-offset-1" id="export-data" style="display: block">导出</button>
                     <span id="export-data-msg" style="color: red;"></span>
+                    <a id="download-files">下载</a>
                 </div>
              </div>
             </div>
@@ -113,6 +114,24 @@
                   }
               });
         }
+
+    $(function () {
+        $("#export-data").click(function () {
+            $.ajax({
+                url: "export-data",
+                data: {'a': 'aa'},
+                type: "POST",
+                success: function (arg) {
+                    if (arg === 'ok'){
+                        var link = document.getElementById('download-files');
+                        $(link).attr("href", "../../static/export_files/file_test.txt");
+                        $(link).attr("download", "");
+                        link.click();
+                    }
+                }
+            })
+        })
+    })
 
     </script>
 

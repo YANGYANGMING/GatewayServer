@@ -245,8 +245,9 @@ from GWS import models
 #
 # send_sms('17706248840', "1234")
 
-import random
-print(random.randrange(10000, 99999))
+with open("static/export_files/file_test.txt", 'r') as f:
+    a = f.read()
+    print(a)
 
 
 

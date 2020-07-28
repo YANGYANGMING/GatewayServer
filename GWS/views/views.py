@@ -8,7 +8,6 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from GatewayServer import settings
 import json, time
 from utils.check_click_method import check_click_method
-# from utils.mqtt_client import MQTT_Client
 from utils.mqtt_client import client
 from lib.log import Logger
 from utils import handle_func
@@ -340,8 +339,50 @@ def export_data(request):
     :param request:
     :return:
     """
+    if request.method == "GET":
 
-    return render(request, 'GWS/export_data.html', locals())
+        return render(request, 'GWS/export_data.html', locals())
+    elif request.method == "POST":
+        response = 'network_id     ' \
+                   + 'time_tamp               ' \
+                   + 'gain     ' \
+                   + 'temperature     ' \
+                   + 'battery     ' \
+                   + 'thickness     ' \
+                   + 'data_len     ' \
+                   + 'data' \
+                   + '\r\n'
+        datas = models.Waveforms.objects.values('time_tamp',
+                                                'network_id',
+                                                'gain',
+                                                'data',
+                                                'temperature',
+                                                'battery',
+                                                'data_len',
+                                                'thickness').all()
+        for item in datas:
+            response += item['network_id'] \
+                        + "        " \
+                        + item['time_tamp'] \
+                        + "      " \
+                        + item['gain'] \
+                        + "        " \
+                        + str(item['temperature']) \
+                        + "           " \
+                        + str(item['battery']) \
+                        + "           " \
+                        + str(item['data_len']) \
+                        + "           " \
+                        + str(item['thickness']) \
+                        + "        " \
+                        + item['data'] \
+                        + '\r\n'
+
+        with open('static/export_files/file_test.txt', 'wb') as f:
+            f.write(response.encode("utf-8"))
+            response = 'ok'
+
+        return HttpResponse(response)
 
 
 @login_required
@@ -752,10 +793,6 @@ try:
 except Exception as e:
     print(e)
     heart_sche.shutdown()
-
-
-def test(request):
-    return render(request, 'test.html')
 
 
 

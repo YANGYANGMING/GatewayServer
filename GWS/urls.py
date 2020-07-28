@@ -58,6 +58,4 @@ urlpatterns = [
     re_path(r'^judge-username-exist-json$', views.judge_username_exist_json),
 
 
-    re_path(r'^test$', views.test),
-
 ]

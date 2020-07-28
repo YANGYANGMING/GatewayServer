@@ -7,4 +7,3 @@ Pillow==6.2.1
 sklearn==0.0
 pypinyin
 aliyun-python-sdk-core-v3
-idna

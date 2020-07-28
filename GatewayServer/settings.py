@@ -83,6 +83,16 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'gws_test1',
+#         'USER': 'postgres',
+#         'PASSWORD': '123456',
+#         'HOST': '127.0.0.1',
+#         'PORT': '5432',
+#     }
+# }
 
 
 # Password validation
@@ -153,7 +163,7 @@ heart_time = {'minutes': 0, 'seconds': 30}
 
 # EMQ X SETTINGS
 # MQTT_HOST = "121.36.220.210"
-MQTT_HOST = "192.168.0.43"
+MQTT_HOST = "192.168.0.44"
 MQTT_USERNAME = 'ORISONIC'
 MQTT_PASSWORD = 'ORISONIC2020'
 
