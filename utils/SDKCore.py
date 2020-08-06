@@ -28,4 +28,4 @@ def send_sms(PhoneNumbers, sms_code):
 
     response = client.do_action_with_exception(request)
 
-    return json.loads(response)
+    return json.loads(str(response, encoding='utf-8'))

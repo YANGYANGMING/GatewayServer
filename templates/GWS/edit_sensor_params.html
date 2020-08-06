@@ -224,16 +224,16 @@
                   'Sample_depth': $("#modal-Sample-depth").val(),
                   'Sample_Hz': $("#modal-Sample-hz").val()
                 };
-          $('#set_sensor_params').text('参数设置中...');
+          $('#set_sensor_params').text('设置参数命令已加入队列中，请稍等...');
           $.ajax({
                url: '/GWS/set-sensor-params',
                type: 'POST',
                data: {'val_dict': JSON.stringify(val_dict)},
                dataType: 'JSON',
                success: function (arg) {
-                   if (arg.status === 'Sample_Hz_error'){
-                       $('#set_sensor_params').text(arg.msg);
-                   }
+                   {#if (arg.status === 'Sample_Hz_error'){#}
+                   {#    $('#set_sensor_params').text(arg.msg);#}
+                   {# }#}
                }
             });
           })

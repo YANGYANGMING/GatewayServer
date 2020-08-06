@@ -1,4 +1,4 @@
-import os, django, time, threading, random
+import os, django, time, threading, random, json
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "GatewayServer.settings")
 django.setup()
 
@@ -73,7 +73,7 @@ from GWS import models
 #     db_time_list.append(eval(item['received_time_data']))
 # print(db_time_list)
 
-# from queue import PriorityQueue
+from queue import PriorityQueue
 # from pypinyin import lazy_pinyin
 # dic = {}
 # generate_queue = locals()
@@ -95,8 +95,11 @@ from GWS import models
 # # print(generate_queue['queue_variable_name'])
 # # print(dic)
 # print(dic['zhongshiyou'].get())
-
-
+# pq = PriorityQueue()
+# pq.put((0, 'q'))
+# pq.put((-1, 'w'))
+# print(pq.get())
+# print(pq.get())
 
 # # product and consumer model
 # pq = PriorityQueue()
@@ -245,9 +248,23 @@ from GWS import models
 #
 # send_sms('17706248840', "1234")
 
-with open("static/export_files/file_test.txt", 'r') as f:
-    a = f.read()
-    print(a)
-
-
+# def struct_to_stamp(struct):
+#     timeArray = time.strptime(struct, "%Y-%m-%d %H:%M:%S")
+#     timeStamp = int(time.mktime(timeArray))
+#     return timeStamp
+#
+#
+# def stamp_to_struct(stamp):
+#     timeArray = time.localtime(stamp)
+#     struct_time = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
+#     return struct_time
+#
+#
+# latest_vals = models.Waveforms.objects.values('thickness', 'temperature', 'battery', 'time_tamp').filter(
+#     network_id='0.0.2.5')
+#
+# alarm_stamp_time = struct_to_stamp(latest_vals.last()['time_tamp']) + 600
+# alarm_struct_time = stamp_to_struct(alarm_stamp_time)
+a = ['q', 'w', 'e', 'r']
+print(a[-1])
 

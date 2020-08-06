@@ -27,6 +27,7 @@ def index(request):
     all_sensor_count = 0
     all_sensor_list = []
     all_alarm_sensor_list = []
+    all_alarm_sensor_list2 = []
     user_obj = models.UserProfile.objects.filter(name=request.user).first()
     gateway_obj = user_obj.gateway.all()
     gw_status = {'在线': 1, '离线': 0}
@@ -43,8 +44,9 @@ def index(request):
         sensor_run_status = {'开通': 1, '禁止': 0}
         sensor_online_status = {'在线': 1, '离线': 0}
         for sensor_item in sensor_obj_list:
-            alarm_sensor_list = handle_func.cal_alarm_val(sensor_item)
+            alarm_sensor_list, alarm_sensor_list2 = handle_func.cal_alarm_val(sensor_item)
             all_alarm_sensor_list += alarm_sensor_list
+            all_alarm_sensor_list2 += alarm_sensor_list2
         all_alarm_sensor_count = len(all_alarm_sensor_list)
         all_sensor_list += sensor_obj_list
     all_sensor_list_json = json.dumps(all_sensor_list)
@@ -94,7 +96,8 @@ def manual_config(request):
                 Enterprise = models.Gateway.objects.values('Enterprise').get(network_id=gateway_network_id)['Enterprise']
                 payload['network_id_list'] = [sensor_network_id]
                 payload['Enterprise'] = Enterprise
-                payload['level'] = 1
+                payload['level'] = 6
+                payload['true_header'] = 'gwdata'
                 # 加入队列
                 handle_func.handle_func_obj.send_network_id_to_queue(payload)
                 response = {'status': True, 'msg': "成功加入采样队列，请稍等..."}
@@ -154,7 +157,7 @@ def gateway_manage(request):
 
 
 @login_required
-# @permissions.check_permission
+@permissions.check_permission
 def edit_sensor_params(request):
     """
     传感器参数详情
@@ -326,7 +329,7 @@ def alarm_sensor_list(request):
     :return:
     """
     if request.method == 'POST':
-        all_alarm_sensor_list = eval(request.POST.get('all_alarm_sensor_list'))
+        all_alarm_sensor_list2 = eval(request.POST.get('all_alarm_sensor_list2'))
 
         return render(request, 'GWS/alarm_sensor_list.html', locals())
 
@@ -548,6 +551,7 @@ def send_server_data(request):
     if request.method == 'POST':
 
         server_data = handle_func.handle_img_and_data(request)
+        print('server_data', server_data)
 
         sensor_network_id = server_data['network_id']
 
@@ -561,9 +565,16 @@ def send_server_data(request):
 
         elif server_data['choice'] == 'add':
             print('增加.....')
-            send_data = {'id': 'server', 'header': 'add_sensor', 'data': server_data, 'user': str(request.user)}
-            print('send_data', send_data)
-            client.publish(gateway_network_id, json.dumps(send_data), 2)
+            # send_data = {'id': 'server', 'header': 'add_sensor', 'data': server_data, 'user': str(request.user)}
+            payload = {}
+            Enterprise = models.Gateway.objects.values('Enterprise').get(network_id=gateway_network_id)['Enterprise']
+            payload['receive_data'] = server_data
+            payload['network_id_list'] = [sensor_network_id]
+            payload['Enterprise'] = Enterprise
+            payload['level'] = 2
+            payload['true_header'] = 'add_sensor'
+            # 加入队列
+            handle_func.handle_func_obj.send_network_id_to_queue(payload)
 
         elif server_data['choice'] == 'remove':
             print('删除.....')
@@ -585,7 +596,7 @@ def thickness_json_report(request):
     response = {'datas': [{'name': '厚度值', 'data': []}]}
     try:
         alias = models.Sensor.objects.filter(network_id=network_id).values('alias')[0]['alias']
-        data_obj = list(models.Waveforms.objects.filter(network_id=network_id).values('id', 'time_tamp', 'thickness'))
+        data_obj = list(models.Waveforms.objects.filter(network_id=network_id).values('id', 'time_tamp', 'thickness').order_by('id'))
         thickness_avg = handle_func.cal_thickness_avg(data_obj)
         data_list = []
         for item in data_obj:
@@ -702,7 +713,7 @@ def set_gateway_json(request):
 
 @csrf_exempt
 @login_required
-# @permissions.check_permission
+@permissions.check_permission
 def set_sensor_params(request):
     """
     设置模态框中的传感器参数
@@ -721,9 +732,16 @@ def set_sensor_params(request):
     except Exception as e:
         print(e, '设置参数失败')
 
-    send_data = {'id': 'server', 'header': 'set_sensor_params', 'val_dict': val_dict, 'network_id': network_id, 'user': str(request.user)}
-    topic = network_id.rsplit('.', 1)[0] + '.0'
-    client.publish(topic, json.dumps(send_data), 2)
+    payload = {}
+    gateway_network_id = network_id.rsplit('.', 1)[0] + '.0'
+    Enterprise = models.Gateway.objects.values('Enterprise').get(network_id=gateway_network_id)['Enterprise']
+    payload['val_dict'] = val_dict
+    payload['network_id_list'] = [network_id]
+    payload['Enterprise'] = Enterprise
+    payload['level'] = 4
+    payload['true_header'] = 'set_sensor_params'
+    # 加入队列
+    handle_func.handle_func_obj.send_network_id_to_queue(payload)
 
     return HttpResponse(json.dumps(result))
 
@@ -751,7 +769,7 @@ def gateway_associated_sensors_json(request):
     except Exception as e:
         print(e)
 
-    return HttpResponse(json.dumps(response))\
+    return HttpResponse(json.dumps(response))
 
 
 @csrf_exempt

@@ -73,6 +73,8 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
             ('GWS_pause_sensor_view', '可以禁用传感器'),
             ('GWS_send_server_data_view', '可以对传感器进行增删改操作'),
             ('GWS_set_gateway_json_view', '可以更新网关'),
+            ('GWS_edit_sensor_params_view', '可以访问传感器参数页面'),
+            ('GWS_set_sensor_params_view', '可以设置传感器参数'),
             ('GWS_user_add_view', '可以访问增加用户页面'),
             ('GWS_user_add_save', '可以保存增加的用户信息'),
             ('GWS_user_edit_view', '可以访问编辑用户页面'),
@@ -154,10 +156,10 @@ class Sensor(models.Model):
     received_time_data = models.CharField(max_length=128)
     battery = models.CharField(max_length=32, default=100)
     cHz = models.CharField(max_length=32, default='2')
-    gain = models.CharField(max_length=32, default='60')
+    gain = models.CharField(max_length=32, default='72')
     avg_time = models.CharField(max_length=32, default='4')
-    Hz = models.CharField(max_length=32, default='2')
-    Sample_depth = models.CharField(max_length=32, default='2')
+    Hz = models.CharField(max_length=32, default='4')
+    Sample_depth = models.CharField(max_length=32, default='0')
     Sample_Hz = models.CharField(max_length=32, default='500')
     sensor_run_status_choices = ((0, '已禁用'),
                                  (1, '已开通'),

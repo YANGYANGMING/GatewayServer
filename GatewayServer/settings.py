@@ -142,22 +142,22 @@ STATICFILES_DIRS = [
 
 LOGIN_URL = '/login/'
 
-CMD_header = {
-    "get_data_manually": "get_data_manually",
-    "gwdata": "gwdata",
-    "gwntid": "gwntid",
-    "sync_sensors": "sync_sensors",
-    "update_sensor": "update_sensor",
-    "add_sensor": "add_sensor",
-    "remove_sensor": "remove_sensor",
-    "server_status": "server_status",
-    "update_gateway": "update_gateway",
-    "add_gateway": "add_gateway",
-    "heart_ping": "heart_ping",
-    "pause_sensor": "pause_sensor",
-    "resume_sensor": "resume_sensor",
-
-}
+# CMD_header = {
+#     "get_data_manually": "get_data_manually",
+#     "gwdata": "gwdata",
+#     "gwntid": "gwntid",
+#     "sync_sensors": "sync_sensors",
+#     "update_sensor": "update_sensor",
+#     "add_sensor": "add_sensor",
+#     "remove_sensor": "remove_sensor",
+#     "server_status": "server_status",
+#     "update_gateway": "update_gateway",
+#     "add_gateway": "add_gateway",
+#     "heart_ping": "heart_ping",
+#     "pause_sensor": "pause_sensor",
+#     "resume_sensor": "resume_sensor",
+#
+# }
 
 heart_time = {'minutes': 0, 'seconds': 30}
 
@@ -179,9 +179,9 @@ keyfile = "%s\client\MyClient1.key" % crtPath
 
 
 # aliyunsdkcore
-accessKeyId = "LTAI4GFZWVdSy1NcZQBVwYpu"
-accessSecret = "M1f91JauHHANpThCDgWM1o8eE6hspt"
-TemplateCode = "SMS_197610886"
+accessKeyId = "qwer"
+accessSecret = "qwer"
+TemplateCode = "qwer"
 
 
 

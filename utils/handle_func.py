@@ -17,6 +17,8 @@ from pypinyin import lazy_pinyin
 # views视图需要用到的返回数据值
 update_gw_payload = {}
 add_gw_payload = {}
+add_sensor_payload = {}
+set_sensor_params_payload = {}
 recv_gwdata_payload = {}
 pause_payload = {}
 resume_payload = {}
@@ -129,6 +131,8 @@ class HandleFunc(object):
                 models.Sensor.objects.create(**payload['receive_data'])
         # Log
         views.log.log(payload['status'], payload['msg'], payload['receive_data']['network_id'], payload['user'])
+        global add_gw_payload
+        add_gw_payload = payload
 
     def remove_sensor(self, payload):
         """
@@ -245,15 +249,18 @@ class HandleFunc(object):
             params_dict = payload['params_dict']
             models.Sensor.objects.filter(network_id=network_id).update(**params_dict)
         # Log
-        views.log.log(payload['status'], payload['msg'], payload['network_id'], payload['user'])
+        views.log.log(payload['status'], payload['msg'], payload['network_id'])
+        global set_sensor_params_payload
+        set_sensor_params_payload = payload
 
     def send_network_id_to_queue(self, payload):
         """
-        把接收网关发送过来的要采样的network_id加入队列中，
+        把接收网关/服务器发送过来的要采样的network_id加入队列中，
         如果该公司没有队列，则动态生成该公司的队列对象
         :param payload:
         :return:
         """
+        true_header = payload['true_header']
         network_id_list = payload['network_id_list']
         Enterprise = payload['Enterprise']
         level = payload['level']
@@ -264,10 +271,14 @@ class HandleFunc(object):
             generate_queue[queue_obj_name] = PriorityQueue()
             threading.Thread(target=send_to_gw, args=(generate_queue[queue_obj_name],)).start()
         queue_obj = generate_queue.get(queue_obj_name)
+
         # 把network_id_list中的network_id放到队列
+        print('network_id_list', network_id_list)
         for network_id in network_id_list:
-            queue_obj.put((level, network_id))
-        print(queue_obj.queue)
+            queue_obj.put((level, json.dumps({"network_id": network_id,
+                                   "true_header": true_header,
+                                   "val_dict": payload.get('val_dict', {}),
+                                   "receive_data": payload.get('receive_data', {})})))
 
 
 def send_to_gw(queue_obj):
@@ -277,30 +288,78 @@ def send_to_gw(queue_obj):
     :return:
     """
     while True:
-        print(queue_obj.queue)
-        network_id = queue_obj.get()[1]
-        print('取队列数据。。。', time.time())
+        q_obj = queue_obj.get()
+        print('q_obj=====', q_obj)
+        q1 = json.loads(q_obj[1])
+        print('queue_obj', queue_obj.queue)
+        network_id = q1["network_id"]
+        true_header = q1["true_header"]
+        print('network_id', network_id)
+        print('true_header', true_header)
+        print('取队列数据。。。', network_id)
         topic = network_id.rsplit('.', 1)[0] + '.0'
         print(network_id)
-        send_data = {'id': 'server', 'header': 'get_data', 'data': network_id}
-        client.publish(topic, json.dumps(send_data), 2)
-        recv_gwdata_start_time = time.time()
-        # 接收到网关处理好的结果，用于把操作返回的信息展示到页面
-        global recv_gwdata_payload
-        recv_gwdata_payload = {}  # 接收之前先清除payload中的缓存数据
-        while (time.time() - recv_gwdata_start_time) < 60:
-            time.sleep(0.5)
-            if recv_gwdata_payload:
-                break
-        if not recv_gwdata_payload:
-            # 超时时间到，未返回任何数据，则显示采样失败信息，网关未响应
-            send_data = {'id': 'client', 'header': 'gwdata', 'status': False, 'msg': '[%s]获取失败，网关未响应。' % network_id}
+        print('true_header', true_header)
+        if true_header == "gwdata":
+            send_data = {'id': 'server', 'header': 'get_data', 'data': network_id}
             client.publish(topic, json.dumps(send_data), 2)
-            # Log
-            views.log.log(send_data['status'], send_data['msg'], network_id)
-        else:
-            # Log
-            views.log.log(recv_gwdata_payload['status'], recv_gwdata_payload['msg'], network_id)
+            recv_gwdata_start_time = time.time()
+            # 接收到网关处理好的结果，用于把操作返回的信息展示到页面
+            global recv_gwdata_payload
+            recv_gwdata_payload = {}  # 接收之前先清除payload中的缓存数据
+            while (time.time() - recv_gwdata_start_time) < 60:
+                time.sleep(0.5)
+                if recv_gwdata_payload:
+                    break
+            if not recv_gwdata_payload:
+                # 超时时间到，未返回任何数据，则显示采样失败信息，网关未响应
+                send_data = {'id': 'client', 'header': true_header, 'status': False, 'msg': '[%s]获取失败，网关未响应。' % network_id}
+                client.publish(topic, json.dumps(send_data), 2)
+                # Log
+                views.log.log(send_data['status'], send_data['msg'], network_id)
+            else:
+                # Log
+                views.log.log(recv_gwdata_payload['status'], recv_gwdata_payload['msg'], network_id)
+        elif true_header == "set_sensor_params":
+            send_data = {'id': 'server', 'header': true_header, 'val_dict': q1['val_dict'], 'network_id': network_id}
+            client.publish(topic, json.dumps(send_data), 2)
+            set_sensor_params_start_time = time.time()
+            # 接收到网关处理好的结果，用于把操作返回的信息展示到页面
+            global set_sensor_params_payload
+            set_sensor_params_payload = {}  # 接收之前先清除payload中的缓存数据
+            while (time.time() - set_sensor_params_start_time) < 8:
+                time.sleep(0.5)
+                if set_sensor_params_payload:
+                    break
+            if not set_sensor_params_payload:
+                # 超时时间到，未返回任何数据，则显示采样失败信息，网关未响应
+                send_data = {'id': 'client', 'header': 'set_sensor_params', 'status': False, 'msg': '[%s]设置参数失败，网关未响应。' % network_id}
+                client.publish(topic, json.dumps(send_data), 2)
+                # Log
+                views.log.log(send_data['status'], send_data['msg'], network_id)
+            else:
+                # Log
+                views.log.log(set_sensor_params_payload['status'], set_sensor_params_payload['msg'], network_id)
+        elif true_header == "add_sensor":
+            send_data = {'id': 'server', 'header': true_header, 'data': q1['receive_data'], 'network_id': network_id}
+            client.publish(topic, json.dumps(send_data), 2)
+            add_sensor_start_time = time.time()
+            # 接收到网关处理好的结果，用于把操作返回的信息展示到页面
+            global add_sensor_payload
+            add_sensor_payload = {}  # 接收之前先清除payload中的缓存数据
+            while (time.time() - add_sensor_start_time) < 6:
+                time.sleep(0.5)
+                if add_sensor_payload:
+                    break
+            if not add_sensor_payload:
+                # 超时时间到，未返回任何数据，则显示采样失败信息，网关未响应
+                send_data = {'id': 'client', 'header': 'add_sensor', 'status': False, 'msg': '[%s]添加传感器失败，网关未响应。' % network_id}
+                client.publish(topic, json.dumps(send_data), 2)
+                # Log
+                views.log.log(send_data['status'], send_data['msg'], network_id)
+            else:
+                # Log
+                views.log.log(add_sensor_payload['status'], add_sensor_payload['msg'], network_id)
 
 
 class HandleImgs(object):
@@ -437,11 +496,12 @@ def corrosion_rate(network_id):
     data_list = [item for item in data_list if item['thickness'] != 0.0]
 
     if data_list:
-        first_time_tamp = datetime.strptime(data_list[0]['time_tamp'], "%Y-%m-%d %H:%M:%S").timestamp()
-        latest_struct_time = data_list[-1:][0]['time_tamp']
-        if int(timestamp(latest_struct_time, first_time_tamp)) > 14:  # 如果采集数据的天数不少于15天，则可以计算腐蚀率
+        first_struct_time = data_list[0]['time_tamp']
+        latest_struct_time = data_list[-1]['time_tamp']
+        print(timestamp(latest_struct_time, first_struct_time))
+        if int(timestamp(latest_struct_time, first_struct_time)) > 14:  # 如果采集数据的天数不少于15天，则可以计算腐蚀率
             y = np.array([item['thickness'] for item in data_list])
-            x = np.array([timestamp(item['time_tamp'], first_time_tamp) for item in data_list])
+            x = np.array([timestamp(item['time_tamp'], first_struct_time) for item in data_list])
             corrosion_rate = skl_func(x, y)
             # plt.legend(loc="upper left")
             # plt.show()
@@ -470,14 +530,15 @@ def skl_func(x, y):
     return lr.coef_
 
 
-def timestamp(struct_time, first_time_tamp):
+def timestamp(latest_struct_time, first_struct_time):
     """
     结构化时间转成时间戳，计算与第一天的间隔时间，单位为天
     :param struct_time:
     :return:
     """
-    time_stamp = datetime.strptime(struct_time, "%Y-%m-%d %H:%M:%S").timestamp()
-    x = (time_stamp - first_time_tamp) / (3600 * 24)
+    first_struct_time = datetime.strptime(first_struct_time, "%Y-%m-%d %H:%M:%S").timestamp()
+    latest_struct_time = datetime.strptime(latest_struct_time, "%Y-%m-%d %H:%M:%S").timestamp()
+    x = (latest_struct_time - first_struct_time) / (3600 * 24)
     return x
 
 
@@ -504,6 +565,7 @@ def cal_alarm_val(sensor_item):
     :return:
     """
     alarm_sensor_list = []
+    alarm_sensor_list2 = []
     alias = sensor_item['alias']
     network_id = sensor_item['network_id']
     alarm_thickness = sensor_item['alarm_thickness'] if sensor_item['alarm_thickness'] else 0
@@ -515,12 +577,16 @@ def cal_alarm_val(sensor_item):
 
     if latest_vals:
         if not sensor_item['sensor_online_status']:
+            alarm_stamp_time = struct_to_stamp(latest_vals.last()['time_tamp']) + 600  # 表示在最后一次取数10分钟后掉线
+            alarm_struct_time = stamp_to_struct(alarm_stamp_time)
             alarm_sensor_list.append(
                 {alias: {'报警信息：': '传感器离线！',
                          '报警信息1：': '/',
                          '报警信息2：': '/',
-                          '报警时间：': '/',
+                         '报警时间：': alarm_struct_time,
                          'network_id': network_id}})
+            alarm_sensor_list2.append(
+                {alias: ['传感器离线！', '/', '/', alarm_struct_time, network_id]})
         if latest_vals.last()['thickness'] < alarm_thickness:
             alarm_sensor_list.append(
                 {alias: {'报警信息：': '厚度报警！（mm）',
@@ -528,6 +594,9 @@ def cal_alarm_val(sensor_item):
                          '当前厚度（mm）：': latest_vals.last()['thickness'],
                           '报警时间：': latest_vals.last()['time_tamp'],
                          'network_id': network_id}})
+            alarm_sensor_list2.append(
+                    {alias: ['厚度报警！（mm）', alarm_thickness, latest_vals.last()['thickness'],
+                             latest_vals.last()['time_tamp'], network_id]})
         if latest_vals.last()['battery'] < alarm_battery:
             alarm_sensor_list.append(
                 {alias: {'报警信息：': '电量报警！（%）',
@@ -535,6 +604,9 @@ def cal_alarm_val(sensor_item):
                          '当前电量（%）：': latest_vals.last()['battery'],
                          '报警时间：': latest_vals.last()['time_tamp'],
                          'network_id': network_id}})
+            alarm_sensor_list2.append(
+                {alias: ['电量报警！（%）', alarm_battery, latest_vals.last()['battery'], latest_vals.last()['time_tamp'],
+                         network_id]})
         if latest_vals.last()['temperature'] > alarm_temperature:
             alarm_sensor_list.append(
                 {alias: {'报警信息：': '温度报警！（℃）',
@@ -542,6 +614,9 @@ def cal_alarm_val(sensor_item):
                          '当前温度（℃）：': latest_vals.last()['temperature'],
                          '报警时间：': latest_vals.last()['time_tamp'],
                          'network_id': network_id}})
+            alarm_sensor_list2.append(
+                    {alias: ['温度报警！（℃）', alarm_temperature, latest_vals.last()['temperature'],
+                             latest_vals.last()['time_tamp'], network_id]})
         if latest_corrosion != '需要更多数据！' and latest_corrosion > alarm_corrosion:
             alarm_sensor_list.append(
                 {alias: {'报警信息：': '腐蚀率报警！（mm/年）',
@@ -549,8 +624,35 @@ def cal_alarm_val(sensor_item):
                          '当前腐蚀率（mm/年）：': latest_corrosion,
                          '报警时间：': latest_vals.last()['time_tamp'],
                          'network_id': network_id}})
+            alarm_sensor_list2.append(
+                    {alias: ['腐蚀率报警！（mm/年）', alarm_corrosion, latest_corrosion, latest_vals.last()['time_tamp'],
+                             network_id]})
 
-    return alarm_sensor_list
+    return alarm_sensor_list, alarm_sensor_list2
+
+
+def struct_to_stamp(struct):
+    """
+    字符串结构化时间转时间戳
+    2020-06-24 14:01:24 >> 1592978484
+    :param struct:
+    :return:
+    """
+    timeArray = time.strptime(struct, "%Y-%m-%d %H:%M:%S")
+    timeStamp = int(time.mktime(timeArray))
+    return timeStamp
+
+
+def stamp_to_struct(stamp):
+    """
+    时间戳转字符串结构化时间
+    1592978484 >> 2020-06-24 14:01:24
+    :param stamp:
+    :return:
+    """
+    timeArray = time.localtime(stamp)
+    struct_time = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
+    return struct_time
 
 
 def judge_user_id(request, nid):

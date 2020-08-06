@@ -229,7 +229,7 @@
 
         function AddSave() {
             {#ShowLoading();#}
-             $('#add_sensor').html('正在增加数据，请稍等...');
+             $('#add_sensor').html('命令已加入队列，请稍等...');
 
             var fd = new FormData();
 
@@ -262,7 +262,7 @@
             if (received_time_data.days === '0' && received_time_data.hours === '0' && received_time_data.minutes === '0') {
                 $('#add_sensor').html('时间不合法！');
             }else{
-                SetTimeToShowTimeOutMSG("add_sensor", gwntid);
+                {#SetTimeToShowTimeOutMSG("add_sensor", gwntid);#}
                 $.ajax({
                     url: '/GWS/send-server-data',
                     type:'POST',

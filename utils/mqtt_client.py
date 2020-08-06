@@ -15,13 +15,13 @@ class MQTTClient(object):
         self.client.on_message = self.on_message
         self.client.on_subscribe = self.on_subscribe
         # self.client.on_log = self.on_log
-        self.client.tls_set(ca_certs=settings.ca_certs,
-                            certfile=settings.certfile,
-                            keyfile=settings.keyfile
-                            )
-        self.client.tls_insecure_set(True)
-        self.client.connect(settings.MQTT_HOST, 8883, 30)
-        # self.client.connect(settings.MQTT_HOST, 1883, 30)
+        # self.client.tls_set(ca_certs=settings.ca_certs,
+        #                     certfile=settings.certfile,
+        #                     keyfile=settings.keyfile
+        #                     )
+        # self.client.tls_insecure_set(True)
+        # self.client.connect(settings.MQTT_HOST, 8883, 30)
+        self.client.connect(settings.MQTT_HOST, 1883, 30)
         self.client.loop_start()
     
     def on_connect(self, client, userdata, flags, rc):
