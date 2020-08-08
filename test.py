@@ -265,6 +265,38 @@ from queue import PriorityQueue
 #
 # alarm_stamp_time = struct_to_stamp(latest_vals.last()['time_tamp']) + 600
 # alarm_struct_time = stamp_to_struct(alarm_stamp_time)
-a = ['q', 'w', 'e', 'r']
-print(a[-1])
+
+# from django.db.models import Q
+#
+# search_key = "1号传感器 2020-08-06"
+# querysets = models.Waveforms.objects.values('id', 'network_id__network_id', 'network_id__alias', 'battery',
+#                                                     'time_tamp', 'thickness', 'temperature').all()
+# def query_filter(search_key, querysets):
+#     q = Q()
+#     q.connector = "OR"
+#     filter_field = ['network_id__network_id', 'network_id__alias', 'time_tamp', 'temperature', 'battery',
+#                     'thickness']
+#     search_key = search_key.split(' ')
+#     for filter_item in filter_field:
+#         for search_key_item in search_key:
+#             # q.children.append(("%s__contains" % filter_item, search_key))
+#             # test = querysets.filter(Q(filter_item__contains=search_key_item) & Q(publish_date__year=2018))
+#             test = querysets.filter(Q(network_id__alias__contains='1号传感器') & Q(time_tamp__contains='2020-08-06'))
+#
+#     print(q)
+#     print(type(q))
+#     result = querysets.filter(q)
+#
+#     return result
+#
+# result = query_filter(search_key, querysets)
+# print(result)
+
+user_obj = models.UserProfile.objects.filter(name="Orisonic")
+if user_obj.values('role__name')[0]['role__name'] == "超级管理员":
+    gateway_obj = models.Gateway.objects.values('name', 'network_id')
+else:
+    gateway_obj = user_obj.first().gateway.values()
+
+print(gateway_obj)
 

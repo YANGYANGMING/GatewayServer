@@ -289,17 +289,11 @@ def send_to_gw(queue_obj):
     """
     while True:
         q_obj = queue_obj.get()
-        print('q_obj=====', q_obj)
+        print('取队列数据。。。', q_obj)
         q1 = json.loads(q_obj[1])
-        print('queue_obj', queue_obj.queue)
         network_id = q1["network_id"]
         true_header = q1["true_header"]
-        print('network_id', network_id)
-        print('true_header', true_header)
-        print('取队列数据。。。', network_id)
         topic = network_id.rsplit('.', 1)[0] + '.0'
-        print(network_id)
-        print('true_header', true_header)
         if true_header == "gwdata":
             send_data = {'id': 'server', 'header': 'get_data', 'data': network_id}
             client.publish(topic, json.dumps(send_data), 2)

@@ -10,80 +10,42 @@
               <h3 class="box-title">{{ request.user }}个人信息</h3>
             </div>
             <!-- /.box-header -->
-            <!-- form start -->
 
-          <form class="form-horizontal" action="" method="post">
-              <div class="box-body col-md-6">
-                <div class="form-group">
-                  <label for="inputEmail3" class="col-sm-2 control-label">姓名</label>
-                  <div class="col-sm-5">
-                    {{ form.name }}
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label for="inputPassword3" class="col-sm-2 control-label">角色</label>
-
-                  <div class="col-sm-5">
-                    {{ form.role }}
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label for="inputPassword3" class="col-sm-2 control-label">最近登录时间</label>
-
-                  <div class="col-sm-5">
-                    {{ form.last_login }}
-                  </div>
-                </div>
-                  <div class="form-group">
-                    <a class="btn btn-info col-md-offset-1 col-xs-offset-1" href="/GWS/change-pwd">修改密码</a>
-                    <a href="javascript:history.go(-1);" type="submit" class="btn btn-default col-md-offset-4">返回</a>
-                  </div>
-
-              </div>
-              <!-- /.box-body -->
-              <div class="form-group">
-
-              </div>
-              <!-- /.box-footer -->
-            </form>
-
-{#            <form class="" action="" method="POST">#}
-{#              <div class="box-body">#}
-{#                  <div class="row">#}
-{#                      <div class="col-md-6">#}
-{#                          <label>name</label>#}
-{#                          {{ form.name }}#}
-{#                      </div>#}
-{#                  </div>#}
-{#                  <div class="row">#}
-{#                      <div class="col-md-6">#}
-{#                          <label>role</label>#}
-{#                          {{ form.role }}#}
-{#                      </div>#}
-{#                  </div>#}
-{#                  <div class="row">#}
-{#                      <div class="form-group col-md-6">#}
-{#                          <label>last_login</label>#}
-{#                          {{ form.last_login }}#}
-{#                      </div>#}
-{#                  </div>#}
-{##}
-{#                  <div class="row">#}
-{#                      <div class="form-group col-md-offset-1 col-xs-offset-1">#}
-{#                        <a class="btn btn-info" href="/GWS/change-pwd">修改密码</a>#}
-{#                        <a href="javascript:history.go(-1);" type="submit" class="btn btn-default col-md-offset-4">返回</a>#}
-{#                    </div>#}
-{#                  </div>#}
-{##}
-{#              </div>#}
-{#              <!-- /.box-body -->#}
-{#              <div class="form-group">#}
-{##}
-{#              </div>#}
-{#              <!-- /.box-footer -->#}
-{#            </form>#}
-
+          <div class="box-body">
+                <div class="row">
+                <form method="post">{% csrf_token %}
+                    <div class="col-xs-12 col-md-6 col-md-offset-1">
+                        <div class="form-group">
+                            <label for="name">姓名</label>
+                            <input type="text" class="form-control" name="name" id="name" value="{{ obj.name }}"  onblur="JudgeExist()">
+                            <p id="name-msg" style="color: red;"></p>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-6 col-md-offset-1">
+                        <div class="form-group">
+                            <label for="role">角色</label>
+                            <input type="text" class="form-control" name="role" id="role" value="{{ obj.role__name }}" disabled>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-6 col-md-offset-1">
+                        <div class="form-group">
+                            <label for="name">最近登陆</label>
+                            <input type="text" class="form-control" name="name" id="name" value="{{ obj.last_login }}" disabled>
+                        </div>
+                    </div>
+                    <div  class="col-xs-12 col-md-6 col-md-offset-1">
+                        <div class="form-group">
+                            <a class="btn btn-info " href="/GWS/change-pwd">修改密码</a>
+                            <button type="submit" class="btn btn-info col-md-offset-5 col-xs-offset-5">修改姓名</button>
+                            <a href="javascript:history.go(-1);" type="submit" class="btn btn-default col-md-offset-1 col-xs-offset-1">返回</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
           </div>
+
+
+      </div>
 
 
     </section>
@@ -93,6 +55,20 @@
 
 {% block script %}
     <script>
+
+    function JudgeExist() {
+            var name = $('#name').val();
+            $.ajax({
+                url: '/GWS/judge-username-exist-json',
+                data: {'name': name, 'previous_name': "{{ request.user }}"},
+                type: 'POST',
+                dataType: 'JSON',
+                success: function (arg) {
+                    $('#name-msg').html(arg.msg)
+                }
+            })
+
+        }
 
 
 

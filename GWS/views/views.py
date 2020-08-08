@@ -28,8 +28,17 @@ def index(request):
     all_sensor_list = []
     all_alarm_sensor_list = []
     all_alarm_sensor_list2 = []
-    user_obj = models.UserProfile.objects.filter(name=request.user).first()
-    gateway_obj = user_obj.gateway.all()
+
+
+    # user_obj = models.UserProfile.objects.filter(name=request.user)
+    # if user_obj.values('role__name')[0]['role__name'] == "超级管理员":
+    #     gateway_obj = models.Gateway.objects.all()
+    # else:
+    #     gateway_obj = user_obj.first().gateway.all()
+
+    gateway_obj = get_gateway_obj(request)
+
+
     gw_status = {'在线': 1, '离线': 0}
     for gw_item in gateway_obj:
         sensor_count = models.Sensor.objects.filter(gateway=gw_item, delete_status=0).count()
@@ -54,6 +63,27 @@ def index(request):
     return render(request, 'index.html', locals())
 
 
+def get_gateway_obj(request, name=None, network_id=None):
+    """
+    获取网关对象
+    :param request:
+    :return:
+    """
+    user_obj = models.UserProfile.objects.filter(name=request.user)
+    if user_obj.values('role__name')[0]['role__name'] == "超级管理员":
+        if name and network_id:
+            gateway_obj = models.Gateway.objects.values(name, network_id)
+        else:
+            gateway_obj = models.Gateway.objects.all()
+    else:
+        if name and network_id:
+            gateway_obj = user_obj.first().gateway.values(name, network_id)
+        else:
+            gateway_obj = user_obj.first().gateway.all()
+
+    return gateway_obj
+
+
 @csrf_exempt
 @permissions.check_permission
 @login_required
@@ -66,8 +96,13 @@ def manual_config(request):
     if request.method == 'GET':
         last_time_gwntid = request.session.get('gwntid_and_snrntid', {'gw': '', 'snr': ''})['gw']
         last_time_snrntid = request.session.get('gwntid_and_snrntid', {'gw': '', 'snr': ''})['snr']
-        user_obj = models.UserProfile.objects.filter(name=request.user).first()
-        gateway_obj = user_obj.gateway.all().values('name', 'network_id')
+        # user_obj = models.UserProfile.objects.filter(name=request.user)
+        # if user_obj.values('role__name')[0]['role__name'] == "超级管理员":
+        #     gateway_obj = models.Gateway.objects.values('name', 'network_id')
+        # else:
+        #     gateway_obj = user_obj.first().gateway.values('name', 'network_id')
+
+        gateway_obj = get_gateway_obj(request, name='name', network_id='network_id')
 
         latest_data = []
         for gateway_item in gateway_obj:
@@ -124,8 +159,14 @@ def sensor_manage(request):
         material = models.Material.objects.values('id', 'name').all().order_by('id')
         sensor_run_status = {'开通': 1, '禁止': 0}
         sensor_online_status = {'在线': 1, '离线': 0}
-        user_obj = models.UserProfile.objects.filter(name=request.user).first()
-        gateway_obj = user_obj.gateway.all().values('network_id', 'name')
+        # user_obj = models.UserProfile.objects.filter(name=request.user)
+        # if user_obj.values('role__name')[0]['role__name'] == "超级管理员":
+        #     gateway_obj = models.Gateway.objects.values('network_id', 'name')
+        # else:
+        #     gateway_obj = user_obj.first().gateway.values('network_id', 'name')
+
+        gateway_obj = get_gateway_obj(request, name='name', network_id='network_id')
+
         for gateway_item in gateway_obj:
             gw_network_id = gateway_item['network_id']
             gw_name = gateway_item['name']
@@ -148,8 +189,12 @@ def gateway_manage(request):
     :return:
     """
     if request.method == 'GET':
-        user_obj = models.UserProfile.objects.filter(name=request.user).first()
-        gateway_obj = user_obj.gateway.all()
+        # user_obj = models.UserProfile.objects.filter(name=request.user)
+        # if user_obj.values('role__name')[0]['role__name'] == "超级管理员":
+        #     gateway_obj = models.Gateway.objects.all()
+        # else:
+        #     gateway_obj = user_obj.first().gateway.all()
+        gateway_obj = get_gateway_obj(request)
         print(gateway_obj)
         gw_status = {'在线': 1, '离线': 0}
 
@@ -172,8 +217,14 @@ def edit_sensor_params(request):
         "Sample_depth": [Sample_depth for Sample_depth in range(0, 3)],
         "Sample_Hz": [200, 5000],
     }
-    user_obj = models.UserProfile.objects.filter(name=request.user).first()
-    gateway_obj = user_obj.gateway.all().values('network_id', 'name')
+    # user_obj = models.UserProfile.objects.filter(name=request.user)
+    # if user_obj.values('role__name')[0]['role__name'] == "超级管理员":
+    #     gateway_obj = models.Gateway.objects.values('network_id', 'name')
+    # else:
+    #     gateway_obj = user_obj.first().gateway.values('network_id', 'name')
+
+    gateway_obj = get_gateway_obj(request, name='name', network_id='network_id')
+
     all_sensor_list = []
     last_sample_time_list = []
     for gateway_item in gateway_obj:
@@ -204,8 +255,14 @@ def all_data_report(request):
         order_column_rule = request.POST.get('order[0][dir]')  # 排序规则：ase/desc
 
         # 查找当前用户所拥有的网关和传感器
-        user_obj = models.UserProfile.objects.filter(name=request.user).first()
-        gateway_obj = user_obj.gateway.all().values('network_id')
+        # user_obj = models.UserProfile.objects.filter(name=request.user)
+        # if user_obj.values('role__name')[0]['role__name'] == "超级管理员":
+        #     gateway_obj = models.Gateway.objects.values('network_id')
+        # else:
+        #     gateway_obj = user_obj.first().gateway.values('network_id')
+
+        gateway_obj = get_gateway_obj(request, name='name', network_id='network_id')
+
         all_sensor_list = []
         for gateway_item in gateway_obj:
             gw_network_id = gateway_item['network_id']
@@ -263,8 +320,14 @@ def thickness_report(request):
     """
     data_obj = models.Waveforms.objects.values('network_id', 'network_id__alias').distinct()
     print(data_obj)
-    user_obj = models.UserProfile.objects.filter(name=request.user).first()
-    gateway_obj = user_obj.gateway.all().values('name', 'network_id')
+    # user_obj = models.UserProfile.objects.filter(name=request.user)
+    # if user_obj.values('role__name')[0]['role__name'] == "超级管理员":
+    #     gateway_obj = models.Gateway.objects.values('network_id', 'name')
+    # else:
+    #     gateway_obj = user_obj.first().gateway.values('network_id', 'name')
+
+    gateway_obj = get_gateway_obj(request, name='name', network_id='network_id')
+
     return render(request, 'GWS/thickness_report.html', locals())
 
 
@@ -275,8 +338,14 @@ def corrosion_rate_list(request):
     :param request:
     :return:
     """
-    user_obj = models.UserProfile.objects.filter(name=request.user).first()
-    gateway_obj = user_obj.gateway.all().values('network_id', 'name')
+    # user_obj = models.UserProfile.objects.filter(name=request.user)
+    # if user_obj.values('role__name')[0]['role__name'] == "超级管理员":
+    #     gateway_obj = models.Gateway.objects.values('network_id', 'name')
+    # else:
+    #     gateway_obj = user_obj.first().gateway.values('network_id', 'name')
+
+    gateway_obj = get_gateway_obj(request, name='name', network_id='network_id')
+
     material_list = models.Material.objects.values('id', 'name').all().order_by('id')
     all_sensor_list = []
     for gateway_item in gateway_obj:
@@ -303,8 +372,14 @@ def add_sensor(request, network_id):
     :param request:
     :return:
     """
-    user_obj = models.UserProfile.objects.filter(name=request.user).first()
-    gateway_obj = user_obj.gateway.all().values('name', 'network_id')
+    # user_obj = models.UserProfile.objects.filter(name=request.user)
+    # if user_obj.values('role__name')[0]['role__name'] == "超级管理员":
+    #     gateway_obj = models.Gateway.objects.values('network_id', 'name')
+    # else:
+    #     gateway_obj = user_obj.first().gateway.values('network_id', 'name')
+
+    gateway_obj = get_gateway_obj(request, name='name', network_id='network_id')
+
     sensor_obj = models.Sensor.objects.first()
     sensor_type = {'ETM-100': 0}
     Importance = {'一般': 0, '重要': 1}

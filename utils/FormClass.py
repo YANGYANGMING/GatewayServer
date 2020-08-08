@@ -17,17 +17,6 @@ class ChangepwdForm(forms.Form):
     new_pwd_confirm = fields.CharField(label='重复新密码', max_length=32, widget=wid.PasswordInput(attrs={'class': 'form-control'}))
 
 
-class UserProfileForm(forms.Form):
-    email = fields.CharField(label='邮箱', max_length=32,
-                             widget=wid.EmailInput(attrs={'class': 'form-control col-lg-offset-1'}))
-    name = fields.CharField(label='用户名', max_length=32,
-                            widget=wid.TextInput(attrs={'class': 'form-control col-lg-offset-1'}))
-    role = fields.CharField(label='角色', max_length=32,
-                            widget=wid.TextInput(attrs={'class': 'form-control col-lg-offset-1'}))
-    last_login = fields.CharField(label='最后登录时间', max_length=32,
-                                  widget=wid.TextInput(attrs={'class': 'form-control col-lg-offset-1'}))
-
-
 class UserEditForm(ModelForm):
     class Meta:
         model = models.UserProfile  # 对应的Model中的类

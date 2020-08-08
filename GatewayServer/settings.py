@@ -179,10 +179,9 @@ keyfile = "%s\client\MyClient1.key" % crtPath
 
 
 # aliyunsdkcore
-accessKeyId = "qwer"
-accessSecret = "qwer"
-TemplateCode = "qwer"
-
+accessKeyId = "LTAI4GFZWVdSy1NcZQBVwYpu"
+accessSecret = "M1f91JauHHANpThCDgWM1o8eE6hspt"
+TemplateCode = "SMS_197610886"
 
 
 # 错误日志
