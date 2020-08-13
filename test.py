@@ -292,11 +292,21 @@ from queue import PriorityQueue
 # result = query_filter(search_key, querysets)
 # print(result)
 
-user_obj = models.UserProfile.objects.filter(name="Orisonic")
-if user_obj.values('role__name')[0]['role__name'] == "超级管理员":
-    gateway_obj = models.Gateway.objects.values('name', 'network_id')
-else:
-    gateway_obj = user_obj.first().gateway.values()
+days_interval = 7
+days_interval_time_stamp = (days_interval - 1) * 24 * 60 * 60
+latest_struct_time = models.Waveforms.objects.filter(network_id='0.0.2.1').values('time_tamp', 'thickness').order_by('-id').first()
+print(latest_struct_time['time_tamp'])
+latest_stamp_time = datetime.strptime(latest_struct_time['time_tamp'], "%Y-%m-%d %H:%M:%S").timestamp()
+first_stamp_time = latest_stamp_time - days_interval_time_stamp
+timeArray = time.localtime(first_stamp_time)
+first_struct_time = time.strftime("%Y-%m-%d", timeArray)
+print(first_struct_time)
+data_list = models.Waveforms.objects.filter(network_id='0.0.2.1',
+                                            time_tamp__gte=first_struct_time,
+                                            time_tamp__lte=latest_struct_time,
+                                            ).values('time_tamp', 'thickness')
+print(data_list)
+print(data_list.count())
 
-print(gateway_obj)
+
 

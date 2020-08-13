@@ -83,6 +83,7 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -163,7 +164,7 @@ heart_time = {'minutes': 0, 'seconds': 30}
 
 # EMQ X SETTINGS
 # MQTT_HOST = "121.36.220.210"
-MQTT_HOST = "192.168.0.44"
+MQTT_HOST = "127.0.0.1"
 MQTT_USERNAME = 'ORISONIC'
 MQTT_PASSWORD = 'ORISONIC2020'
 
@@ -179,9 +180,9 @@ keyfile = "%s\client\MyClient1.key" % crtPath
 
 
 # aliyunsdkcore
-accessKeyId = "LTAI4GFZWVdSy1NcZQBVwYpu"
-accessSecret = "M1f91JauHHANpThCDgWM1o8eE6hspt"
-TemplateCode = "SMS_197610886"
+accessKeyId = "accessKeyId"
+accessSecret = "accessSecret"
+TemplateCode = "TemplateCode"
 
 
 # 错误日志

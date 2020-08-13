@@ -54,6 +54,7 @@ urlpatterns = [
 
     re_path(r'^thickness-json-report$', views.thickness_json_report),
     re_path(r'^corrosion-rate-json-report$', views.corrosion_rate_json_report),
+    re_path(r'^conform-corrosion-interval-json$', views.conform_corrosion_interval_json),
 
     re_path(r'^judge-username-exist-json$', views.judge_username_exist_json),
 

@@ -344,6 +344,11 @@ def corrosion_rate_list(request):
     # else:
     #     gateway_obj = user_obj.first().gateway.values('network_id', 'name')
 
+    days_interval = int(request.session.get('days_interval'))
+    if not days_interval:
+        days_interval = 0
+    print('days_interval', days_interval)
+
     gateway_obj = get_gateway_obj(request, name='name', network_id='network_id')
 
     material_list = models.Material.objects.values('id', 'name').all().order_by('id')
@@ -356,7 +361,7 @@ def corrosion_rate_list(request):
         for item in sensor_list:
             network_id = item['network_id']
             # 计算腐蚀速率
-            corrosion_rate = handle_func.corrosion_rate(network_id)
+            corrosion_rate = handle_func.corrosion_rate(network_id, days_interval)
             item['corrosion_rate'] = corrosion_rate
 
         all_sensor_list += sensor_list
@@ -706,6 +711,21 @@ def corrosion_rate_json_report(request):
         print(e)
 
     return HttpResponse(json.dumps(corrosion_rate))
+
+
+@csrf_exempt
+@login_required
+def conform_corrosion_interval_json(request):
+    """
+    获取选择的时间周期，写入session
+    :param request:
+    :return:
+    """
+    days_interval = request.POST.get('days_interval')
+    request.session['days_interval'] = int(days_interval)
+    result = {'status': True}
+
+    return HttpResponse(json.dumps(result))
 
 
 @login_required

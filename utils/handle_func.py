@@ -478,28 +478,31 @@ def mkdir_path(path=None, gw_network_id=None):
     return path
 
 
-def corrosion_rate(network_id):
+def corrosion_rate(network_id, days_interval=0):
     """
     计算腐蚀率
     :param data_latest:
     :param data_first:
     :return:
     """
-    data_list = list(models.Waveforms.objects.filter(network_id=network_id).values('time_tamp', 'thickness'))
-
-    data_list = [item for item in data_list if item['thickness'] != 0.0]
+    print('network_id', network_id)
+    data_list = get_data_list(network_id, days_interval)
 
     if data_list:
         first_struct_time = data_list[0]['time_tamp']
         latest_struct_time = data_list[-1]['time_tamp']
-        print(timestamp(latest_struct_time, first_struct_time))
-        if int(timestamp(latest_struct_time, first_struct_time)) > 14:  # 如果采集数据的天数不少于15天，则可以计算腐蚀率
+        print('采集的天数', calculate_time_interval(latest_struct_time, first_struct_time))
+        if int(calculate_time_interval(latest_struct_time, first_struct_time)) >= days_interval - 2:  # 如果采集数据的天数不少于选择的天数，则可以计算腐蚀率
             y = np.array([item['thickness'] for item in data_list])
-            x = np.array([timestamp(item['time_tamp'], first_struct_time) for item in data_list])
+            x = np.array([calculate_time_interval(item['time_tamp'], first_struct_time) for item in data_list])
+            print('x:', x)
+            print('y:', y)
             corrosion_rate = skl_func(x, y)
+            print('corrosion_rate1', corrosion_rate)
             # plt.legend(loc="upper left")
             # plt.show()
             corrosion_rate = round(float(abs(corrosion_rate * 365)), 3)
+            print('corrosion_rate2', corrosion_rate)
         else:
             corrosion_rate = '需要更多数据！'
     else:
@@ -524,16 +527,51 @@ def skl_func(x, y):
     return lr.coef_
 
 
-def timestamp(latest_struct_time, first_struct_time):
+def calculate_time_interval(latest_struct_time, first_struct_time):
     """
     结构化时间转成时间戳，计算与第一天的间隔时间，单位为天
     :param struct_time:
     :return:
     """
-    first_struct_time = datetime.strptime(first_struct_time, "%Y-%m-%d %H:%M:%S").timestamp()
-    latest_struct_time = datetime.strptime(latest_struct_time, "%Y-%m-%d %H:%M:%S").timestamp()
-    x = (latest_struct_time - first_struct_time) / (3600 * 24)
+    first_stamp_time = datetime.strptime(first_struct_time, "%Y-%m-%d %H:%M:%S").timestamp()
+    latest_stamp_time = datetime.strptime(latest_struct_time, "%Y-%m-%d %H:%M:%S").timestamp()
+    x = (latest_stamp_time - first_stamp_time) / (3600 * 24)
     return x
+
+
+def get_data_list(network_id, days_interval):
+    """
+    根据network_id和用户选择的days_interval，查找出指定范围内的数据
+    :param network_id:
+    :param days_interval: 选择的要查看的时间范围
+    :return:
+    """
+    data_obj = models.Waveforms.objects.filter(network_id=network_id)
+    if data_obj:
+        latest_struct_time = data_obj.values('time_tamp', 'thickness').order_by('-id').first()
+        print(latest_struct_time['time_tamp'])
+        latest_stamp_time = datetime.strptime(latest_struct_time['time_tamp'], "%Y-%m-%d %H:%M:%S").timestamp()
+        if days_interval:  # 如果选择了日期，则需要计算出日期中的第一天
+            days_interval_time_stamp = (days_interval - 1) * 24 * 60 * 60
+            first_stamp_time = latest_stamp_time - days_interval_time_stamp
+
+        else:   # 如果没有选择日期，则直接从数据库取出日期中的第一天
+            first_struct_time = data_obj.values('time_tamp', 'thickness').first()
+            first_stamp_time = datetime.strptime(first_struct_time['time_tamp'], "%Y-%m-%d %H:%M:%S").timestamp()
+
+        timeArray = time.localtime(first_stamp_time)
+        first_struct_time = time.strftime("%Y-%m-%d", timeArray)
+        print(first_struct_time)
+        data_list = models.Waveforms.objects.filter(network_id=network_id,
+                                                    time_tamp__gte=first_struct_time,
+                                                    time_tamp__lte=latest_struct_time,
+                                                    ).values('time_tamp', 'thickness')
+
+        data_list = [item for item in data_list if item['thickness'] != 0.0]
+    else:
+        data_list = []
+
+    return data_list
 
 
 def cal_thickness_avg(data_list):

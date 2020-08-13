@@ -9,82 +9,43 @@
       <!-- /.table -->
       <div class="box">
         <div class="box-header with-border">
-              {% if not gateway_obj %}
-                    <h3 class="box-title">添加网关&nbsp;&nbsp;&nbsp;
-                        <b style="color: red; opacity: 50%">暂无网关，请先设置网关，再添加传感器</b>
-                    </h3>
-              {% else %}
-                  <h3 class="box-title">更新网关</h3>
-              {% endif %}
+              <h3 class="box-title">更新网关</h3>
           <div class="box-tools pull-right">
             <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
             <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
           </div>
         </div>
         <div class="box-body">
-              {% if not gateway_obj %}
-                  <div class="row">
-                <div class="col-xs-6 col-md-4 col-md-offset-1">
-                    <div class="form-group">
-                        <label for="name">网关名称</label>
-                        <input type="text" class="form-control" name="name" id="name" value="">
-                    </div>
+              <div class="row">
+            <div class="col-xs-6 col-md-4 col-md-offset-1">
+                <div class="form-group">
+                    <label for="name">网关名称</label>
+                    <input type="text" class="form-control" name="name" id="name" value="{{ gateway_obj.name }}">
                 </div>
-                <div class="col-xs-6 col-md-4 col-md-offset-1">
-                    <div class="form-group">
-                        <label for="Enterprise">公司名称</label>
-                        <input type="text" class="form-control" name="Enterprise" id="Enterprise" value="">
-                    </div>
+            </div>
+            <div class="col-xs-6 col-md-4 col-md-offset-1">
+                <div class="form-group">
+                    <label for="Enterprise">公司名称</label>
+                    <input type="text" class="form-control" name="Enterprise" id="Enterprise" value="{{ gateway_obj.Enterprise }}" disabled>
                 </div>
-                <div class="col-xs-6 col-md-4 col-md-offset-1">
-                    <div class="form-group">
-                        <label for="network_id">网关网络号</label>
-                        <input type="text" class="form-control" name="network_id" id="network_id" value="">
-                    </div>
+            </div>
+            <div class="col-xs-6 col-md-4 col-md-offset-1">
+                <div class="form-group">
+                    <label for="network_id">网关网络号</label>
+                    <input type="text" class="form-control" name="network_id" id="network_id" value="{{ gateway_obj.network_id }}" disabled>
                 </div>
-                  <div class="col-xs-6 col-md-4 col-md-offset-1">
-                    <div class="form-group">
-                        <label for="gw_status">网关在线状态</label>
-                        <select class="form-control select2" name="gw_status" id="gw_status" style="width: 100%;">
-                          {% for k, v in online_status.items %}
-                              <option value="{{ v }}">{{ k }}</option>
-                          {% endfor %}
-                        </select>
-                    </div>
+            </div>
+              <div class="col-xs-6 col-md-4 col-md-offset-1">
+                <div class="form-group">
+                    <label for="gw_status">网关在线状态</label>
+                    <select class="form-control select2" name="gw_status" id="gw_status" style="width: 100%;">
+                      {% for k, v in gw_status.items %}
+                          <option value="{{ v }}">{{ k }}</option>
+                      {% endfor %}
+                    </select>
                 </div>
-              </div>
-              {% else %}
-                  <div class="row">
-                <div class="col-xs-6 col-md-4 col-md-offset-1">
-                    <div class="form-group">
-                        <label for="name">网关名称</label>
-                        <input type="text" class="form-control" name="name" id="name" value="{{ gateway_obj.name }}">
-                    </div>
-                </div>
-                <div class="col-xs-6 col-md-4 col-md-offset-1">
-                    <div class="form-group">
-                        <label for="Enterprise">公司名称</label>
-                        <input type="text" class="form-control" name="Enterprise" id="Enterprise" value="{{ gateway_obj.Enterprise }}" disabled>
-                    </div>
-                </div>
-                <div class="col-xs-6 col-md-4 col-md-offset-1">
-                    <div class="form-group">
-                        <label for="network_id">网关网络号</label>
-                        <input type="text" class="form-control" name="network_id" id="network_id" value="{{ gateway_obj.network_id }}" disabled>
-                    </div>
-                </div>
-                  <div class="col-xs-6 col-md-4 col-md-offset-1">
-                    <div class="form-group">
-                        <label for="gw_status">网关在线状态</label>
-                        <select class="form-control select2" name="gw_status" id="gw_status" style="width: 100%;">
-                          {% for k, v in gw_status.items %}
-                              <option value="{{ v }}">{{ k }}</option>
-                          {% endfor %}
-                        </select>
-                    </div>
-                </div>
-              </div>
-              {% endif %}
+            </div>
+          </div>
 
 
             <div class="row">

@@ -13,7 +13,7 @@
     //
     // // ws是普通通讯，端口8083；wss是加密通讯，端口是8084
     // const client = mqtt.connect('ws://iot.orisonic.com:8083/mqtt', options);
-    // // const client = mqtt.connect('wss://iot.orisonic.com/mqtt', options);
+    // // const client = mqtt.connect('wss://iot.orisonic.com:8084/mqtt', options);
     //
     // // client.
     // client.on('connect', (error) => {

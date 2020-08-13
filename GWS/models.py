@@ -33,6 +33,7 @@ class UserProfileManager(BaseUserManager):
             name=name,
         )
         user.is_superuser = True
+        user.is_staff = True
         user.save(using=self._db)
         return user
 
@@ -41,8 +42,8 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=64, unique=True,)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    role = models.ManyToManyField("Role", blank=True, null=True)
-    gateway = models.ManyToManyField('Gateway')
+    role = models.ManyToManyField("Role")
+    gateway = models.ManyToManyField('Gateway', null=True, blank=True)
 
     objects = UserProfileManager()
 
