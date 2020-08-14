@@ -211,7 +211,7 @@ def edit_sensor_params(request):
     """
     context = {
         "cHz": [cHz for cHz in range(1, 4)],
-        "gain": [gain for gain in range(60, 101)],
+        "gain": [gain for gain in range(40, 101)],
         "avg_time": [avg_time for avg_time in range(0, 11)],
         "Hz": [Hz for Hz in range(2, 5)],
         "Sample_depth": [Sample_depth for Sample_depth in range(0, 3)],
@@ -344,9 +344,7 @@ def corrosion_rate_list(request):
     # else:
     #     gateway_obj = user_obj.first().gateway.values('network_id', 'name')
 
-    days_interval = int(request.session.get('days_interval'))
-    if not days_interval:
-        days_interval = 0
+    days_interval = int(request.session.get('days_interval', 0))
     print('days_interval', days_interval)
 
     gateway_obj = get_gateway_obj(request, name='name', network_id='network_id')
@@ -664,7 +662,7 @@ def send_server_data(request):
 
     return HttpResponse(json.dumps(response))
 
-
+from datetime import datetime
 @login_required
 def thickness_json_report(request):
     """
