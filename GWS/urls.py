@@ -57,6 +57,9 @@ urlpatterns = [
     re_path(r'^conform-corrosion-interval-json$', views.conform_corrosion_interval_json),
 
     re_path(r'^judge-username-exist-json$', views.judge_username_exist_json),
+    re_path(r'^judge-sensor-name-exist-json$', views.judge_sensor_name_exist_json),
+    re_path(r'^judge-sensor-ntid-exist-json$', views.judge_sensor_ntid_exist_json),
+    re_path(r'^judge-sensor-id-exist-json$', views.judge_sensor_id_exist_json),
 
 
 ]

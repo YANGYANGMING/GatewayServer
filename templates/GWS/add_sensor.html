@@ -21,13 +21,15 @@
                 <div class="col-xs-6 col-md-4 col-md-offset-1">
                     <div class="form-group">
                         <label for="sensor-id">传感器ID <b style="color: red;">*</b></label>
-                        <input type="text" class="form-control" name="sensor-id" id="sensor-id" value="">
+                        <input type="text" class="form-control" name="sensor-id" id="sensor-id" value="" onblur="JudgeSensorIDExist()">
+                        <p id="sensor-id-msg" style="color: red;"></p>
                     </div>
                 </div>
                 <div class="col-xs-6 col-md-4 col-md-offset-1">
                     <div class="form-group">
                         <label for="alias">传感器名称 <b style="color: red;">*</b></label>
-                        <input type="text" class="form-control" name="alias" id="alias" value="">
+                        <input type="text" class="form-control" name="alias" id="alias" value="" onblur="JudgeSensoraliasExist()">
+                        <p id="alias-msg" style="color: red;"></p>
                     </div>
                 </div>
                 <div class="col-xs-3 col-md-2 col-md-offset-1">
@@ -48,7 +50,8 @@
                     <div class="form-group">
                         <label for="network_id">网络号 <b style="color: red;">*</b></label>
                         {% if network_id == "new" %}
-                            <input type="text" class="form-control" name="network_id" id="network_id" value="">
+                            <input type="text" class="form-control" name="network_id" id="network_id" value="" onblur="JudgeSensorNetworkIDExist()">
+                            <p id="network_id_msg" style="color: red;"></p>
                         {% else %}
                             <input type="text" class="form-control" name="network_id" id="network_id" value="{{ network_id }}" disabled>
                         {% endif %}
@@ -225,6 +228,9 @@
                 $('#gateway').select2("val", ["{{ gwntid }}"])
             }
 
+            // 重新添加传感器的时候不会触发JudgeSensorNetworkIDExist()
+             sensor_network_id_exist = false;
+
         });
 
         function AddSave() {
@@ -261,8 +267,22 @@
             var gwntid = network_id.split('.').slice(0, 3).join('.') + '.0';
             if (received_time_data.days === '0' && received_time_data.hours === '0' && received_time_data.minutes === '0') {
                 $('#add_sensor').html('时间不合法！');
+            } else if (received_time_data.days === '0' && parseInt(received_time_data.hours) <= 11 && parseInt(received_time_data.minutes) <= 59){
+                $('#add_sensor').html('时间不能小于12小时！');
+            } else if(sensor_id === ""){
+                $('#add_sensor').html('传感器ID不能为空！');
+            } else if(alias === ""){
+                $('#add_sensor').html('传感器名称不能为空！');
+            } else if(network_id === ""){
+                $('#add_sensor').html('传感器网络号不能为空！');
+            } else if(sensor_sensor_id_exist){
+                $('#add_sensor').html('传感器ID已存在！');
+            }  else if(sensor_alias_exist){
+                $('#add_sensor').html('传感器名称已存在！');
+            } else if(sensor_network_id_exist){
+                $('#add_sensor').html('传感器网络号已存在！');
             }else{
-                {#SetTimeToShowTimeOutMSG("add_sensor", gwntid);#}
+                SetTimeToShowTimeOutMSG("add_sensor", gwntid);
                 $.ajax({
                     url: '/GWS/send-server-data',
                     type:'POST',
@@ -273,6 +293,48 @@
                     }
                 })
             }
+        }
+
+        function JudgeSensorIDExist() {
+            var sensor_id = $('#sensor-id').val();
+            $.ajax({
+                url: '/GWS/judge-sensor-id-exist-json',
+                data: {'sensor_id': sensor_id, 'previous_sensor_id': "{{ previous_sensor_id }}"},
+                type: 'POST',
+                dataType: 'JSON',
+                success: function (arg) {
+                    sensor_sensor_id_exist = arg.status;
+                    $('#sensor-id-msg').html(arg.msg)
+                }
+            })
+        }
+
+        function JudgeSensoraliasExist() {
+            var alias = $('#alias').val();
+            $.ajax({
+                url: '/GWS/judge-sensor-name-exist-json',
+                data: {'alias': alias, 'previous_alias': "{{ previous_alias }}"},
+                type: 'POST',
+                dataType: 'JSON',
+                success: function (arg) {
+                    sensor_alias_exist = arg.status;
+                    $('#alias-msg').html(arg.msg)
+                }
+            })
+        }
+
+        function JudgeSensorNetworkIDExist() {
+            var network_id = $('#network_id').val();
+            $.ajax({
+                url: '/GWS/judge-sensor-ntid-exist-json',
+                data: {'network_id': network_id},
+                type: 'POST',
+                dataType: 'JSON',
+                success: function (arg) {
+                    sensor_network_id_exist = arg.status;
+                    $('#network_id_msg').html(arg.msg)
+                }
+            })
         }
 
         // 选中材料显示声速

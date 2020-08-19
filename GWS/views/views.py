@@ -6,11 +6,12 @@ from GWS import models
 from GWS import permissions
 from apscheduler.schedulers.background import BackgroundScheduler
 from GatewayServer import settings
-import json, time
 from utils.check_click_method import check_click_method
 from utils.mqtt_client import client
 from lib.log import Logger
 from utils import handle_func
+import json
+import time
 
 
 heart_sche = BackgroundScheduler()
@@ -28,7 +29,6 @@ def index(request):
     all_sensor_list = []
     all_alarm_sensor_list = []
     all_alarm_sensor_list2 = []
-
 
     # user_obj = models.UserProfile.objects.filter(name=request.user)
     # if user_obj.values('role__name')[0]['role__name'] == "超级管理员":
@@ -171,7 +171,7 @@ def sensor_manage(request):
             gw_network_id = gateway_item['network_id']
             gw_name = gateway_item['name']
             sensor_obj_list = models.Sensor.objects.filter(gateway__network_id=gw_network_id)
-            sensor_list = sensor_obj_list.values('sensor_id', 'network_id', 'received_time_data', 'alias', 'battery',
+            sensor_list = sensor_obj_list.values('id', 'sensor_id', 'network_id', 'received_time_data', 'alias', 'battery',
                                                  'location', 'date_of_installation', 'gateway__name', 'area', 'material',
                                                  'sensor_run_status', 'sensor_online_status', 'sensor_type',
                                                  'Importance', 'delete_status', 'description')
@@ -395,6 +395,13 @@ def add_sensor(request, network_id):
         "minute_interval": [i for i in range(0, 60)],
     }
     gwntid = network_id.rsplit('.', 1)[0] + '.0'
+    if network_id == "new":
+        previous_alias = ""
+        previous_sensor_id = ""
+    else:
+        previous_alias = models.Sensor.objects.values('alias').get(network_id=network_id)['alias']
+        previous_sensor_id = models.Sensor.objects.values('sensor_id').get(network_id=network_id)['sensor_id']
+
     return render(request, 'GWS/add_sensor.html', locals())
 
 
@@ -662,7 +669,7 @@ def send_server_data(request):
 
     return HttpResponse(json.dumps(response))
 
-from datetime import datetime
+
 @login_required
 def thickness_json_report(request):
     """
@@ -679,9 +686,10 @@ def thickness_json_report(request):
         data_list = []
         for item in data_obj:
             data_temp = {}
-            data_temp['y'] = float(item.pop('thickness'))
-            data_temp['name'] = str(item.pop('id')) + ":" + item.pop('time_tamp')
-            data_list.append(data_temp)
+            if float(item['thickness']) != 0.0:
+                data_temp['y'] = float(item.pop('thickness'))
+                data_temp['name'] = str(item.pop('id')) + ":" + item.pop('time_tamp')
+                data_list.append(data_temp)
         response['datas'] = [{'name': '厚度值', 'data': data_list}]
         response['alias'] = alias
         response['yAxis_max_limit'] = thickness_avg * 2
@@ -744,6 +752,72 @@ def judge_username_exist_json(request):
 
     if user_is_exist:
         response = {'status': True, 'msg': '此用户名已存在！'}
+
+    return HttpResponse(json.dumps(response))
+
+
+@login_required
+@csrf_exempt
+def judge_sensor_name_exist_json(request):
+    """
+    判断是否存在此传感器名称
+    :param request:
+    :return:
+    """
+    response = {'status': False, 'msg': ''}
+    alias = request.POST.get('alias')
+    previous_alias = request.POST.get('previous_alias')
+    if alias == previous_alias:  # 判断是否修改了传感器名
+        sensor_is_exist = None
+    else:
+        sensor_is_exist = models.Sensor.objects.filter(alias=alias).exists()
+
+    if sensor_is_exist:
+        response = {'status': True, 'msg': '此传感器名称已存在！'}
+
+    return HttpResponse(json.dumps(response))
+
+
+@login_required
+@csrf_exempt
+def judge_sensor_ntid_exist_json(request):
+    """
+    判断是否存在此传感器network_id
+    :param request:
+    :return:
+    """
+    response = {'status': False, 'msg': ''}
+    network_id = request.POST.get('network_id')
+    previous_network_id = request.POST.get('previous_network_id')
+    if network_id == previous_network_id:  # 判断是否修改了传感器network_id
+        network_id_is_exist = None
+    else:
+        network_id_is_exist = models.Sensor.objects.filter(network_id=network_id).exists()
+
+    if network_id_is_exist:
+        response = {'status': True, 'msg': '此传感器网络号已存在！'}
+
+    return HttpResponse(json.dumps(response))
+
+
+@login_required
+@csrf_exempt
+def judge_sensor_id_exist_json(request):
+    """
+    判断是否存在此传感器sensor_id
+    :param request:
+    :return:
+    """
+    response = {'status': False, 'msg': ''}
+    sensor_id = request.POST.get('sensor_id')
+    previous_sensor_id = request.POST.get('previous_sensor_id')
+    if sensor_id == previous_sensor_id:  # 判断是否修改了传感器sensor_id
+        sensor_id_is_exist = None
+    else:
+        sensor_id_is_exist = models.Sensor.objects.filter(sensor_id=sensor_id).exists()
+
+    if sensor_id_is_exist:
+        response = {'status': True, 'msg': '此传感器ID已存在！'}
 
     return HttpResponse(json.dumps(response))
 

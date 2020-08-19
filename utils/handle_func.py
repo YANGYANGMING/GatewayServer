@@ -491,13 +491,10 @@ def corrosion_rate(network_id, days_interval=0):
     if data_list:
         first_struct_time = data_list[0]['time_tamp']
         effective_days = calculate_effective_days(data_list)
-        data_count = len(data_list)
         print('effective_days==========', effective_days)
-        print('data_count==========', data_count)
         # 如果采集数据的有效天数effective_days >= (选择的天数 * 0.6)，<= 选择的天数,
-        # 或者数据量不少于15条，则可以计算腐蚀率
         # （选择的天数 * 0.5）表示去掉防止采集的数据出错导致厚度值为0的天数和未采集数据的天数
-        if (days_interval * 0.5) <= effective_days <= days_interval or data_count >= 15:
+        if (days_interval * 0.5) <= effective_days <= days_interval:
             y = np.array([item['thickness'] for item in data_list])
             x = np.array([calculate_time_interval(item['time_tamp'], first_struct_time) for item in data_list])
             corrosion_rate = skl_func(x, y)
@@ -554,26 +551,38 @@ def get_data_list(network_id, days_interval):
         # latest_struct_time = data_obj.values('time_tamp', 'thickness').order_by('-id').first()
         # print(latest_struct_time['time_tamp'])
         # latest_stamp_time = datetime.strptime(latest_struct_time['time_tamp'], "%Y-%m-%d %H:%M:%S").timestamp()
-        if days_interval:  # 如果选择了时间范围，则需要计算出日期中的第一天
-            days_interval_time_stamp = (days_interval - 1) * 24 * 60 * 60
-            first_stamp_time = time.time() - days_interval_time_stamp  # 从当前时间往前推days_interval
+        # if days_interval:  # 选择了时间范围，需要计算出日期中的第一天
+        days_interval_time_stamp = (days_interval - 1) * 24 * 60 * 60
+        first_stamp_time = time.time() - days_interval_time_stamp  # 从当前时间往前推days_interval天
 
-            timeArray = time.localtime(time.time())
-            cur_time = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
-            print(cur_time)
+        #     timeArray = time.localtime(time.time())
+        #     cur_time = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
+        #     print(cur_time)
+        #
+        # else:   # 如果没有选择时间范围，表示计算全部时间的腐蚀率，则直接从数据库取出日期中的第一天
+        #     first_struct_time_temp = data_obj.values('time_tamp', 'thickness').first()
+        #     first_stamp_time = datetime.strptime(first_struct_time_temp['time_tamp'], "%Y-%m-%d %H:%M:%S").timestamp()
 
-        else:   # 如果没有选择时间范围，表示计算全部时间的腐蚀率，则直接从数据库取出日期中的第一天
-            first_struct_time_temp = data_obj.values('time_tamp', 'thickness').first()
-            first_stamp_time = datetime.strptime(first_struct_time_temp['time_tamp'], "%Y-%m-%d %H:%M:%S").timestamp()
-
-        timeArray = time.localtime(first_stamp_time)
-        first_struct_time = time.strftime("%Y-%m-%d", timeArray)
+        second_stamp_time = first_stamp_time + (3 * 24 * 60 * 60)
+        first_struct_time = time.strftime("%Y-%m-%d", time.localtime(first_stamp_time))
         print(first_struct_time)
-        data_list = models.Waveforms.objects.filter(network_id=network_id,
-                                                    time_tamp__gte=first_struct_time,
-                                                    ).values('time_tamp', 'thickness')
+        second_struct_time = time.strftime("%Y-%m-%d", time.localtime(second_stamp_time))
+        print(second_struct_time)
+        # is_exist判断选择的时间段的前4天是否都有数据
+        is_exist = models.Waveforms.objects.filter(network_id=network_id,
+                                                   time_tamp__gte=first_struct_time,
+                                                   time_tamp__lte=second_struct_time,
+                                                   ).exists()
+        print(is_exist)
 
-        data_list = [item for item in data_list if item['thickness'] != 0.0]
+        if is_exist:
+            data_list = models.Waveforms.objects.filter(network_id=network_id,
+                                                        time_tamp__gte=first_struct_time,
+                                                        ).values('time_tamp', 'thickness')
+
+            data_list = [item for item in data_list if item['thickness'] != 0.0]
+        else:
+            data_list = []
     else:
         data_list = []
 
@@ -582,7 +591,7 @@ def get_data_list(network_id, days_interval):
 
 def calculate_effective_days(data_list):
     """
-    计算有效天数，去掉测量数据为0的日期
+    计算有效天数，去掉重复日期
     :param data_list:
     :return:
     """

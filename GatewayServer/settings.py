@@ -168,7 +168,8 @@ MQTT_HOST = "127.0.0.1"
 MQTT_USERNAME = 'ORISONIC'
 MQTT_PASSWORD = 'ORISONIC2020'
 
-crtPath = BASE_DIR + r"\crt_new"
+# crtPath = BASE_DIR + r"\crt_47.92.190.54"
+crtPath = BASE_DIR + r"\crt_192.168.0.44"
 
 ca_certs = "%s\ca\MyRootCA.pem" % crtPath
 certfile = "%s\client\MyClient1.pem" % crtPath

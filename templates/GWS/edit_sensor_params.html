@@ -20,7 +20,7 @@
                     <div class="form-group">
                         <label class="col-sm-4 control-label">名称：</label>
                         <div class="col-sm-5">
-                            <input type="text" class="form-control" id="modal-alias" value="1号传感器" placeholder="1号传感器">
+                            <input type="text" class="form-control" id="modal-alias" value="" disabled>
                         </div>
                     </div>
                     <div class="form-group">
@@ -32,7 +32,7 @@
                   <label class="col-sm-4 control-label">周波数：&nbsp;&nbsp;</label>
                   <div class="col-sm-5">
                       <div class="form-group">
-                        <select class="form-control select2" id="modal-chz" style="width: 92%; margin-left: 10px;">
+                        <select class="form-control select2" id="modal-chz" style="width: 92%; margin-left: 10px;" disabled>
                           <option></option>
                             {% for cHz_item in context.cHz %}
                                 <option value="{{ cHz_item }}">{{ cHz_item }}</option>
@@ -65,7 +65,7 @@
                     <label class="col-sm-4 control-label">频率：&nbsp;&nbsp;</label>
                     <div class="col-sm-5">
                       <div class="form-group">
-                        <select class="form-control select2" id="modal-hz" style="width: 92%; margin-left: 10px;">
+                        <select class="form-control select2" id="modal-hz" style="width: 92%; margin-left: 10px;" disabled>
                           <option></option>
                             {% for Hz_item in context.Hz %}
                                 <option value="{{ Hz_item }}">{{ Hz_item }}</option>
@@ -76,7 +76,7 @@
                     <label class="col-sm-4 control-label">采样深度：&nbsp;&nbsp;</label>
                     <div class="col-sm-5">
                       <div class="form-group">
-                        <select class="form-control select2" id="modal-Sample-depth" style="width: 92%; margin-left: 10px;">
+                        <select class="form-control select2" id="modal-Sample-depth" style="width: 92%; margin-left: 10px;" disabled>
                           <option></option>
                             {% for Sample_depth_item in context.Sample_depth %}
                                 <option value="{{ Sample_depth_item }}">{{ Sample_depth_item }}</option>
@@ -199,7 +199,7 @@
           var Sample_depth = $cur_tr.children().eq(6).text();
           var Sample_hz = $cur_tr.children().eq(7).text();
 
-          $(".modal-title").html(alias + "详细信息");
+          $(".modal-title").html(alias + "参数信息");
           $("#modal-alias").val(alias);
           $("#modal-network-id").val(network_id);
           $("#modal-chz").val(cHz);
@@ -225,17 +225,21 @@
                   'Sample_Hz': $("#modal-Sample-hz").val()
                 };
           $('#set_sensor_params').text('设置参数命令已加入队列中，请稍等...');
-          $.ajax({
-               url: '/GWS/set-sensor-params',
-               type: 'POST',
-               data: {'val_dict': JSON.stringify(val_dict)},
-               dataType: 'JSON',
-               success: function (arg) {
-                   {#if (arg.status === 'Sample_Hz_error'){#}
-                   {#    $('#set_sensor_params').text(arg.msg);#}
-                   {# }#}
-               }
-            });
+          if (val_dict.Sample_Hz < 200 || val_dict.Sample_Hz > 5000){
+              $('#set_sensor_params').text('采样频率范围：200-5000');
+          } else{
+              $.ajax({
+                   url: '/GWS/set-sensor-params',
+                   type: 'POST',
+                   data: {'val_dict': JSON.stringify(val_dict)},
+                   dataType: 'JSON',
+                   success: function (arg) {
+                       {#if (arg.status === 'Sample_Hz_error'){#}
+                       {#    $('#set_sensor_params').text(arg.msg);#}
+                       {# }#}
+                   }
+                });
+            }
           })
       }
 

@@ -77,7 +77,7 @@
                     </div>
                     <div  class="col-xs-12 col-md-6 col-md-offset-1">
                         <div class="form-group">
-                            <button type="button" class="btn btn-info col-md-offset-6" onfocus="JudgeNotNULL(this)">Save</button>
+                            <button type="button" class="btn btn-info col-md-offset-6" onfocus="JudgeNotNULL(this)">添加</button>
                         </div>
                     </div>
                 </form>
@@ -120,6 +120,7 @@
             type: 'POST',
             dataType: 'JSON',
             success: function (arg) {
+                name_exist_add = arg.status;
                 $('#name-msg').html(arg.msg)
             }
         })
@@ -154,12 +155,18 @@
         }else{
             $('#password-msg').html("密码不能为空！");
         }
+        if (name_exist_add){
+            $('#name-msg').html("此用户名已存在！");
+        }else{
+            $('#name-msg').html("");
+        }
 
         if ($('#name').val()[0] &&
             $('#role').val()[0] &&
             $('#groups').val()[0] &&
             $('#gateway').val()[0] &&
-            $('#password').val()[0]
+            $('#password').val()[0] &&
+            name_exist_add === false
         ){
             $(ths).attr('type', 'submit');
          }

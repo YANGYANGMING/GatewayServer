@@ -120,6 +120,7 @@
                     series: {
                         cursor: 'pointer',
                         lineWidth: 1.5,
+                        turboThreshold:200000, //set 0 to disable the cheack
                         events: {
                             click: function (event) {
                                 var data_id_and_time = event.point.series.chart.hoverPoint.name;
@@ -147,6 +148,7 @@
                 data:{'network_id': network_id},
                 dataType: 'JSON',
                 success:function(arg){
+                    console.log(arg['datas']);
                     config['series'] = arg['datas'];
                     config['title']['text'] = arg['alias'];
                     // config['yAxis']['max'] = arg['yAxis_max_limit'];

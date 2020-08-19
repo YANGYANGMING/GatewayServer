@@ -15,7 +15,7 @@
                         <div class="col-xs-12 col-md-6 col-md-offset-1">
                             <div class="form-group">
                                 <label for="name">用户名</label>
-                                <input type="text" class="form-control" name="name" id="name" value="{{ cur_name }}"  onblur="JudgeExist()">
+                                <input type="text" class="form-control" name="name" id="name" value="{{ cur_name }}" onblur="JudgeExist()">
                                 <p id="name-msg" style="color: red;"></p>
                             </div>
                         </div>
@@ -74,8 +74,8 @@
 
                         <div  class="col-xs-12 col-md-6 col-md-offset-1">
                             <div class="form-group">
-                                <a style="cursor: pointer" class="btn btn-danger col-md-offset-2" href="{% url 'user_delete' nid %}">Delete</a>
-                                <button type="button" class="btn btn-info col-md-offset-6" onfocus="JudgeNotNULL(this)">Save</button>
+                                <a style="cursor: pointer" class="btn btn-danger col-md-offset-2" href="{% url 'user_delete' nid %}">删除</a>
+                                <button type="button" class="btn btn-info col-md-offset-6" onfocus="JudgeNotNULL(this)">保存</button>
                             </div>
                         </div>
                     </form>
@@ -125,10 +125,10 @@
             type: 'POST',
             dataType: 'JSON',
             success: function (arg) {
+                name_exist_edit = arg.status;
                 $('#name-msg').html(arg.msg)
             }
         })
-
     }
 
     // 判断是否有未填写的选项
@@ -159,12 +159,18 @@
         }else{
             $('#user-permissions-msg').html("用户权限不能为空！");
         }
+        if (name_exist_edit){
+            $('#name-msg').html("此用户名已存在！");
+        }else{
+            $('#name-msg').html("");
+        }
 
         if ($('#name').val()[0] &&
             $('#role').val()[0] &&
             $('#groups').val()[0] &&
             $('#gateway').val()[0] &&
-            $('#user-permissions').val()[0]
+            $('#user-permissions').val()[0] &&
+            name_exist_edit === false
         ){
             $(ths).attr('type', 'submit');
          }

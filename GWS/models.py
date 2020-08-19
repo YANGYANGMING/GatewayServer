@@ -153,7 +153,7 @@ class Sensor(models.Model):
     """
     sensor_id = models.CharField(max_length=32, unique=True)
     network_id = models.CharField(max_length=32, unique=True)
-    alias = models.CharField(max_length=64)
+    alias = models.CharField(max_length=64, unique=True)
     received_time_data = models.CharField(max_length=128)
     battery = models.CharField(max_length=32, default=100)
     cHz = models.CharField(max_length=32, default='2')

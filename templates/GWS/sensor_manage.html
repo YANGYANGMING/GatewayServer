@@ -41,59 +41,57 @@
             <table id="example1" class="table table-bordered table-striped table-hover" style="width: 100%;">
                 <thead>
                     <tr>
-                        <th>名称</th>
-                        <th>序列号</th>
-                        <th>网络号</th>
-                        <th>绑定网关</th>
-                        <th>重要性</th>
-                        <th>电量</th>
-                        <th>采样间隔</th>
-                        <th>描述</th>
-                        <th>运行状态</th>
-                        <th>在线状态</th>
-                        <th>数据详情</th>
-                        <th>操作</th>
+                         <th>名&nbsp;称&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                        <th>序&nbsp;列&nbsp;号</th>
+                        <th>网&nbsp;络&nbsp;号&nbsp;</th>
+                        <th>绑&nbsp;定&nbsp;网&nbsp;关&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                        <th>重&nbsp;要&nbsp;性</th>
+                        <th>电&nbsp;量</th>
+                        <th>采&nbsp;样&nbsp;间&nbsp;隔</th>
+                        <th>描&nbsp;述&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                        <th>运&nbsp;行&nbsp;状&nbsp;态</th>
+                        <th>在&nbsp;线&nbsp;状&nbsp;态</th>
+                        <th>数&nbsp;据&nbsp;详&nbsp;情</th>
+                        <th>操&nbsp;作&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for row in all_sensor_list %}
                         {% if row.delete_status == '1' %}
                             <tr style="color: #cdcdcd;">
-                                <td><p style="width: 100px;">{{ row.alias }}</p></td>
+                                <td>{{ row.alias }}</td>
                                 <td>{{ row.sensor_id }}</td>
-                                <td><p style="width: 70px;">{{ row.network_id }}</p></td>
-                                <td><p style="width: 80px;">{{ row.gateway__name }}</p></td>
+                                <td>{{ row.network_id }}</td>
+                                <td>{{ row.gateway__name }}</td>
                                 <td>
                                     {% for k, v in Importance.items %}
                                         {% if v == row.Importance %}
-                                            <p style="width: 65px;">{{ k }}</p>
+                                            {{ k }}
                                         {% endif %}
                                     {% endfor %}
                                 </td>
-                                <td><p style="width: 60px;">{{ row.battery }}</p></td>
+                                <td>{{ row.battery }}</td>
                                 <td>
-                                    <p style="width: 80px;">
-                                        {% render_run_time row.received_time_data %}
-                                    </p>
+                                    {% render_run_time row.received_time_data %}
                                 </td>
-                                <td><p style="overflow: auto; width: 150px; height: 60px;">{{ row.description }}</p></td>
+                                <td><p style="overflow: auto; height: 60px;">{{ row.description }}</p></td>
                                 <td>
                                     {% for k, v in sensor_run_status.items %}
                                             {% if v == 0 %}
-                                                <p style="width: 80px;">{{ k }}</p>
+                                               {{ k }}
                                             {% endif %}
                                     {% endfor %}
                                 </td>
                                 <td>
                                     {% for k, v in sensor_online_status.items %}
                                             {% if v == 0 %}
-                                                <p style="width: 80px;">{{ k }}</p>
+                                                {{ k }}
                                             {% endif %}
                                     {% endfor %}
                                 </td>
-                                <td><a href="sensor-data-info-{{ row.network_id }}"><p style="width: 80px;"><i class="fa fa-eye"></i> 数据详情</p></a></td>
+                                <td><a href="sensor-data-info-{{ row.network_id }}"><i class="fa fa-eye"></i> 数据详情</a></td>
                                 <td>
-                                    <p style="overflow: auto; width: 130px;">
+                                    <p style="overflow: auto;">
                                         <a href="{% url 'add_sensor' row.network_id %}">
                                             <i class="fa fa-plus fa-fw"></i>
                                             重新添加此传感器
@@ -109,45 +107,43 @@
                             </tr>
                         {% else %}
                             <tr>
-                                <td><p style="width: 100px;">{{ row.alias }}</p></td>
-                                <td><p style="">{{ row.sensor_id }}</p></td>
-                                <td><p style="width: 70px;">{{ row.network_id }}</p></td>
-                                <td><p style="width: 100px;">{{ row.gateway__name }}</p></td>
+                                <td>{{ row.alias }}</td>
+                                <td>{{ row.sensor_id }}</td>
+                                <td>{{ row.network_id }}</td>
+                                <td>{{ row.gateway__name }}</td>
                                 <td>
                                     {% for k, v in Importance.items %}
                                         {% if v == row.Importance %}
-                                            <p style="width: 65px;">{{ k }}</p>
+                                            {{ k }}
                                         {% endif %}
                                     {% endfor %}
                                 </td>
-                                <td><p style="width: 60px;">{{ row.battery }}</p></td>
+                                <td>{{ row.battery }}</td>
                                 <td>
-                                    <p style="width: 80px;">
-                                        {% render_run_time row.received_time_data %}
-                                    </p>
+                                    {% render_run_time row.received_time_data %}
                                 </td>
-                                <td><p style="overflow: auto; width: 150px; height: 60px;">{{ row.description }}</p></td>
+                                <td><p style="overflow: auto; height: 60px;">{{ row.description }}</p></td>
                                 <td>
                                     {% for k, v in sensor_run_status.items %}
                                             {% if v == row.sensor_run_status and row.sensor_run_status == 1 %}
-                                                <p style="color: green; font-weight: bolder; font-size: larger; width: 80px;">{{ k }}</p>
+                                                <p style="color: green; font-weight: bolder; font-size: larger;">{{ k }}</p>
                                             {% elif v == row.sensor_run_status and row.sensor_run_status == 0 %}
-                                                <p style="color: red; font-weight: bolder; font-size: larger; width: 80px;">{{ k }}</p>
+                                                <p style="color: red; font-weight: bolder; font-size: larger;">{{ k }}</p>
                                             {% endif %}
                                     {% endfor %}
                                 </td>
                                 <td>
                                     {% for k, v in sensor_online_status.items %}
                                             {% if v == row.sensor_online_status and row.sensor_online_status == 1 %}
-                                                <p style="color: green; font-weight: bolder; font-size: larger; width: 80px;">{{ k }}</p>
+                                                <p style="color: green; font-weight: bolder; font-size: larger;">{{ k }}</p>
                                             {% elif v == row.sensor_online_status and row.sensor_online_status == 0 %}
-                                                <p style="color: red; font-weight: bolder; font-size: larger; width: 80px;">{{ k }}</p>
+                                                <p style="color: red; font-weight: bolder; font-size: larger;">{{ k }}</p>
                                             {% endif %}
                                     {% endfor %}
                                 </td>
-                                <td><a href="sensor-data-info-{{ row.network_id }}"><p style="width: 80px;"><i class="fa fa-eye"></i> 数据详情</p></a></td>
+                                <td><a href="sensor-data-info-{{ row.network_id }}"><i class="fa fa-eye"></i> 数据详情</a></td>
                                 <td>
-                                    <p style="overflow: auto; width: 130px;">
+                                    <p style="overflow: auto;">
                                         <a href="/GWS/edit-sensor-{{ row.sensor_id }}" onclick=";">
                                             编辑
                                         </a>
