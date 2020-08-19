@@ -308,9 +308,16 @@ from queue import PriorityQueue
 # print(data_list)
 # print(data_list.count())
 
-print(datetime.strptime("2020-07-30 00:00:00", "%Y-%m-%d %H:%M:%S").timestamp() * 1000)
-print(1598745600000)
+# print(datetime.strptime("2020-07-30 00:00:00", "%Y-%m-%d %H:%M:%S").timestamp() * 1000)
+# print(1598745600000)
+#
+# timeArray = time.localtime(1598745600)
+# otherStyleTime = time.strftime("%Y--%m--%d %H:%M:%S", timeArray)
+# print(otherStyleTime)
 
-timeArray = time.localtime(1598745600)
-otherStyleTime = time.strftime("%Y--%m--%d %H:%M:%S", timeArray)
-print(otherStyleTime)
+
+a = models.Sensor.objects.filter(alias='1号传感器').exclude(network_id='0.0.1.1').exists()
+print('a', a)
+
+
+

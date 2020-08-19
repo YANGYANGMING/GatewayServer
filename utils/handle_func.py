@@ -238,6 +238,20 @@ class HandleFunc(object):
         global resume_payload
         resume_payload = payload
 
+    def check_alias(self, payload):
+        """
+        检查网关发送过来的alias是否重复
+        :param payload:
+        :return:
+        """
+        print('检查alias.......')
+        network_id = payload['network_id']
+        alias = payload['alias']
+        topic = network_id.rsplit('.', 1)[0] + ".0"
+        alias_is_exist = models.Sensor.objects.filter(alias=alias).exclude(network_id=network_id).exists()
+        result = {'id': 'server', 'header': 'check_alias', 'alias_is_exist': alias_is_exist}
+        client.publish(topic, json.dumps(result), 2)
+
     def set_sensor_params(self, payload):
         """
         接收传感器增益等参数
@@ -336,24 +350,36 @@ def send_to_gw(queue_obj):
                 views.log.log(set_sensor_params_payload['status'], set_sensor_params_payload['msg'], network_id)
         elif true_header == "add_sensor":
             send_data = {'id': 'server', 'header': true_header, 'data': q1['receive_data'], 'network_id': network_id}
-            client.publish(topic, json.dumps(send_data), 2)
-            add_sensor_start_time = time.time()
-            # 接收到网关处理好的结果，用于把操作返回的信息展示到页面
-            global add_sensor_payload
-            add_sensor_payload = {}  # 接收之前先清除payload中的缓存数据
-            while (time.time() - add_sensor_start_time) < 6:
-                time.sleep(0.5)
-                if add_sensor_payload:
-                    break
-            if not add_sensor_payload:
-                # 超时时间到，未返回任何数据，则显示采样失败信息，网关未响应
-                send_data = {'id': 'client', 'header': 'add_sensor', 'status': False, 'msg': '[%s]添加传感器失败，网关未响应。' % network_id}
-                client.publish(topic, json.dumps(send_data), 2)
-                # Log
-                views.log.log(send_data['status'], send_data['msg'], network_id)
+
+            alias = q1['receive_data']['alias']
+            network_id = q1['receive_data']['network_id']
+
+            is_soft_delete = models.Sensor.objects.filter(network_id=network_id, delete_status=1).exists()
+            if is_soft_delete:  # 如果是软删除，排除自身
+                alias_is_exist = models.Sensor.objects.filter(alias=alias).exclude(network_id=network_id).exists()
             else:
-                # Log
-                views.log.log(add_sensor_payload['status'], add_sensor_payload['msg'], network_id)
+                alias_is_exist = models.Sensor.objects.filter(alias=alias).exists()
+            if not alias_is_exist:
+                client.publish(topic, json.dumps(send_data), 2)
+                add_sensor_start_time = time.time()
+                # 接收到网关处理好的结果，用于把操作返回的信息展示到页面
+                global add_sensor_payload
+                add_sensor_payload = {}  # 接收之前先清除payload中的缓存数据
+                while (time.time() - add_sensor_start_time) < 6:
+                    time.sleep(0.5)
+                    if add_sensor_payload:
+                        break
+                if not add_sensor_payload:
+                    # 超时时间到，未返回任何数据，则显示采样失败信息，网关未响应
+                    send_data = {'id': 'client', 'header': 'add_sensor', 'status': False, 'msg': '[%s]添加传感器失败，网关未响应。' % network_id}
+                    client.publish(topic, json.dumps(send_data), 2)
+                    # Log
+                    views.log.log(send_data['status'], send_data['msg'], network_id)
+                else:
+                    # Log
+                    views.log.log(add_sensor_payload['status'], add_sensor_payload['msg'], network_id)
+            else:
+                print('alias_is_exist存在', alias_is_exist)
 
 
 class HandleImgs(object):

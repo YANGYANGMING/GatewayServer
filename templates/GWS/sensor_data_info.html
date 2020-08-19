@@ -232,7 +232,7 @@
                 <div class="col-lg-2 col-md-3 col-xs-6">
                   <div class="small-box bg-white">
                     <div class="inner">
-                      <label style="color: #000;">所在区域经度</label>
+                      <label style="color: #000;">所在位置经度</label>
                         <h4 style="color: #000;">{{ sensor_obj.longitude }}</h4>
                     </div>
                   </div>
@@ -321,7 +321,7 @@
                   <div class="small-box bg-white">
                     <div class="inner">
                       <label style="color: #000; display: block">传感器位置图片</label>
-                        <img style="height: 60px" src="/{{ sensor_obj.location_img_path }}" alt="" onclick="ShowBigImg(this)" data-toggle="modal" data-target="#showBigImgModel">
+                        <img style="height: 60px" src="/{{ sensor_obj.location_img_path }}" alt="暂无图片" onclick="ShowBigImg(this)" data-toggle="modal" data-target="#showBigImgModel">
                     </div>
                   </div>
                 </div>
