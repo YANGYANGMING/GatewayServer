@@ -184,7 +184,7 @@
                 </div>
               </div>
               <div class="row">
-                <section class="col-lg-7 connectedSortable">
+                <section class="col-lg-6 connectedSortable">
 
                   <!-- 传感器状态 -->
                   <div class="box box-solid box-success">
@@ -197,7 +197,7 @@
                         <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
                       </div>
                     </div>
-                    <div class="box-body" style="overflow-x: auto; max-height: 422px; height: auto;">
+                    <div class="box-body" style="overflow-x: auto; height: 420px;">
                         <table id="example1" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
@@ -215,22 +215,18 @@
                                         <td>{{ row.alias }}</td>
                                         <td>{{ row.gateway__name }}</td>
                                         <td id="sensor-run-status">
-                                            {% for k, v in sensor_run_status.items %}
-                                                    {% if v == row.sensor_run_status and row.sensor_run_status == 1 %}
-                                                        <p style="color: green; font-weight: bolder; font-size: larger;">{{ k }}</p>
-                                                    {% elif v == row.sensor_run_status and row.sensor_run_status == 0 %}
-                                                        <p style="color: red; font-weight: bolder; font-size: larger;">{{ k }}</p>
-                                                    {% endif %}
-                                            {% endfor %}
+                                            {% if row.sensor_run_status == 1 %}
+                                                <p style="color: green; font-weight: bolder; font-size: larger;">开通</p>
+                                            {% elif row.sensor_run_status == 0 %}
+                                                <p style="color: red; font-weight: bolder; font-size: larger;">禁止</p>
+                                            {% endif %}
                                         </td>
                                         <td id="sensor-online-status">
-                                            {% for k, v in sensor_online_status.items %}
-                                                    {% if v == row.sensor_online_status and row.sensor_online_status == 1 %}
-                                                        <p style="color: green; font-weight: bolder; font-size: larger;">{{ k }}</p>
-                                                    {% elif v == row.sensor_online_status and row.sensor_online_status == 0 %}
-                                                        <p style="color: red; font-weight: bolder; font-size: larger;">{{ k }}</p>
-                                                    {% endif %}
-                                            {% endfor %}
+                                            {% if row.sensor_online_status == 1 %}
+                                                <p style="color: green; font-weight: bolder; font-size: larger;">在线</p>
+                                            {% elif row.sensor_online_status == 0 %}
+                                                <p style="color: red; font-weight: bolder; font-size: larger;">离线</p>
+                                            {% endif %}
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -249,14 +245,14 @@
                         <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
                       </div>
                     </div>
-                    <div class="box-body" style="overflow-x: auto; max-height: 300px; height: auto;">
+                    <div class="box-body" style="overflow-x: auto; height: 420px;">
                         <table id="example1" class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th>网络号</th>
                                     <th>名称</th>
                                     <th>公司</th>
-                                    <th>状态</th>
+                                    <th>在线状态</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -266,13 +262,11 @@
                                         <td>{{ row.name }}</td>
                                         <td>{{ row.Enterprise }}</td>
                                         <td>
-                                            {% for k, v in gw_status.items %}
-                                                {% if v == row.gw_status and row.gw_status == 1 %}
-                                                    <p style="color: green; font-weight: bolder; font-size: larger;">{{ k }}</p>
-                                                {% elif v == row.gw_status and row.gw_status == 0 %}
-                                                    <p style="color: red; font-weight: bolder; font-size: larger;">{{ k }}</p>
-                                                {% endif %}
-                                            {% endfor %}
+                                            {% if row.gw_status == 1 %}
+                                                <p style="color: green; font-weight: bolder; font-size: larger;">在线</p>
+                                            {% elif row.gw_status == 0 %}
+                                                <p style="color: red; font-weight: bolder; font-size: larger;">离线</p>
+                                            {% endif %}
                                         </td>
                                     </tr>
                                 {% endfor %}
@@ -280,26 +274,10 @@
                         </table>
                       </div>
                   </div>
-                  <!-- 地图 -->
-                  <div class="box box-solid box-success">
-                    <div class="box-header with-border">
-                      <h3 class="box-title">地图</h3>
-                      <div class="box-tools pull-right">
-                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
-                                title="Collapse">
-                          <i class="fa fa-minus"></i></button>
-                        <button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove">
-                          <i class="fa fa-times"></i></button>
-                      </div>
-                    </div>
-                    <div class="box-body">
-                        <div id="myMap" style="height: 400px; width: 100%;"></div>
-                    </div>
-                  </div>
 
                 </section>
 
-                <section class="col-lg-5 connectedSortable">
+                <section class="col-lg-6 connectedSortable">
                   <!-- 报警信息 -->
                   <div class="box box-solid box-danger">
                         <div class="box-header with-border">
@@ -344,17 +322,33 @@
                         </div>
                     <!-- /.box-body -->
                       </div>
+                  <!-- 地图 -->
+                  <div class="box box-solid box-success">
+                    <div class="box-header with-border">
+                      <h3 class="box-title">地图</h3>
+                      <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
+                                title="Collapse">
+                          <i class="fa fa-minus"></i></button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove" data-toggle="tooltip" title="Remove">
+                          <i class="fa fa-times"></i></button>
+                      </div>
+                    </div>
+                    <div class="box-body">
+                        <div id="myMap" style="height: 400px; width: 100%;"></div>
+                    </div>
+                  </div>
 
                 </section>
-
 
                 <!-- right col -->
               </div>
               <!-- /.row (main row) -->
             </section>
             <!-- /.content -->
+
         {% endblock %}
-    
+
     </div>
       <!-- /.content-wrapper -->
      <footer class="main-footer">
@@ -364,14 +358,14 @@
         <strong>零声科技监测服务器系统 <a href="http://www.orisonic.com">ORISONIC</a>.</strong> 零声科技（苏州）有限公司
       </footer>
 </div>
+<input style="display: none" type="text" id="gw-network-id-list" value="{{ request.session.gw_network_id_list }}">
 <!-- jQuery 3 -->
 <script type="text/javascript" src="/static/bower_components/jquery/dist/jquery.min.js"></script>
 <!-- jQuery UI 1.11.4 -->
 <script src="/static/bower_components/jquery-ui/jquery-ui.min.js"></script>
 <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
 <script>
-  $.widget.bridge('uibutton', $.ui.button);
-
+    $.widget.bridge('uibutton', $.ui.button);
 
 </script>
 {#<!-- IE兼容ES6基本语法 -->#}
@@ -413,7 +407,6 @@
 
 {% block script %}
     <script>
-
     // 滚动函数
     window.onload = roll(50);
      function roll(t) {

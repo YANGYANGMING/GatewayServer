@@ -7,7 +7,7 @@ import json
 class MQTTClient(object):
     
     def __init__(self):
-        self.sub_list = [('pub', 2)]
+        self.sub_list = 'pub'
         self.client = mqtt.Client()
         self.client.on_connect = self.on_connect
         self.client.on_disconnect = self.on_disconnect

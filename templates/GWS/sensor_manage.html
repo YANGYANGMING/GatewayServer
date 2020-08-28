@@ -232,8 +232,8 @@
             fd.append('location_img_obj', location_img_obj);
             fd.append('data', data);
 
-            var gwntid = network_id.split('.').slice(0, 3).join('.') + '.0';
-            SetTimeToShowTimeOutMSG("remove_sensor", gwntid);
+            {#var gwntid = network_id.split('.').slice(0, 3).join('.') + '.0';#}
+            {#SetTimeToShowTimeOutMSG("remove_sensor", gwntid);#}
 
             $.ajax({
                 url: "/GWS/send-server-data",

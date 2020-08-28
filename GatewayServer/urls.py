@@ -18,13 +18,21 @@ from django.conf.urls import include
 from django.urls import re_path
 from GWS.views import account
 from django.views.generic import RedirectView
+from django.views import static ##新增
+from django.conf import settings ##新增
+from django.conf.urls import url ##新增
 
 urlpatterns = [
     re_path('^admin/', admin.site.urls),
     re_path(r'^GWS/', include('GWS.urls')),
     re_path(r'^login/$', account.acc_login),
     re_path(r'^logout/$', account.acc_logout, name='logout'),
-    re_path(r'^$', RedirectView.as_view(url='GWS/index')),
 
+    # url(r'^static/(?P<path>.*)$', static.serve,
+    #     {'document_root': settings.STATIC_ROOT}, name='static'),
+
+    re_path(r'^$', RedirectView.as_view(url='GWS/index')),
     re_path(r'\S', account.page_404),
+
+
 ]

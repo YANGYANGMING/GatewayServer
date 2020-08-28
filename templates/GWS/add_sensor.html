@@ -229,13 +229,16 @@
             }
 
             // 重新添加传感器的时候不会触发JudgeSensorNetworkIDExist()
+             sensor_sensor_id_exist = false;
+             sensor_alias_exist = false;
              sensor_network_id_exist = false;
+
 
         });
 
         function AddSave() {
             {#ShowLoading();#}
-             $('#add_sensor').html('命令已加入队列，请稍等...');
+            {# $('#add_sensor').html('命令已加入队列，请稍等...');#}
 
             var fd = new FormData();
 
@@ -264,7 +267,6 @@
             fd.append('location_img_obj', location_img_obj);
             fd.append('data', data);
 
-            var gwntid = network_id.split('.').slice(0, 3).join('.') + '.0';
             if (received_time_data.days === '0' && received_time_data.hours === '0' && received_time_data.minutes === '0') {
                 $('#add_sensor').html('时间不合法！');
             } else if (received_time_data.days === '0' && parseInt(received_time_data.hours) <= 11 && parseInt(received_time_data.minutes) <= 59){
@@ -279,10 +281,13 @@
                 $('#add_sensor').html('传感器ID已存在！');
             }  else if(sensor_alias_exist){
                 $('#add_sensor').html('传感器名称已存在！');
-            } else if(sensor_network_id_exist){
+            } else if(sensor_network_id_exist === 1){
                 $('#add_sensor').html('传感器网络号已存在！');
-            }else{
-                SetTimeToShowTimeOutMSG("add_sensor", gwntid);
+            } else if(sensor_network_id_exist === 2){
+                $('#add_sensor').html('传感器网络号格式有误！');
+            } else{
+                {#var gwntid = network_id.split('.').slice(0, 3).join('.') + '.0';#}
+                {#SetTimeToShowTimeOutMSG("add_sensor", gwntid);#}
                 $.ajax({
                     url: '/GWS/send-server-data',
                     type:'POST',
@@ -290,6 +295,7 @@
                     processData: false,
                     contentType: false,
                     success:function (arg) {
+                        $('#add_sensor').text(JSON.parse(arg).msg);
                     }
                 })
             }

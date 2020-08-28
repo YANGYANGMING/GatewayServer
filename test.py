@@ -316,8 +316,8 @@ from queue import PriorityQueue
 # print(otherStyleTime)
 
 
-a = models.Sensor.objects.filter(alias='1号传感器').exclude(network_id='0.0.1.1').exists()
-print('a', a)
-
-
-
+# from django.contrib.auth.models import Group, Permission
+# group_obj = Group.objects.get(id=2)
+# print(group_obj)
+# permissions_list = group_obj.permissions.values('id')
+# print(permissions_list)

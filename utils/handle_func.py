@@ -16,7 +16,6 @@ from pypinyin import lazy_pinyin
 
 # views视图需要用到的返回数据值
 update_gw_payload = {}
-add_gw_payload = {}
 add_sensor_payload = {}
 set_sensor_params_payload = {}
 recv_gwdata_payload = {}
@@ -38,28 +37,32 @@ class HandleFunc(object):
         :return:GWS_sensor
         """
         sync_sensors = payload['sync_sensors']
-        gateway_obj = models.Gateway.objects.filter(network_id=sync_sensors[0]['gateway']).first()
-        server_network_id_dict = models.Sensor.objects.values('network_id').filter(gateway__network_id=sync_sensors[0]['gateway'])
-        server_network_id_list = [item['network_id'] for item in server_network_id_dict]
-        for item in sync_sensors:
-            item['gateway'] = gateway_obj
-            # update
-            if item['network_id'] in server_network_id_list:
-                models.Sensor.objects.filter(network_id=item['network_id']).update(**item)
-                print('update')
-                server_network_id_list.remove(item['network_id'])
-            # create
-            else:
-                models.Sensor.objects.create(**item)
-                print('create')
-        # remove
-        # print('server_network_id_list', server_network_id_list)
-        if server_network_id_list:
-            for remove_item in server_network_id_list:
-                models.Sensor.objects.filter(network_id=remove_item).delete()
-                print('remove')
-        # Log
-        views.log.log(payload['status'], payload['msg'], sync_sensors[0]['gateway'])
+        try:
+            gateway_obj = models.Gateway.objects.filter(network_id=sync_sensors[0]['gateway']).first()
+            server_network_id_dict = models.Sensor.objects.values('network_id').filter(gateway__network_id=sync_sensors[0]['gateway'])
+            server_network_id_list = [item['network_id'] for item in server_network_id_dict]
+            for item in sync_sensors:
+                item['gateway'] = gateway_obj
+                # update
+                if item['network_id'] in server_network_id_list:
+                    models.Sensor.objects.filter(network_id=item['network_id']).update(**item)
+                    print('update')
+                    server_network_id_list.remove(item['network_id'])
+                # create
+                else:
+                    models.Sensor.objects.create(**item)
+                    print('create')
+            # remove
+            # print('server_network_id_list', server_network_id_list)
+            if server_network_id_list:
+                for remove_item in server_network_id_list:
+                    models.Sensor.objects.filter(network_id=remove_item).delete()
+                    print('remove')
+            # Log
+            views.log.log(payload['status'], payload['msg'], sync_sensors[0]['gateway'])
+        except Exception as e:
+            views.log.log(False, "上电更新失败", sync_sensors[0]['gateway'])
+            print(e)
 
     def heart_ping(self, payload):
         """
@@ -106,7 +109,7 @@ class HandleFunc(object):
         :return:
         """
         print('增加.........')
-        print(payload)
+        # print(payload)
         if payload['status']:
             # 处理图片及其路径
             location_img_json = payload['receive_data'].pop('location_img_json')
@@ -131,8 +134,8 @@ class HandleFunc(object):
                 models.Sensor.objects.create(**payload['receive_data'])
         # Log
         views.log.log(payload['status'], payload['msg'], payload['receive_data']['network_id'], payload['user'])
-        global add_gw_payload
-        add_gw_payload = payload
+        # global add_gw_payload
+        # add_gw_payload = payload
 
     def remove_sensor(self, payload):
         """
@@ -186,8 +189,6 @@ class HandleFunc(object):
                 user_item.gateway.add(gateway_nid)
         # Log
         views.log.log(payload['status'], payload['msg'], payload['gateway_data']['network_id'], payload['user'])
-        global add_gw_payload
-        add_gw_payload = payload
 
     def gwdata(self, payload):
         """
@@ -205,8 +206,6 @@ class HandleFunc(object):
             sensor_obj.update(battery=gwData['battery'], sensor_online_status=1)
         else:  # 未采集到数据，传感器在线状态变成离线
             sensor_obj.update(sensor_online_status=0)
-        global recv_gwdata_payload
-        recv_gwdata_payload = payload
 
     def pause_sensor(self, payload):
         """
@@ -264,8 +263,6 @@ class HandleFunc(object):
             models.Sensor.objects.filter(network_id=network_id).update(**params_dict)
         # Log
         views.log.log(payload['status'], payload['msg'], payload['network_id'])
-        global set_sensor_params_payload
-        set_sensor_params_payload = payload
 
     def send_network_id_to_queue(self, payload):
         """
@@ -319,15 +316,6 @@ def send_to_gw(queue_obj):
                 time.sleep(0.5)
                 if recv_gwdata_payload:
                     break
-            if not recv_gwdata_payload:
-                # 超时时间到，未返回任何数据，则显示采样失败信息，网关未响应
-                send_data = {'id': 'client', 'header': true_header, 'status': False, 'msg': '[%s]获取失败，网关未响应。' % network_id}
-                client.publish(topic, json.dumps(send_data), 2)
-                # Log
-                views.log.log(send_data['status'], send_data['msg'], network_id)
-            else:
-                # Log
-                views.log.log(recv_gwdata_payload['status'], recv_gwdata_payload['msg'], network_id)
         elif true_header == "set_sensor_params":
             send_data = {'id': 'server', 'header': true_header, 'val_dict': q1['val_dict'], 'network_id': network_id}
             client.publish(topic, json.dumps(send_data), 2)
@@ -339,15 +327,6 @@ def send_to_gw(queue_obj):
                 time.sleep(0.5)
                 if set_sensor_params_payload:
                     break
-            if not set_sensor_params_payload:
-                # 超时时间到，未返回任何数据，则显示采样失败信息，网关未响应
-                send_data = {'id': 'client', 'header': 'set_sensor_params', 'status': False, 'msg': '[%s]设置参数失败，网关未响应。' % network_id}
-                client.publish(topic, json.dumps(send_data), 2)
-                # Log
-                views.log.log(send_data['status'], send_data['msg'], network_id)
-            else:
-                # Log
-                views.log.log(set_sensor_params_payload['status'], set_sensor_params_payload['msg'], network_id)
         elif true_header == "add_sensor":
             send_data = {'id': 'server', 'header': true_header, 'data': q1['receive_data'], 'network_id': network_id}
 
@@ -364,22 +343,19 @@ def send_to_gw(queue_obj):
                 add_sensor_start_time = time.time()
                 # 接收到网关处理好的结果，用于把操作返回的信息展示到页面
                 global add_sensor_payload
-                add_sensor_payload = {}  # 接收之前先清除payload中的缓存数据
                 while (time.time() - add_sensor_start_time) < 6:
                     time.sleep(0.5)
                     if add_sensor_payload:
                         break
-                if not add_sensor_payload:
-                    # 超时时间到，未返回任何数据，则显示采样失败信息，网关未响应
-                    send_data = {'id': 'client', 'header': 'add_sensor', 'status': False, 'msg': '[%s]添加传感器失败，网关未响应。' % network_id}
-                    client.publish(topic, json.dumps(send_data), 2)
-                    # Log
-                    views.log.log(send_data['status'], send_data['msg'], network_id)
-                else:
-                    # Log
-                    views.log.log(add_sensor_payload['status'], add_sensor_payload['msg'], network_id)
-            else:
-                print('alias_is_exist存在', alias_is_exist)
+                add_sensor_payload = {}  # 清除payload中的缓存数据
+        elif true_header == "test_signal_strength":
+            send_data = {'id': 'server', 'header': true_header, 'network_id': network_id}
+            client.publish(topic, json.dumps(send_data), 2)
+            test_signal_strength_time = time.time()
+            while True:
+                time.sleep(0.5)
+                if (time.time() - test_signal_strength_time) > 7:
+                    break
 
 
 class HandleImgs(object):
@@ -435,10 +411,7 @@ class HandleImgs(object):
         """
         im = Image.open(infile)
         x, y = im.size
-        print('x', x)
-        print('y', y)
         y_s = int(y * x_s / x)
-        print('y_s', y_s)
         out = im.resize((x_s, y_s), Image.ANTIALIAS)
         outfile = self.get_outfile(infile, outfile)
         out.save(outfile)
@@ -511,13 +484,11 @@ def corrosion_rate(network_id, days_interval=0):
     :param data_first:
     :return:
     """
-    print('network_id', network_id)
     data_list = get_data_list(network_id, days_interval)
 
     if data_list:
         first_struct_time = data_list[0]['time_tamp']
         effective_days = calculate_effective_days(data_list)
-        print('effective_days==========', effective_days)
         # 如果采集数据的有效天数effective_days >= (选择的天数 * 0.6)，<= 选择的天数,
         # （选择的天数 * 0.5）表示去掉防止采集的数据出错导致厚度值为0的天数和未采集数据的天数
         if (days_interval * 0.5) <= effective_days <= days_interval:
@@ -527,7 +498,6 @@ def corrosion_rate(network_id, days_interval=0):
             # plt.legend(loc="upper left")
             # plt.show()
             corrosion_rate = round(float(abs(corrosion_rate * 365)), 3)
-            print('corrosion_rate2', corrosion_rate)
         else:
             corrosion_rate = '需要更多数据！'
     else:
@@ -591,15 +561,15 @@ def get_data_list(network_id, days_interval):
 
         second_stamp_time = first_stamp_time + (3 * 24 * 60 * 60)
         first_struct_time = time.strftime("%Y-%m-%d", time.localtime(first_stamp_time))
-        print(first_struct_time)
+        # print(first_struct_time)
         second_struct_time = time.strftime("%Y-%m-%d", time.localtime(second_stamp_time))
-        print(second_struct_time)
+        # print(second_struct_time)
         # is_exist判断选择的时间段的前4天是否都有数据
         is_exist = models.Waveforms.objects.filter(network_id=network_id,
                                                    time_tamp__gte=first_struct_time,
                                                    time_tamp__lte=second_struct_time,
                                                    ).exists()
-        print(is_exist)
+        # print(is_exist)
 
         if is_exist:
             data_list = models.Waveforms.objects.filter(network_id=network_id,
@@ -775,7 +745,6 @@ def show_selected_permissions(request, Group, nid):
         id=request.user.id).user_permissions.values('id', 'name').all()
     # 当前被选中要修改的用户所拥有的角色权限和被手动分配的权限
     selected_user_role_permissions_list = list(Group.objects.values('permissions__id').filter(user=nid))
-    print('selected_user_role_permissions_list', selected_user_role_permissions_list)
     selected_user_manual_assign_permissions_list = models.UserProfile.objects.get(id=nid).user_permissions.values(
         'id').all()
     # 变换key保持一致
@@ -791,7 +760,10 @@ def show_selected_permissions(request, Group, nid):
     # 当前被选中要修改的用户所拥有的角色权限和被手动分配的权限的总和
     selected_user_permissions_list = [item['permissions__id'] for item in selected_user_role_permissions_list] + \
                                      [item['id'] for item in selected_user_manual_assign_permissions_list]
+    if not selected_user_permissions_list[0]:  # 如果没有设置权限，默认为-1，防止前端console显示出错
+        selected_user_permissions_list[0] = -1
     selected_user_permissions_list = list_dict_duplicate_removal(selected_user_permissions_list)
+    print('selected_user_permissions_list', selected_user_permissions_list)
     return cur_user_all_permissions_list, selected_user_permissions_list
 
 
@@ -803,6 +775,30 @@ def list_dict_duplicate_removal(distinct_list):
     """
     run_function = lambda x, y: x if y in x else x + [y]
     return reduce(run_function, [[], ] + distinct_list)
+
+
+def verify_the_validity_of_network_id(network_id):
+    """
+    验证network_id的合法性
+    :param network_id:
+    :return:
+    """
+    network_item_list = network_id.split('.')
+    if len(network_item_list) == 4:
+        for item in network_item_list:
+            try:
+                int(item)
+            except:
+                return False
+        if int(network_item_list[0]) >= 0 \
+            and int(network_item_list[1]) >= 0 \
+            and int(network_item_list[2]) >= 0 \
+            and int(network_item_list[3]) > 0:
+            return True
+        else:
+            return False
+    else:
+        return False
 
 
 #######################################################

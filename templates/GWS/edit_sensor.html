@@ -236,8 +236,6 @@
         function Update() {
             {#ShowLoading();#}
 
-            $('#update_sensor').html('正在更新数据，请稍等...');
-
             var fd = new FormData();
             var sensor_id = $('#sensor-id').val();
             var alias = $('#alias').val();
@@ -257,8 +255,6 @@
             var hours = $('#hours').val();
             var minutes = $('#minutes').val();
             var received_time_data = {'days': days, 'hours': hours, 'minutes': minutes};
-
-            var gwntid = network_id.split('.').slice(0, 3).join('.') + '.0';
 
             // 判断src是否为空
             var exist_img_path = '';
@@ -281,7 +277,9 @@
             } else if (alias === ""){
                 $('#update_sensor').html('传感器名称不能为空！');
             } else{
-                SetTimeToShowTimeOutMSG("update_sensor", gwntid);
+                {#var gwntid = network_id.split('.').slice(0, 3).join('.') + '.0';#}
+                {#SetTimeToShowTimeOutMSG("update_sensor", gwntid);#}
+
                 $.ajax({
                     url: '/GWS/send-server-data',
                     type:'POST',
@@ -289,6 +287,8 @@
                     processData: false,
                     contentType: false,
                     success:function (arg) {
+                        console.log(arg);
+                        $('#update_sensor').text(JSON.parse(arg).msg);
                     }
                 })
             }

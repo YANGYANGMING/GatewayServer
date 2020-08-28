@@ -41,6 +41,7 @@
                             <span id="gwdata" style="color: red; display: inline;"></span>
                         </div>
                     </div>
+
 {#                <div class="col-xs-12 col-md-3">#}
 {#                    <p>返回信息：</p>#}
 {#                    <ul id="show-recv-msg" style="list-style: none; height: 100px; overflow: auto">#}
@@ -154,14 +155,13 @@
 
         {#RefreshRecvMsg();#}
 
-
       });
 
     //手动获取数据
     button_sample = false;
     function RefreshDataManual() {
         $('#refresh-data-manual').click(function () {
-            $('#gwdata').html('已经加入采样队列，请稍等...');
+            {#$('#gwdata').html('已经加入采样队列，请稍等...');#}
 
             var gateway_network_id = $('#selected-gateway-id').val();
             var sensor_network_id = $('#selected-sensor-id').val();
@@ -176,14 +176,7 @@
                         dataType: 'json',
                         data: {'sensor_network_id': sensor_network_id, 'gateway_network_id': gateway_network_id},
                         success: function (arg) {
-                            {#console.log(arg);#}
-                            {#if (arg.status) {#}
-                            {#    $('#gwdata').text(arg.msg);#}
-                            {#    ClearMSG('#gwdata')#}
-                            {# }else{#}
-                            {#    $('#gwdata').text(arg.msg);#}
-                                {#btn_sample = false;#}
-                            {# }#}
+                            $('#gwdata').text(arg.msg);
                         },
                         error: function (arg) {
                             button_sample = false;

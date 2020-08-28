@@ -136,7 +136,11 @@ USE_TZ = False
 AUTH_USER_MODEL = 'GWS.UserProfile'
 
 STATIC_URL = '/static/'
-
+# STATIC_ROOT = 'static'  # # 新增行
+# STATICFILES_DIRS = [
+#   os.path.join(BASE_DIR, '/static/'),  # # 修改地方
+# ]
+#
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
@@ -168,7 +172,7 @@ MQTT_HOST = "127.0.0.1"
 MQTT_USERNAME = 'ORISONIC'
 MQTT_PASSWORD = 'ORISONIC2020'
 
-# crtPath = BASE_DIR + r"\crt_47.92.190.54"
+# crtPath = BASE_DIR + r"\crt_47.93.190.54"
 crtPath = BASE_DIR + r"\crt_192.168.0.44"
 
 ca_certs = "%s\ca\MyRootCA.pem" % crtPath

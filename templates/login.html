@@ -26,7 +26,7 @@
 						<div class="input-group-addon">
 							<i class="icon_user"></i>
 						</div>
-						<input type="text" class="form-control" name="username" id="username" placeholder="用户名" autocomplete="off" oninput="CheckRole()">
+						<input type="text" class="form-control" name="username" id="username" value="{{ username }}" placeholder="用户名" autocomplete="off" oninput="CheckRole();">
 					</div>
 				</div>
 
@@ -35,7 +35,7 @@
 						<div class="input-group-addon">
 							<i class="icon_password"></i>
 						</div>
-						<input type="password" class="form-control" name="password" id="password" placeholder="密码" autocomplete="off">
+						<input type="password" class="form-control" name="password" id="password" value="{{ password }}" placeholder="密码" autocomplete="off">
 					</div>
 				</div>
 
@@ -70,7 +70,7 @@
                     </label>
                   </div>
 {#					<div><a href="#" class="forget">忘记密码？</a></div>#}
-                  <div class="tishi" style="color: white;"></div>
+                  <div class="tishi" style="color: red;">{{ result.msg }}</div>
 				<div class="form-group">
 					<button href="javascript:;" type="submit" class="btn btn-danger btn-block btn-login">
 						<i class="fa fa-sign-in"></i>
@@ -78,7 +78,7 @@
 					</button>
 				</div>
 {#                <div class=" textright"><a href="" class="forget">立即注册</a></div>#}
-                    
+
 			</form>
   			</div>
 

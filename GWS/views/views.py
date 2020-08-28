@@ -30,14 +30,7 @@ def index(request):
     all_alarm_sensor_list = []
     all_alarm_sensor_list2 = []
 
-    # user_obj = models.UserProfile.objects.filter(name=request.user)
-    # if user_obj.values('role__name')[0]['role__name'] == "超级管理员":
-    #     gateway_obj = models.Gateway.objects.all()
-    # else:
-    #     gateway_obj = user_obj.first().gateway.all()
-
     gateway_obj = get_gateway_obj(request)
-
 
     gw_status = {'在线': 1, '离线': 0}
     for gw_item in gateway_obj:
@@ -96,11 +89,6 @@ def manual_config(request):
     if request.method == 'GET':
         last_time_gwntid = request.session.get('gwntid_and_snrntid', {'gw': '', 'snr': ''})['gw']
         last_time_snrntid = request.session.get('gwntid_and_snrntid', {'gw': '', 'snr': ''})['snr']
-        # user_obj = models.UserProfile.objects.filter(name=request.user)
-        # if user_obj.values('role__name')[0]['role__name'] == "超级管理员":
-        #     gateway_obj = models.Gateway.objects.values('name', 'network_id')
-        # else:
-        #     gateway_obj = user_obj.first().gateway.values('name', 'network_id')
 
         gateway_obj = get_gateway_obj(request, name='name', network_id='network_id')
 
@@ -126,16 +114,20 @@ def manual_config(request):
         # 把sensor_network_id和gateway_network_id存到session中，刷新页面可保存上次操作内容
         request.session['gwntid_and_snrntid'] = {'gw': gateway_network_id, 'snr': sensor_network_id}
         try:
-            if sensor_network_id != '':
-                gateway_network_id = sensor_network_id.rsplit('.', 1)[0] + '.0'
-                Enterprise = models.Gateway.objects.values('Enterprise').get(network_id=gateway_network_id)['Enterprise']
-                payload['network_id_list'] = [sensor_network_id]
-                payload['Enterprise'] = Enterprise
-                payload['level'] = 6
-                payload['true_header'] = 'gwdata'
-                # 加入队列
-                handle_func.handle_func_obj.send_network_id_to_queue(payload)
-                response = {'status': True, 'msg': "成功加入采样队列，请稍等..."}
+            gateway_online_status = models.Gateway.objects.values('gw_status').filter(network_id=gateway_network_id)[0]['gw_status']
+            if gateway_online_status:
+                if sensor_network_id != '':
+                    gateway_network_id = sensor_network_id.rsplit('.', 1)[0] + '.0'
+                    Enterprise = models.Gateway.objects.values('Enterprise').get(network_id=gateway_network_id)['Enterprise']
+                    payload['network_id_list'] = [sensor_network_id]
+                    payload['Enterprise'] = Enterprise
+                    payload['level'] = 6
+                    payload['true_header'] = 'gwdata'
+                    # 加入队列
+                    handle_func.handle_func_obj.send_network_id_to_queue(payload)
+                    response = {'status': True, 'msg': "成功加入采样队列，请稍等..."}
+            else:
+                response = {'status': False, 'msg': "此传感器所在网关已离线"}
         except KeyError:
             print('没有这个传感器')
 
@@ -159,11 +151,6 @@ def sensor_manage(request):
         material = models.Material.objects.values('id', 'name').all().order_by('id')
         sensor_run_status = {'开通': 1, '禁止': 0}
         sensor_online_status = {'在线': 1, '离线': 0}
-        # user_obj = models.UserProfile.objects.filter(name=request.user)
-        # if user_obj.values('role__name')[0]['role__name'] == "超级管理员":
-        #     gateway_obj = models.Gateway.objects.values('network_id', 'name')
-        # else:
-        #     gateway_obj = user_obj.first().gateway.values('network_id', 'name')
 
         gateway_obj = get_gateway_obj(request, name='name', network_id='network_id')
 
@@ -189,11 +176,6 @@ def gateway_manage(request):
     :return:
     """
     if request.method == 'GET':
-        # user_obj = models.UserProfile.objects.filter(name=request.user)
-        # if user_obj.values('role__name')[0]['role__name'] == "超级管理员":
-        #     gateway_obj = models.Gateway.objects.all()
-        # else:
-        #     gateway_obj = user_obj.first().gateway.all()
         gateway_obj = get_gateway_obj(request)
         print(gateway_obj)
         gw_status = {'在线': 1, '离线': 0}
@@ -217,11 +199,6 @@ def edit_sensor_params(request):
         "Sample_depth": [Sample_depth for Sample_depth in range(0, 3)],
         "Sample_Hz": [200, 5000],
     }
-    # user_obj = models.UserProfile.objects.filter(name=request.user)
-    # if user_obj.values('role__name')[0]['role__name'] == "超级管理员":
-    #     gateway_obj = models.Gateway.objects.values('network_id', 'name')
-    # else:
-    #     gateway_obj = user_obj.first().gateway.values('network_id', 'name')
 
     gateway_obj = get_gateway_obj(request, name='name', network_id='network_id')
 
@@ -255,11 +232,6 @@ def all_data_report(request):
         order_column_rule = request.POST.get('order[0][dir]')  # 排序规则：ase/desc
 
         # 查找当前用户所拥有的网关和传感器
-        # user_obj = models.UserProfile.objects.filter(name=request.user)
-        # if user_obj.values('role__name')[0]['role__name'] == "超级管理员":
-        #     gateway_obj = models.Gateway.objects.values('network_id')
-        # else:
-        #     gateway_obj = user_obj.first().gateway.values('network_id')
 
         gateway_obj = get_gateway_obj(request, name='name', network_id='network_id')
 
@@ -320,11 +292,6 @@ def thickness_report(request):
     """
     data_obj = models.Waveforms.objects.values('network_id', 'network_id__alias').distinct()
     print(data_obj)
-    # user_obj = models.UserProfile.objects.filter(name=request.user)
-    # if user_obj.values('role__name')[0]['role__name'] == "超级管理员":
-    #     gateway_obj = models.Gateway.objects.values('network_id', 'name')
-    # else:
-    #     gateway_obj = user_obj.first().gateway.values('network_id', 'name')
 
     gateway_obj = get_gateway_obj(request, name='name', network_id='network_id')
 
@@ -338,12 +305,6 @@ def corrosion_rate_list(request):
     :param request:
     :return:
     """
-    # user_obj = models.UserProfile.objects.filter(name=request.user)
-    # if user_obj.values('role__name')[0]['role__name'] == "超级管理员":
-    #     gateway_obj = models.Gateway.objects.values('network_id', 'name')
-    # else:
-    #     gateway_obj = user_obj.first().gateway.values('network_id', 'name')
-
     days_interval = int(request.session.get('days_interval', 0))
     print('days_interval', days_interval)
 
@@ -375,12 +336,6 @@ def add_sensor(request, network_id):
     :param request:
     :return:
     """
-    # user_obj = models.UserProfile.objects.filter(name=request.user)
-    # if user_obj.values('role__name')[0]['role__name'] == "超级管理员":
-    #     gateway_obj = models.Gateway.objects.values('network_id', 'name')
-    # else:
-    #     gateway_obj = user_obj.first().gateway.values('network_id', 'name')
-
     gateway_obj = get_gateway_obj(request, name='name', network_id='network_id')
 
     sensor_obj = models.Sensor.objects.first()
@@ -632,7 +587,7 @@ def send_server_data(request):
     :param request:
     :return:
     """
-    response = {'status': False, 'msg': '网关未响应'}
+    response = {'status': False, 'msg': '操作中...'}
     if request.method == 'POST':
 
         server_data = handle_func.handle_img_and_data(request)
@@ -642,30 +597,37 @@ def send_server_data(request):
 
         gateway_network_id = sensor_network_id.rsplit('.', 1)[0] + '.0'
 
-        if server_data['choice'] == 'update':
-            print('更新.....')
-            send_data = {'id': 'server', 'header': 'update_sensor', 'data': server_data, 'user': str(request.user)}
-            print('send_data', send_data)
-            client.publish(gateway_network_id, json.dumps(send_data), 2)
+        gateway_online_status = models.Gateway.objects.values('gw_status').filter(network_id=gateway_network_id)[0][
+            'gw_status']
+        if gateway_online_status:
 
-        elif server_data['choice'] == 'add':
-            print('增加.....')
-            # send_data = {'id': 'server', 'header': 'add_sensor', 'data': server_data, 'user': str(request.user)}
-            payload = {}
-            Enterprise = models.Gateway.objects.values('Enterprise').get(network_id=gateway_network_id)['Enterprise']
-            payload['receive_data'] = server_data
-            payload['network_id_list'] = [sensor_network_id]
-            payload['Enterprise'] = Enterprise
-            payload['level'] = 2
-            payload['true_header'] = 'add_sensor'
-            # 加入队列
-            handle_func.handle_func_obj.send_network_id_to_queue(payload)
+            if server_data['choice'] == 'update':
+                print('更新.....')
+                send_data = {'id': 'server', 'header': 'update_sensor', 'data': server_data, 'user': str(request.user)}
+                print('send_data', send_data)
+                client.publish(gateway_network_id, json.dumps(send_data), 2)
 
-        elif server_data['choice'] == 'remove':
-            print('删除.....')
-            send_data = {'id': 'server', 'header': 'remove_sensor', 'data': server_data, 'user': str(request.user)}
-            print('send_data', send_data)
-            client.publish(gateway_network_id, json.dumps(send_data), 2)
+            elif server_data['choice'] == 'add':
+                print('增加.....')
+                # send_data = {'id': 'server', 'header': 'add_sensor', 'data': server_data, 'user': str(request.user)}
+                payload = {}
+                Enterprise = models.Gateway.objects.values('Enterprise').get(network_id=gateway_network_id)[
+                    'Enterprise']
+                payload['receive_data'] = server_data
+                payload['network_id_list'] = [sensor_network_id]
+                payload['Enterprise'] = Enterprise
+                payload['level'] = 2
+                payload['true_header'] = 'add_sensor'
+                # 加入队列
+                handle_func.handle_func_obj.send_network_id_to_queue(payload)
+
+            elif server_data['choice'] == 'remove':
+                print('删除.....')
+                send_data = {'id': 'server', 'header': 'remove_sensor', 'data': server_data, 'user': str(request.user)}
+                print('send_data', send_data)
+                client.publish(gateway_network_id, json.dumps(send_data), 2)
+        else:
+            response = {'status': False, 'msg': '此传感器所在网关已离线'}
 
     return HttpResponse(json.dumps(response))
 
@@ -786,16 +748,22 @@ def judge_sensor_ntid_exist_json(request):
     :param request:
     :return:
     """
-    response = {'status': False, 'msg': ''}
+    response = {'status': 0, 'msg': ''}
     network_id = request.POST.get('network_id')
     previous_network_id = request.POST.get('previous_network_id')
-    if network_id == previous_network_id:  # 判断是否修改了传感器network_id
-        network_id_is_exist = None
-    else:
-        network_id_is_exist = models.Sensor.objects.filter(network_id=network_id).exists()
 
-    if network_id_is_exist:
-        response = {'status': True, 'msg': '此传感器网络号已存在！'}
+    # 验证network_id是否合法
+    validity_of_network_id = handle_func.verify_the_validity_of_network_id(network_id)
+    if validity_of_network_id:
+        if network_id == previous_network_id:  # 判断是否修改了传感器network_id
+            network_id_is_exist = None
+        else:
+            network_id_is_exist = models.Sensor.objects.filter(network_id=network_id).exists()
+
+        if network_id_is_exist:
+            response = {'status': 1, 'msg': '此传感器网络号已存在！'}
+    else:
+        response = {'status': 2, 'msg': '此传感器网络号格式有误！'}
 
     return HttpResponse(json.dumps(response))
 
@@ -978,10 +946,5 @@ try:
 except Exception as e:
     print(e)
     heart_sche.shutdown()
-
-
-
-
-
 
 

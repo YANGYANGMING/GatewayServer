@@ -40,12 +40,22 @@
                     <div  class="col-xs-12 col-md-6 col-md-offset-1">
                         <div class="form-group">
                             <label for="groups">权限组</label>
-                            <select name="groups" id="groups" class="form-control" multiple="multiple" >
+                            <select name="groups" id="groups" class="form-control" multiple="multiple" onclick="GetPermission(this)">
                                 {% for group_item in groups_obj %}
                                     <option value="{{ group_item.id }}">{{ group_item.name }}</option>
                                 {% endfor %}
                             </select>
                             <p id="groups-msg" style="color: red;"></p>
+                        </div>
+                    </div>
+                    <div  class="col-xs-12 col-md-6 col-md-offset-1">
+                        <div class="form-group">
+                            <label for="user-permissions">用户权限</label>
+                            <select name="user_permissions" id="user-permissions" class="form-control " multiple="multiple" style="height: 150px;">
+                                {% for user_permissions_item in cur_user_all_permissions_list %}
+                                    <option value="{{ user_permissions_item.permissions__id }}">{{ user_permissions_item.permissions__name }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                     </div>
                     <div  class="col-xs-12 col-md-6 col-md-offset-1">
@@ -59,16 +69,7 @@
                             <p id="gateway-msg" style="color: red;"></p>
                         </div>
                     </div>
-{#                    <div  class="col-xs-12 col-md-6 col-md-offset-1">#}
-{#                        <div class="form-group">#}
-{#                            <label for="user_permissions">用户权限</label>#}
-{#                            <select name="user_permissions" id="user_permissions" class="form-control " multiple="multiple" style="height: 150px;">#}
-{#                                {% for user_permissions_item in cur_user_all_permissions_list %}#}
-{#                                    <option value="{{ user_permissions_item.permissions__id }}">{{ user_permissions_item.permissions__name }}</option>#}
-{#                                {% endfor %}#}
-{#                            </select>#}
-{#                        </div>#}
-{#                    </div>#}
+
                     <div  class="col-xs-12 col-md-6 col-md-offset-1">
                         <div class="form-group">
                             <label for="is_active">允许登录</label>
@@ -125,6 +126,20 @@
             }
         })
 
+    }
+
+    function GetPermission(ths) {
+        var groups_list = $(ths).val();
+        $.ajax({
+            url: '/GWS/get-user-permissions-json',
+            data: {'groups_list': JSON.stringify(groups_list)},
+            type: 'POST',
+            dataType: 'JSON',
+            success: function (arg) {
+                $('#user-permissions').val(arg);
+
+            }
+        });
     }
 
     // 判断是否有未填写的选项

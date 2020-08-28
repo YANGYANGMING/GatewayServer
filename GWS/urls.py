@@ -38,6 +38,8 @@ urlpatterns = [
     re_path(r'^send-sms-verification-code-to-phone$', account.send_sms_verification_code_to_phone),
     re_path(r'^check-role$', account.check_role),
 
+    re_path(r'^get-user-permissions-json$', account.get_user_permissions_json),
+
     re_path(r'^data-json-report-(.*)$', views.data_json_report),
     re_path(r'^sensor-data-info-(.*)$', views.sensor_data_info),
     re_path(r'^edit-sensor-(\d+)$', views.edit_sensor, name="edit_sensor"),

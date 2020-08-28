@@ -62,7 +62,7 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
 
     class Meta:
         permissions = (
-            ('GWS_manual_config_view', '可以访问配置时间页面'),
+            ('GWS_manual_config_view', '可以访问手动获取数据页面'),
             ('GWS_manual_config_get_data_view', '可以手动获取数据'),
             ('GWS_sensor_manage_view', '可以访问传感器管理页面'),
             ('GWS_gateway_manage_view', '可以访问网关管理页面'),
@@ -123,7 +123,7 @@ class Gateway(models.Model):
     """
     网关
     """
-    name = models.CharField(max_length=32)
+    name = models.CharField(max_length=32, unique=True)
     Enterprise = models.CharField(max_length=128)
     gw_status_choices = ((0, '离线'),
                          (1, '在线'),
