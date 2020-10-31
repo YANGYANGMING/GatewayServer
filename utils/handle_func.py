@@ -18,9 +18,9 @@ from pypinyin import lazy_pinyin
 update_gw_payload = {}
 add_sensor_payload = {}
 set_sensor_params_payload = {}
-recv_gwdata_payload = {}
 pause_payload = {}
 resume_payload = {}
+recv_gwdata_payload = {}
 
 generate_queue = locals()
 
@@ -184,9 +184,22 @@ class HandleFunc(object):
             Enterprise = payload['gateway_data']['Enterprise']
             network_id = payload['gateway_data']['network_id']
             gateway_nid = models.Gateway.objects.filter(network_id=network_id).values('id')[0]['id']
-            user_obj_list = models.UserProfile.objects.filter(gateway__Enterprise=Enterprise).all()
+            user_obj_list = models.UserProfile.objects.filter(gateway__Enterprise=Enterprise, role__name="管理员").all()
             for user_item in user_obj_list:
                 user_item.gateway.add(gateway_nid)
+        # Log
+        views.log.log(payload['status'], payload['msg'], payload['gateway_data']['network_id'], payload['user'])
+
+    def delete_gateway(self, payload):
+        """
+        删除网关
+        :param payload:
+        :return:
+        """
+        print('delete网关.........')
+        if payload['status']:
+            gateway_network_id = payload['gateway_data']['network_id']
+            models.Gateway.objects.filter(network_id=gateway_network_id).delete()
         # Log
         views.log.log(payload['status'], payload['msg'], payload['gateway_data']['network_id'], payload['user'])
 
@@ -199,13 +212,20 @@ class HandleFunc(object):
         gwData = payload['gwData']
         print('取数.......')
         sensor_obj = models.Sensor.objects.filter(network_id=payload['network_id'])
+        # sensor_id = sensor_obj.values('sensor_id')[0]['sensor_id']
         if payload['status']:
             gwData['network_id'] = sensor_obj[0]
             models.Waveforms.objects.create(**gwData)
             # 更新最新电量信息到对应传感器
             sensor_obj.update(battery=gwData['battery'], sensor_online_status=1)
+
+            recv_gwdata_payload[payload['network_id']] = payload
+
         else:  # 未采集到数据，传感器在线状态变成离线
             sensor_obj.update(sensor_online_status=0)
+
+        # Log
+        views.log.log(payload['status'], payload['msg'], payload['network_id'])
 
     def pause_sensor(self, payload):
         """
@@ -237,18 +257,49 @@ class HandleFunc(object):
         global resume_payload
         resume_payload = payload
 
-    def check_alias(self, payload):
+    def check_sensor_params_is_exists(self, payload):
         """
-        检查网关发送过来的alias是否重复
+        检查网关更新时发送过来的传感器alias/sensor_id/network_id是否重复
         :param payload:
         :return:
         """
         print('检查alias.......')
+        choice = payload['choice']
+        sensor_id = payload['sensor_id']
         network_id = payload['network_id']
         alias = payload['alias']
         topic = network_id.rsplit('.', 1)[0] + ".0"
-        alias_is_exist = models.Sensor.objects.filter(alias=alias).exclude(network_id=network_id).exists()
-        result = {'id': 'server', 'header': 'check_alias', 'alias_is_exist': alias_is_exist}
+        if choice == 'update':
+            alias_is_exist = models.Sensor.objects.filter(alias=alias).exclude(network_id=network_id).exists()
+            sensor_id_is_exist = False
+            network_id_is_exist = False
+            result = {'id': 'server', 'header': 'check_sensor_params_is_exists', 'alias_is_exist': alias_is_exist, 'network_id_is_exist': network_id_is_exist, 'sensor_id_is_exist': sensor_id_is_exist}
+            client.publish(topic, json.dumps(result), 2)
+        elif choice == 'add':
+            alias_is_exist = models.Sensor.objects.filter(alias=alias).exists()
+            network_id_is_exist = models.Sensor.objects.filter(network_id=network_id).exists()
+            sensor_id_is_exist = models.Sensor.objects.filter(sensor_id=sensor_id).exists()
+            print('sensor_id', sensor_id)
+            print('sensor_id_is_exist', sensor_id_is_exist)
+            result = {'id': 'server', 'header': 'check_sensor_params_is_exists', 'alias_is_exist': alias_is_exist, 'network_id_is_exist': network_id_is_exist, 'sensor_id_is_exist': sensor_id_is_exist}
+            client.publish(topic, json.dumps(result), 2)
+
+    def check_GW_alias(self, payload):
+        """
+        检查网关发送过来的网关名称是否重复
+        :param payload:
+        :return:
+        """
+        print('检查GW_alias.......')
+        topic = payload['network_id']
+        name = payload['name']
+        gateway_exist = payload['gateway_exist']
+        old_gateway_name = payload['old_gateway_name']
+        if gateway_exist:  # 是更新网关名称
+            GW_alias_is_exist = models.Gateway.objects.filter(name=name).exclude(name=old_gateway_name).exists()
+        else:
+            GW_alias_is_exist = models.Gateway.objects.filter(name=name).exists()
+        result = {'id': 'server', 'header': 'check_GW_alias', 'GW_alias_is_exist': GW_alias_is_exist}
         client.publish(topic, json.dumps(result), 2)
 
     def set_sensor_params(self, payload):
@@ -261,6 +312,19 @@ class HandleFunc(object):
             network_id = payload['network_id']
             params_dict = payload['params_dict']
             models.Sensor.objects.filter(network_id=network_id).update(**params_dict)
+        # Log
+        views.log.log(payload['status'], payload['msg'], payload['network_id'])
+
+    def update_administration_params(self, payload):
+        """
+        接收特检局设置的参数
+        :param payload:
+        :return:
+        """
+        if payload['status']:
+            network_id = payload['network_id']
+            received_time_data = payload['received_time_data']
+            models.Sensor.objects.filter(network_id=network_id).update(received_time_data=received_time_data)
         # Log
         views.log.log(payload['status'], payload['msg'], payload['network_id'])
 
@@ -300,6 +364,7 @@ def send_to_gw(queue_obj):
     """
     while True:
         q_obj = queue_obj.get()
+        print('cur_time == ', time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
         print('取队列数据。。。', q_obj)
         q1 = json.loads(q_obj[1])
         network_id = q1["network_id"]
@@ -313,8 +378,8 @@ def send_to_gw(queue_obj):
             global recv_gwdata_payload
             recv_gwdata_payload = {}  # 接收之前先清除payload中的缓存数据
             while (time.time() - recv_gwdata_start_time) < 60:
-                time.sleep(0.5)
-                if recv_gwdata_payload:
+                time.sleep(0.01)
+                if recv_gwdata_payload.get(network_id, None):
                     break
         elif true_header == "set_sensor_params":
             send_data = {'id': 'server', 'header': true_header, 'val_dict': q1['val_dict'], 'network_id': network_id}
@@ -477,7 +542,7 @@ def mkdir_path(path=None, gw_network_id=None):
     return path
 
 
-def corrosion_rate(network_id, days_interval=0):
+def corrosion_rate(network_id, days_interval):
     """
     计算腐蚀率
     :param data_latest:
@@ -489,7 +554,8 @@ def corrosion_rate(network_id, days_interval=0):
     if data_list:
         first_struct_time = data_list[0]['time_tamp']
         effective_days = calculate_effective_days(data_list)
-        # 如果采集数据的有效天数effective_days >= (选择的天数 * 0.6)，<= 选择的天数,
+        print('effective_days', effective_days)
+        # 如果采集数据的有效天数effective_days >= (选择的天数 * 0.5)，<= 选择的天数,
         # （选择的天数 * 0.5）表示去掉防止采集的数据出错导致厚度值为0的天数和未采集数据的天数
         if (days_interval * 0.5) <= effective_days <= days_interval:
             y = np.array([item['thickness'] for item in data_list])
@@ -508,7 +574,7 @@ def corrosion_rate(network_id, days_interval=0):
 
 def skl_func(x, y):
     """
-    最小二分法计算斜率
+    最小二乘法计算斜率
     :param x:
     :param y:
     :return:
@@ -559,12 +625,12 @@ def get_data_list(network_id, days_interval):
         #     first_struct_time_temp = data_obj.values('time_tamp', 'thickness').first()
         #     first_stamp_time = datetime.strptime(first_struct_time_temp['time_tamp'], "%Y-%m-%d %H:%M:%S").timestamp()
 
-        second_stamp_time = first_stamp_time + (3 * 24 * 60 * 60)
+        second_stamp_time = first_stamp_time + (6 * 24 * 60 * 60)
         first_struct_time = time.strftime("%Y-%m-%d", time.localtime(first_stamp_time))
         # print(first_struct_time)
         second_struct_time = time.strftime("%Y-%m-%d", time.localtime(second_stamp_time))
         # print(second_struct_time)
-        # is_exist判断选择的时间段的前4天是否都有数据
+        # is_exist判断选择的时间段的前7天是否都有数据
         is_exist = models.Waveforms.objects.filter(network_id=network_id,
                                                    time_tamp__gte=first_struct_time,
                                                    time_tamp__lte=second_struct_time,
@@ -630,7 +696,7 @@ def cal_alarm_val(sensor_item):
     alarm_temperature = sensor_item['alarm_temperature'] if sensor_item['alarm_temperature'] else 350
     alarm_corrosion = sensor_item['alarm_corrosion'] if sensor_item['alarm_corrosion'] else 50
     latest_vals = models.Waveforms.objects.values('thickness', 'temperature', 'battery', 'time_tamp').filter(network_id=sensor_item['network_id'])
-    latest_corrosion = corrosion_rate(network_id)
+    latest_corrosion = corrosion_rate(network_id, 90)
 
     if latest_vals:
         if not sensor_item['sensor_online_status']:
@@ -801,7 +867,60 @@ def verify_the_validity_of_network_id(network_id):
         return False
 
 
+def handle_data_to_send_administration(data):
+    """
+    处理发送给特检局的数据
+    :param data:
+    :return:
+    """
+    network_id = data['network_id']
+    Sensor_obj = models.Sensor.objects.values('sensor_id', 'material', 'sensor_run_status', 'received_time_data',
+                                              'Hz', 'alarm_battery', 'battery').get(network_id=network_id)
+    material_id = Sensor_obj['material']
+    sensor_id = Sensor_obj['sensor_id']
+    Sensor_Mac = sensor_id[-10:]
+    material_obj = models.Material.objects.values('name', 'sound_V', 'temperature_co').get(id=material_id)
+    material_name = material_obj['name']
+    temperature = round(float(data['temperature']), 2)
+    thickness = round(float(data['thickness']), 2)
+    # 计算true_sound_V
+    sound_V = material_obj['sound_V']
+    temperature_co = material_obj['temperature_co']
+    true_sound_V = float(sound_V - ((temperature - 25) * temperature_co))
+    # 设备开闭状态
+    sensor_status = True if Sensor_obj['sensor_run_status'] else False
+    # 计算当前时间
+    Current_T = data['time_tamp']
+    # 超声频率
+    Ultrasonic_Freq = float(Sensor_obj['Hz']) * 1000
+    # 转定时时间格式
+    received_time_data = eval(Sensor_obj['received_time_data'])
+    Gauge_Cycle = str(int(received_time_data['days']) * 24 + int(received_time_data['hours'])) + ":00:00"
+    # 电量 --> 电压
+    battery = 5.0 + round(float(Sensor_obj['battery']) / 100, 1)
+    alarm_battery = 5.0 + round(float(Sensor_obj['alarm_battery']) / 100, 1)
+    DATA = {
+        "Current_T": Current_T,
+        "Sensor_Mac": Sensor_Mac,
+        "Gauge_Cycle": Gauge_Cycle,
+        "Material_Type": "45",
+        "Material_Temp": temperature,
+        "Environmental_Temp": 30.00,
+        "Sound_Velocity": true_sound_V,
+        "Voltage": battery,
+        "LIM_Voltage": alarm_battery,
+        "Ultrasonic_Freq": Ultrasonic_Freq,
+        "Time_Cycle": "72:00:00",
+        "Status": sensor_status,
+        "Thickness": [
+            {"Sensor_NO": sensor_id, "Thickness": thickness},
+        ]
+    }
+    return DATA
+
+
 #######################################################
+
 handle_func_obj = HandleFunc()
 
 

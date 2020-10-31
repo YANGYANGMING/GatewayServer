@@ -65,11 +65,11 @@
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
       <jdbc-url>jdbc:postgresql://localhost:5432/gws_test1</jdbc-url>
     </data-source>
-    <data-source source="LOCAL" name="dbtest" uuid="aa364d78-5ff0-4a9b-a9a0-ad1a2b30b750">
+    <data-source source="LOCAL" name="db" uuid="6927bba4-d2aa-425e-ad19-af3bebcba52a">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:D:\yym\网关检测服务器\gatewayserver多网关 - MQTT\GatewayServer\dbtest.sqlite3</jdbc-url>
+      <jdbc-url>jdbc:sqlite:D:\yym\网关检测服务器\gatewayserver多网关 - MQTT\GatewayServer\db.sqlite3</jdbc-url>
       <driver-properties>
         <property name="enable_load_extension" value="true" />
       </driver-properties>
@@ -94,11 +94,40 @@
         </library>
       </libraries>
     </data-source>
-    <data-source source="LOCAL" name="db" uuid="6927bba4-d2aa-425e-ad19-af3bebcba52a">
+    <data-source source="LOCAL" name="db_upload" uuid="bdb3264f-0944-42a7-80e9-531aeb058a6e">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
-      <jdbc-url>jdbc:sqlite:D:\yym\网关检测服务器\gatewayserver多网关 - MQTT\GatewayServer\db.sqlite3</jdbc-url>
+      <jdbc-url>jdbc:sqlite:D:\yym\网关检测服务器\gatewayserver多网关 - MQTT\GatewayServer\db_upload.sqlite3</jdbc-url>
+      <driver-properties>
+        <property name="enable_load_extension" value="true" />
+      </driver-properties>
+      <libraries>
+        <library>
+          <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.25.1/license.txt</url>
+        </library>
+        <library>
+          <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.25.1/sqlite-jdbc-3.25.1.jar</url>
+        </library>
+        <library>
+          <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.25.1/license.txt</url>
+        </library>
+        <library>
+          <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.25.1/sqlite-jdbc-3.25.1.jar</url>
+        </library>
+        <library>
+          <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.25.1/license.txt</url>
+        </library>
+        <library>
+          <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.25.1/sqlite-jdbc-3.25.1.jar</url>
+        </library>
+      </libraries>
+    </data-source>
+    <data-source source="LOCAL" name="db_delete_test" uuid="7154bb71-adb3-4194-9c81-2574a1eeb201">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:D:\yym\网关检测服务器\gatewayserver多网关 - MQTT\GatewayServer\db_delete_test.sqlite3</jdbc-url>
       <driver-properties>
         <property name="enable_load_extension" value="true" />
       </driver-properties>

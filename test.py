@@ -4,6 +4,7 @@ django.setup()
 
 from datetime import datetime
 from GWS import models
+from queue import PriorityQueue
 
 # a = {'id': 1, 'sensor_id': '536876188', 'network_id': '0.0.0.1', 'alias': '1号传感器sd', 'received_time_data': "{'month': '*', 'day': '*', 'hour': '1', 'mins': '1'}", 'cHz': '2', 'gain': '60', 'avg_time': '4', 'Hz': '2', 'Sample_depth': '2', 'Sample_Hz': '500', 'sensor_type': 0, 'Importance': 0, 'date_of_installation': '2020-3-25', 'initial_thickness': '10.0', 'alarm_thickness': '8.0', 'alarm_battery': '50', 'area': '一区', 'location': '1号出料管道处', 'location_img_path': '', 'description': '1号出料管道腐蚀测量', 'assembly_crewman': 'yyy'}
 # models.Sensor.objects.filter(sensor_id=a['sensor_id']).update(**a)
@@ -73,7 +74,6 @@ from GWS import models
 #     db_time_list.append(eval(item['received_time_data']))
 # print(db_time_list)
 
-from queue import PriorityQueue
 # from pypinyin import lazy_pinyin
 # dic = {}
 # generate_queue = locals()
@@ -321,3 +321,499 @@ from queue import PriorityQueue
 # print(group_obj)
 # permissions_list = group_obj.permissions.values('id')
 # print(permissions_list)
+
+
+# import struct
+# a = 2000000000
+# data_length = struct.pack('i', a)
+# print(data_length)
+# print(len(data_length))
+# length = struct.unpack('i', data_length)[0]
+# print(length)
+
+
+# from utils.handle_func import handle_data_to_send_administration
+# from utils.socket_client import mysocket
+# data = {
+#     'network_id': "0.0.2.1",
+#     'temperature': 156,
+#     'thickness': 10.203,
+# }
+#
+# send_data = handle_data_to_send_administration(method='UPDATA', data=data)
+# recv_response = mysocket(send_data)
+# print(recv_response)
+
+
+# import hashlib
+
+# message = b"Hello"
+
+# md_obj = hashlib.md5()
+# md_obj.update(message)
+# md5_val = md_obj.hexdigest()
+# print(md5_val)
+
+
+# from gmssl import sm2, sm3, func
+# from utils.socket_client import UPLOAD_DATA
+
+
+# uid_len = 0x0080
+# uid = 0x31323334353637383132333435363738
+# a = 0xFFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFC
+# b = 0x28E9FA9E9D9F5E344D5A9E4BCF6509A7F39789F515AB8F92DDBCBD414D940E93
+# xG = 0x32C4AE2C1F1981195F9904466A39C9948FE30BBFF2660BE1715A4589334C74C7
+# yG = 0xBC3736A2F4F6779C59BDCEE36B692153D0A9877CC62A474002DF32E52139F0A0
+# xA = 0xD69C2F1EEC3BFB6B95B30C28085C77B125D77A9C39525D8190768F37D6B205B5
+# yA = 0x89DCD316BBE7D89A9DC21917F17799E698531F5E6E3E10BD31370B259C3F81C3
+# n = 0xFFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFF7203DF6B21C6052B53BBF40939D54123
+# p = 0xFFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFF
+# print(sm3.sm3_hash(str(uid_len + uid + a + b + xG + yG + xA + yA)))
+# string = str(uid_len + uid + a + b + xG + yG + xA + yA)
+# print(string)
+# out1 = SM3(string).hash
+# print(out1)
+# print(len(out1))
+
+# hex1 = '1c56'
+# hex2 = '1d'
+# dec1 = eval(hex1)
+# dec2 = eval(hex2)
+# bin1 = '{:b}'.format(dec1)
+# bin2 = '{:b}'.format(dec2)
+# print(bin1)
+# print(bin2)
+# print(bin1 + bin2)
+
+# import binascii
+#
+# def str_to_hexStr(string):
+#     str_bin = string.encode('utf-8')
+#     return binascii.hexlify(str_bin).decode('utf-8')
+
+# # # hash uid + params
+# h256 = str(uid_len)[2:] + str(uid)[2:] + str(a)[2:] + str(b)[2:] + str(xG)[2:] + str(yG)[2:] + str(xA)[2:] + str(yA)[2:]
+# uid_and_params_hash = sm3.sm3_hash(func.bytes_to_list(bytes(h256, encoding='utf-8')))
+# print('uid_and_params_hash==', uid_and_params_hash)
+# # print('uid_and_params_hash==', len(uid_and_params_hash))
+#
+# # # hash u / p + data
+# hex_UPLOAD_DATA = str_to_hexStr(json.dumps(UPLOAD_DATA))
+# uid_and_params_and_data_hash = sm3.sm3_hash(func.bytes_to_list(bytes(uid_and_params_hash + hex_UPLOAD_DATA, encoding='utf-8')))
+# # print('uid_and_params_and_data_hash_hex==', uid_and_params_and_data_hash)
+# # print('uid_and_params_and_data_hash_hex==', len(uid_and_params_and_data_hash))
+# # print('uid_and_params_and_data_hash_int==', int(uid_and_params_and_data_hash, 16))
+#
+# # # generate keys
+# # def is_on_curve(point):
+# #     """如果给定点位于椭圆曲线上，则返回True。"""
+# #     if point is None:
+# #         # None represents the point at infinity.
+# #         return True
+# #
+# #     x, y = point
+# #
+# #     return (y * y - x * x * x - a * x - b) % p == 0
+# # def point_neg(point):
+# #     """返回-点。"""
+# #     assert is_on_curve(point)
+# #
+# #     if point is None:
+# #         # -0 = 0
+# #         return None
+# #
+# #     x, y = point
+# #     result = (x, -y % p)
+# #
+# #     assert is_on_curve(result)
+# #
+# #     return result
+# # def inverse_mod(k, p):
+# #     """ 返回k模p的逆。
+# #         此函数只返回（x*k）%p==1的整数x。
+# #         k必须非零，p必须是素数。
+# #     """
+# #     if k == 0:
+# #         raise ZeroDivisionError('division by zero')
+# #
+# #     if k < 0:
+# #         # k ** -1 = p - (-k) ** -1  (mod p)
+# #         return p - inverse_mod(-k, p)
+# #
+# #     # Extended Euclidean algorithm.
+# #     s, old_s = 0, 1
+# #     t, old_t = 1, 0
+# #     r, old_r = p, k
+# #
+# #     while r != 0:
+# #         quotient = old_r // r
+# #         old_r, r = r, old_r - quotient * r
+# #         old_s, s = s, old_s - quotient * s
+# #         old_t, t = t, old_t - quotient * t
+# #
+# #     gcd, x, y = old_r, old_s, old_t
+# #
+# #     assert gcd == 1
+# #     assert (k * x) % p == 1
+# #
+# #     return x % p
+# # def point_add(point1, point2):
+# #     """根据分组法返回point1+point2的结果。"""
+# #     assert is_on_curve(point1)
+# #     assert is_on_curve(point2)
+# #
+# #     if point1 is None:
+# #         # 0 + point2 = point2
+# #         return point2
+# #     if point2 is None:
+# #         # point1 + 0 = point1
+# #         return point1
+# #
+# #     x1, y1 = point1
+# #     x2, y2 = point2
+# #
+# #     if x1 == x2 and y1 != y2:
+# #         # point1 + (-point1) = 0
+# #         return None
+# #
+# #     if x1 == x2:
+# #         # This is the case point1 == point2.
+# #         m = (3 * x1 * x1 + a) * inverse_mod(2 * y1, p)
+# #     else:
+# #         # This is the case point1 != point2.
+# #         m = (y1 - y2) * inverse_mod(x1 - x2, p)
+# #
+# #     x3 = m * m - x1 - x2
+# #     y3 = y1 + m * (x3 - x1)
+# #     result = (x3 % p,
+# #               -y3 % p)
+# #
+# #     assert is_on_curve(result)
+# #
+# #     return result
+# # def scalar_mult(k, point):
+# #     """返回使用double和point_add算法计算的k*点。"""
+# #     assert is_on_curve(point)
+# #
+# #     if k % n == 0 or point is None:
+# #         return None
+# #
+# #     if k < 0:
+# #         # k * point = -k * (-point)
+# #         return scalar_mult(-k, point_neg(point))
+# #
+# #     result = None
+# #     addend = point
+# #
+# #     while k:
+# #         if k & 1:
+# #             # Add.
+# #             result = point_add(result, addend)
+# #
+# #         # Double.
+# #         addend = point_add(addend, addend)
+# #
+# #         k >>= 1
+# #
+# #     assert is_on_curve(result)
+# #
+# #     return result
+# # def make_keypair():
+# #     """生成随机的私钥对。"""
+# #     private_key = random.randrange(1, n)
+# #     public_key = scalar_mult(private_key, (xG, yG))
+# #     # print('public_key==', public_key)
+# #     # print('public_key_len', len(public_key))
+# #     return private_key, public_key
+# # private, public = make_keypair()
+# # print("Private key:", hex(private))
+# # print("Public key: (0x{:x}, 0x{:x})".format(*public))
+#
+# # # sign
+# private = '191421ea268b74310a37963b60c2735884c6cc6bdc92f5be2001464393d2d102'
+# public = ('6857d626cf9b286efdb762cdb79ad10ebf207b0df96ac6e8eb7318cf7bffeccf', '49fb5148ccfb3efe3869d5493450f4a4544a88c0ffc3a7f71d418f66ced64fe0')
+# sm2_crypt = sm2.CryptSM2(public_key=public, private_key=private)
+# random_hex_str = func.random_hex(sm2_crypt.para_len)
+# print('random_hex_str', random_hex_str)
+# sign = sm2_crypt.sign(uid_and_params_and_data_hash, random_hex_str)
+# print(sign)  # 38c1d2e7d51d71c2e2a29e48c2edb37c0dc4d2b033a74c6f6e3f43ccaa71bc3f2d6f96890a1e42b09935b2ddbba23d5e56f98b46151c348c32f4fdb940121808
+
+
+# # 解签
+# sm2_crypt.verify(sign, uid_and_params_and_data_hash)
+
+# user_obj_list = models.UserProfile.objects.values('id').filter(gateway__Enterprise="零声科技（苏州）有限公司", role__name="管理员")
+# print(user_obj_list)
+
+# with open('data_time.txt', 'r') as f:
+#     while True:
+#         data_time = f.readline()
+#         if data_time:
+#             print(data_time.strip('\n'))
+#         else:
+#             break
+#
+# models.Sensor.objects.filter(id=1).exists()
+
+# add sensor
+send_data = {
+    'receive_data': {
+        'received_time_data': {'days': '1', 'hours': '0', 'minutes': '0'},
+        'sensor_id': '10010001201906018002',
+        'alias': '2号传感器',
+        'network_id': '0.0.1.2',
+        'choice': 'add',
+        'sensor_type': '0',
+        'Importance': '0',
+        'material': '2',
+        'area': '',
+        'location': '',
+        'latitude': '0.0',
+        'longitude': '0.0',
+        'assembly_crewman': '',
+        'description': '',
+        'location_img_json': '',
+        'location_img_path': ''
+    },
+    'network_id_list': ['0.0.1.2'],
+    'Enterprise': '零声科技（苏州）有限公司',
+    'level': 2,
+    'true_header': 'add_sensor'
+}
+
+response = {
+    'status': True,
+    'msg': '添加传感器成功',
+    'receive_data': {
+        'received_time_data': {'days': '1', 'hours': '0', 'minutes': '0'},
+        'sensor_id': '10010001201906018002',
+        'alias': '2号传感器',
+        'network_id': '0.0.1.2',
+        'sensor_type': '0',
+        'Importance': '0',
+        'material': '2',
+        'area': '',
+        'location': '',
+        'latitude': '0.0',
+        'longitude': '0.0',
+        'assembly_crewman': '',
+        'description': '',
+        'location_img_path': '',
+        'location_img_json': ''
+    },
+    'user': None,
+    'header': 'add_sensor',
+    'id': 'client'
+}
+
+
+# update sensor
+send_data = {
+    'id': 'server',
+    'header': 'update_sensor',
+    'data': {
+        'received_time_data': {'days': '1', 'hours': '0', 'minutes': '0'},
+        'sensor_id': '10010001201906018001',
+        'alias': '1号传感器',
+        'network_id': '0.0.1.1',
+        'choice': 'update',
+        'sensor_type': '0',
+        'Importance': '0',
+        'material': '2',
+        'date_of_installation': '2020-10-27',
+        'area': '',
+        'location': '',
+        'latitude': '0.0',
+        'longitude': '0.0',
+        'assembly_crewman': '',
+        'description': '',
+        'location_img_json': '',
+        'location_img_path': 'static/location_imgs_0.0.1.0/None'
+    },
+    'user': 'Orisonic'
+}
+
+response = {
+    'status': True,
+    'msg': '更新传感器成功',
+    'receive_data': {
+        'received_time_data': {'days': '1', 'hours': '0', 'minutes': '0'},
+        'alias': '1号传感器',
+        'network_id': '0.0.1.1',
+        'sensor_type': '0',
+        'Importance': '0',
+        'material': '2',
+        'date_of_installation': '2020-10-27',
+        'area': '',
+        'location': '',
+        'latitude': '0.0',
+        'longitude': '0.0',
+        'assembly_crewman': '',
+        'description': '',
+        'location_img_path': 'static/location_imgs_0.0.1.0/None',
+        'location_img_json': ''
+    },
+    'user': 'Orisonic',
+    'header': 'update_sensor',
+    'id': 'client'
+}
+
+
+# delete
+send_data = {
+    'id': 'server',
+    'header': 'remove_sensor',
+    'data': {
+        'sensor_id': '10010001201906018002',
+        'network_id': '0.0.1.2',
+        'choice': 'remove',
+        'forcedelete': False,
+        'location_img_json': '',
+        'location_img_path': ''
+    },
+    'user': 'Orisonic'
+}
+
+response = {
+    'status': True,
+    'msg': '删除传感器成功',
+    'receive_data': {
+        'sensor_id': '10010001201906018002',
+        'network_id': '0.0.1.2',
+        'forcedelete': False,
+        'location_img_path' : ''
+    },
+    'user': 'Orisonic',
+    'header': 'remove_sensor',
+    'id': 'client'
+}
+
+# set params
+send_data = {
+    'val_dict': {
+        'alias': '1号传感器',
+        'cHz': '2',
+        'gain': '72',
+        'avg_time': '4',
+        'Hz': '4',
+        'Sample_depth': '0',
+        'Sample_Hz': '500'
+    },
+    'network_id_list': ['0.0.1.1'],
+    'Enterprise': '零声科技（苏州）有限公司',
+    'level': 4,
+    'true_header': 'set_sensor_params'
+}
+
+response = {
+    'status': True,
+    'network_id': '0.0.1.1',
+    'msg': '[1号传感器]设置参数成功',
+    'params_dict': {
+        'alias': '1号传感器',
+        'cHz': '2',
+        'gain': '72',
+        'avg_time': '4',
+        'Hz': '4',
+        'Sample_depth': '0',
+        'Sample_Hz': '500'
+    },
+    'header': 'set_sensor_params',
+    'id': 'client'
+}
+
+
+# gwdata
+send_data = {
+    'network_id_list': ['0.0.1.1'],
+    'Enterprise': '零声科技（苏州）有限公司',
+    'level': 6,
+    'true_header': 'gwdata'
+}
+
+response = {
+    'network_id': '0.0.2.1',
+    'id': 'client',
+    'msg': '[一号测试试块]获取成功',
+    'header': 'gwdata',
+    'status': True,
+    'gwData': {
+        'temperature': 22,
+        'data': [1933, 1140, 0, 0, 3585, ..., 2053, 2108],
+        'thickness': 10.015,
+        'network_id': '0.0.2.1',
+        'data_len': 2048,
+        'battery': 100,
+        'gain': 65,
+        'time_tamp': '2020-10-28 15:07:26',
+        'com_version': 'emat_com 0.1'
+    }
+}
+
+# update alarm sensor
+send_data = {
+    'id': 'server',
+    'header': 'update_sensor',
+    'data': {
+        'sensor_id': '10010001201906018001',
+        'alias': '1号传感器',
+        'network_id': '0.0.1.1',
+        'choice': 'update',
+        'initial_thickness': '10.0',
+        'alarm_thickness': '8.0',
+        'alarm_battery': '50.0',
+        'alarm_temperature': '310.0',
+        'alarm_corrosion': '0.3',
+        'location_img_json': '',
+        'location_img_path': 'static/location_imgs_0.0.1.0/None'
+    },
+    'user': 'Orisonic'
+}
+
+response = {
+    'status': True,
+    'msg': '更新传感器成功',
+    'receive_data': {
+        'alias': '1号传感器',
+        'network_id': '0.0.1.1',
+        'initial_thickness': '10.0',
+        'alarm_thickness': '8.0',
+        'alarm_battery': '50.0',
+        'alarm_temperature': '310.0',
+        'alarm_corrosion': '0.3',
+        'location_img_path': 'static/location_imgs_0.0.1.0/None',
+        'location_img_json': ''
+    },
+    'user': 'Orisonic',
+    'header': 'update_sensor',
+    'id': 'client'
+}
+
+# update gateway
+send_data = {
+    'id': 'server',
+    'header': 'update_gateway',
+    'gateway_data': {
+        'Enterprise': '零声科技（苏州）有限公司',
+        'name': '零声科技1号测试网关',
+        'network_id': '0.0.1.0',
+        'gw_status': '1'},
+    'user': 'Orisonic'
+}
+
+response = {
+    'status': True,
+    'msg': '更新网关成功',
+    'gateway_data': {
+        'Enterprise': '零声科技（苏州）有限公司',
+        'name': '零声科技1号测试网关',
+        'network_id': '0.0.1.0',
+        'gw_status': '1'
+    },
+    'user': 'Orisonic',
+    'header': 'update_gateway',
+    'id': 'client'
+}
+
+

@@ -14,8 +14,9 @@
     // ws是普通通讯，端口8083；wss是加密通讯，端口是8084
     // const client = mqtt.connect('ws://iot.orisonic.com:8083/mqtt', options);
     // const client = mqtt.connect('wss://iot.orisonic.com:8084/mqtt', options);
-    const client = mqtt.connect('ws://192.168.0.43:8083/mqtt', options);
+    // const client = mqtt.connect('ws://192.168.0.41:8083/mqtt', options);
     // const client = mqtt.connect('wss://www.test.com:8084/mqtt', options);
+    const client = mqtt.connect('ws://www.yymit.cn:8083/mqtt', options);
 
     // client.
     client.on('connect', (error) => {
@@ -55,7 +56,7 @@
                     // ClearMSGAndRefersh('#' + header);
                     setTimeout(function () {
                         $("#gwdata").text('');
-                    }, 3000);
+                    }, 5000);
                 }else{
                     button_sample = false;
                 }
@@ -64,7 +65,7 @@
                 header === 'add_sensor' ||
                 header === 'remove_sensor'
             ) {
-                var gwntid = rsplit(payload.receive_data.network_id,'.');
+                var gwntid = rsplit(payload.network_id,'.');
                 console.log('gwntid-=====', gwntid);
                 if (isInArray(gw_network_id_list, gwntid)){
                     $('#' + header).html(msg);

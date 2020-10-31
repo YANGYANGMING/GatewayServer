@@ -27,5 +27,6 @@ def send_sms(PhoneNumbers, sms_code):
     request.add_query_param('TemplateParam', "{\"code\": %s}" % sms_code)
 
     response = client.do_action_with_exception(request)
+    print(response)
 
     return json.loads(str(response, encoding='utf-8'))

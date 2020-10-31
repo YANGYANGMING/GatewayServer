@@ -57,6 +57,10 @@
       <div class="navbar-custom-menu">
         <ul class="nav navbar-nav">
           <!-- User Account: style can be found in dropdown.less -->
+            <li class="dropdown messages-menu">
+                <a href="javascript:;" id="upload-data-msg"></a>
+          </li>
+
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <img src="/static/images/avatar/default.png" class="user-image" alt="User Image">
@@ -93,7 +97,7 @@
               <!-- Sidebar user panel -->
               <div class="user-panel">
                 <div class="image">
-                  <p style="font-size: 20px; color: #fff;">零声科技监测服务系统</p>
+                  <p style="font-size: 20px; color: #fff;">零声科技在线测厚系统</p>
                 </div>
               </div>
 
@@ -125,7 +129,7 @@
                               <i class="ion ion-android-warning"></i>
                             </div>
                             <p class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></p>
-                              <button type="submit" class="col-lg-12 col-xs-12" style="opacity: 0; height: 115px; position: absolute; top: 0; left: 0;">sdsds</button>
+                              <button type="submit" class="col-lg-12 col-xs-12" style="opacity: 0; height: 115px; position: absolute; top: 0; left: 0;"></button>
                           </div>
                         </a>
 
@@ -353,10 +357,15 @@
       <!-- /.content-wrapper -->
      <footer class="main-footer">
         <div class="pull-right hidden-xs">
-          <b>Version</b> 1.0
+            <b>Version</b> 1.0
         </div>
-        <strong>零声科技监测服务器系统 <a href="http://www.orisonic.com">ORISONIC</a>.</strong> 零声科技（苏州）有限公司
+        <strong>零声科技监测服务器系统 <a href="http://www.orisonic.com">ORISONIC</a>.</strong> 零声科技（苏州）有限公司 &nbsp;&nbsp;&nbsp;&nbsp;
+        <!-- 备案 -->
+         <a hidefocus="true" href="https://beian.miit.gov.cn" target="_blank" rel="nofollow">黑ICP备16005641号</a> &nbsp;&nbsp;&nbsp;&nbsp;
+         <!-- 统计 -->
+        <script type="text/javascript" src="//js.users.51.la/20970753.js"></script>
       </footer>
+
 </div>
 <input style="display: none" type="text" id="gw-network-id-list" value="{{ request.session.gw_network_id_list }}">
 <!-- jQuery 3 -->
@@ -404,6 +413,7 @@
 <script src="/static/plugins/map/map.js"></script>
 
 <script src="/static/plugins/FixedColumns-3.3.1/js/dataTables.fixedColumns.min.js"></script>
+
 
 {% block script %}
     <script>
@@ -476,7 +486,8 @@
                     '<p>绑定网关：' + select_sensor_list[i].gateway__name + '</p>'+
                     '<p>网络号：' + select_sensor_list[i].network_id + '</p>'+
                     '<p>运行状态：' + select_sensor_list[i].sensor_run_status + '</p>'+
-                    '<p>在线状态：' + select_sensor_list[i].sensor_online_status + '</p>';
+                    '<p>在线状态：' + select_sensor_list[i].sensor_online_status + '</p>' +
+                    '<img style="height: 60px" src="/' + select_sensor_list[i].location_img_path + '" alt="暂无图片">';
             marker.on('click', markerClick);
             //map.setFitView();
         }

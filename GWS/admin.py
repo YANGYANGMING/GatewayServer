@@ -66,7 +66,7 @@ class UserProfileAdmin(BaseUserAdmin):
         (None, {'fields': ('password', )}),
         ('Personal info', {'fields': ('name',)}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'role', 'user_permissions', 'groups',
-                                    'gateway')}),
+                                    'gateway', 'phone_number')}),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
     # overrides get_fieldsets to use this attribute when creating a user.
@@ -86,7 +86,5 @@ admin.site.register(models.Role)
 admin.site.register(models.Menus)
 admin.site.register(models.Gateway)
 admin.site.register(models.Sensor)
-admin.site.register(models.Corrosion_rate)
-admin.site.register(models.Enterprise)
 admin.site.register(models.Waveforms)
 admin.site.register(models.Material)

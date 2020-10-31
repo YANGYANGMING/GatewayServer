@@ -27,7 +27,8 @@ urlpatterns = [
     re_path(r'^corrosion-rate-list$', views.corrosion_rate_list),
     re_path(r'^add-sensor/(.*)$', views.add_sensor, name="add_sensor"),
     re_path(r'^alarm-sensor-list$', views.alarm_sensor_list),
-    re_path(r'^export-data$', views.export_data),
+    re_path(r'^export-data$', views.export_data, name="export_data"),
+    # re_path(r'^system-settings$', views.system_settings, name="system_settings"),
 
     re_path(r'^user-add$', account.user_add, name="user_add"),
     re_path(r'^user-edit/(\d+)$', account.user_edit, name="user_edit"),
@@ -62,6 +63,7 @@ urlpatterns = [
     re_path(r'^judge-sensor-name-exist-json$', views.judge_sensor_name_exist_json),
     re_path(r'^judge-sensor-ntid-exist-json$', views.judge_sensor_ntid_exist_json),
     re_path(r'^judge-sensor-id-exist-json$', views.judge_sensor_id_exist_json),
+
 
 
 ]

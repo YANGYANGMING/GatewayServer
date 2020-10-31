@@ -30,20 +30,21 @@ def render_menus_tree(request):
     ele = ''
     try:
         user_obj = models.UserProfile.objects.filter(name=request.user).first()
-        role_list = user_obj.role.all()
-        menus_obj_list = []
-        for item in role_list:
-            menus_obj_list += item.menus.all()
-        menus_obj_list = list(set(menus_obj_list))
-        for menu in menus_obj_list:
-            if request.path == menu.url_name:
-                ele += '<li class="active">'
-            else:
-                ele += '<li>'
-            if menu.url_type == 0:
-                ele += """<a href="%s"><span>%s </span></a></li>""" % (menu.url_name, menu.name)
-            elif menu.url_type == 1 and menu.url_name == 'add_sensor':
-                ele += """<a href="/GWS/add-sensor/new"><span>%s </span></a></li>""" % (menu.name)
+        if user_obj:
+            role_list = user_obj.role.all()
+            menus_obj_list = []
+            for item in role_list:
+                menus_obj_list += item.menus.all()
+            menus_obj_list = list(set(menus_obj_list))
+            for menu in menus_obj_list:
+                if request.path == menu.url_name:
+                    ele += '<li class="active">'
+                else:
+                    ele += '<li>'
+                if menu.url_type == 0:
+                    ele += """<a href="%s"><span>%s </span></a></li>""" % (menu.url_name, menu.name)
+                elif menu.url_type == 1 and menu.url_name == 'add_sensor':
+                    ele += """<a href="/GWS/add-sensor/new"><span>%s </span></a></li>""" % (menu.name)
     except Exception as e:
         print(e)
 

@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.conf.urls import include
 from django.urls import re_path
-from GWS.views import account
+from GWS.views import account, views
 from django.views.generic import RedirectView
 from django.views import static ##新增
 from django.conf import settings ##新增
@@ -27,6 +27,9 @@ urlpatterns = [
     re_path(r'^GWS/', include('GWS.urls')),
     re_path(r'^login/$', account.acc_login),
     re_path(r'^logout/$', account.acc_logout, name='logout'),
+
+    re_path(r'^test$', views.test),
+    re_path(r'^test-json$', views.test_json),
 
     # url(r'^static/(?P<path>.*)$', static.serve,
     #     {'document_root': settings.STATIC_ROOT}, name='static'),

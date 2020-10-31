@@ -42,6 +42,7 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=64, unique=True,)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    phone_number = models.CharField(max_length=11, null=True, blank=True)
     role = models.ManyToManyField("Role")
     gateway = models.ManyToManyField('Gateway', null=True, blank=True)
 
@@ -76,6 +77,10 @@ class UserProfile(AbstractBaseUser, PermissionsMixin):
             ('GWS_set_gateway_json_view', '可以更新网关'),
             ('GWS_edit_sensor_params_view', '可以访问传感器参数页面'),
             ('GWS_set_sensor_params_view', '可以设置传感器参数'),
+            ('GWS_export_data_view', '可以访问导出数据页面'),
+            ('GWS_system_settings_view', '可以访问系统设置页面'),
+            ('GWS_control_upload_data_view', '可以设置上传数据到特检局'),
+
             ('GWS_user_add_view', '可以访问增加用户页面'),
             ('GWS_user_add_save', '可以保存增加的用户信息'),
             ('GWS_user_edit_view', '可以访问编辑用户页面'),
@@ -215,22 +220,6 @@ class Waveforms(models.Model):
     def __str__(self):
         return str(self.network_id)
 
-
-class Corrosion_rate(models.Model):
-    """
-    腐蚀速率
-    """
-    sensor = models.ForeignKey('Sensor', on_delete=models.CASCADE)
-    corrosion_rate_interval_choices = ((7, '一周'),
-                                       (15, '半个月'),
-                                       (30, '1个月'),
-                                       (90, '3个月'),
-                                       (180, '6个月'),
-                                       (365, '12个月'),
-                                       ('', 'all date'),
-                                       )
-    corrosion_rate_interval = models.SmallIntegerField(choices=corrosion_rate_interval_choices, default=30)
-    corrosion_rate = models.CharField(max_length=32, null=True, blank=True)
 
 
 

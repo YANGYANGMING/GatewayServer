@@ -16,6 +16,9 @@ perm_dic = {
     'GWS_set_gateway_json_view': ['set_gateway_json', 'POST', [], {}],  # 可以更新网关
     'GWS_edit_sensor_params_view': ['edit_sensor_params', 'GET', [], {}],  # 可以访问传感器参数页面
     'GWS_set_sensor_params_view': ['set_sensor_params', 'POST', [], {}],  # 可以设置传感器参数
+    'GWS_export_data_view': ['export_data', 'GET', [], {}],  # 可以访问导出数据页面
+    'GWS_system_settings_view': ['system_settings', 'GET', [], {}],  # 可以访问系统设置页面
+    'GWS_control_upload_data_view': ['control_upload_data', 'GET', [], {}],  # 可以设置上传数据到特检局
 
     'GWS_user_add_view': ['user_add', 'GET', [], {}],  # 可以访问增加用户页面
     'GWS_user_add_save': ['user_add', 'POST', [], {}],  # 可以保存增加的用户信息

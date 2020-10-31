@@ -267,6 +267,10 @@
             fd.append('location_img_obj', location_img_obj);
             fd.append('data', data);
 
+            if (location_img_obj) {
+                $('#add_sensor').html('正在压缩上传图片，请稍等...');
+            }
+
             if (received_time_data.days === '0' && received_time_data.hours === '0' && received_time_data.minutes === '0') {
                 $('#add_sensor').html('时间不合法！');
             } else if (received_time_data.days === '0' && parseInt(received_time_data.hours) <= 11 && parseInt(received_time_data.minutes) <= 59){

@@ -44,7 +44,7 @@
                         <div  class="col-xs-12 col-md-6 col-md-offset-1">
                             <div class="form-group">
                                 <label for="user_permissions">用户权限</label>
-                                <select name="user_permissions" id="user-permissions" class="form-control " multiple="multiple" style="height: 150px;">
+                                <select name="user_permissions" id="user-permissions" class="form-control" multiple="multiple" style="height: 150px;">
                                     {% for user_permissions_item in cur_user_all_permissions_list %}
                                         <option value="{{ user_permissions_item.permissions__id }}">{{ user_permissions_item.permissions__name }}</option>
                                     {% endfor %}

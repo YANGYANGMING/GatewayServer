@@ -12,9 +12,10 @@ from lib.log import Logger
 from utils import handle_func
 import json
 import time
+import socket
 
 
-heart_sche = BackgroundScheduler()
+# heart_sche = BackgroundScheduler()
 log = Logger()
 
 
@@ -42,7 +43,7 @@ def index(request):
         gw_name = gateway_item['name']
         sensor_obj_list = list(models.Sensor.objects.filter(gateway__network_id=gw_network_id, delete_status=0).\
             values('network_id', 'alias', 'gateway__name', 'sensor_run_status', 'sensor_online_status',
-                   'alarm_thickness', 'alarm_battery', 'alarm_temperature', 'alarm_corrosion', 'longitude', 'latitude'))
+                   'alarm_thickness', 'alarm_battery', 'alarm_temperature', 'alarm_corrosion', 'longitude', 'latitude', 'location_img_path'))
         sensor_run_status = {'开通': 1, '禁止': 0}
         sensor_online_status = {'在线': 1, '离线': 0}
         for sensor_item in sensor_obj_list:
@@ -126,6 +127,8 @@ def manual_config(request):
                     # 加入队列
                     handle_func.handle_func_obj.send_network_id_to_queue(payload)
                     response = {'status': True, 'msg': "成功加入采样队列，请稍等..."}
+                    # Log
+                    log.log(True, '手动获取数据', sensor_network_id, str(request.user))
             else:
                 response = {'status': False, 'msg': "此传感器所在网关已离线"}
         except KeyError:
@@ -305,7 +308,7 @@ def corrosion_rate_list(request):
     :param request:
     :return:
     """
-    days_interval = int(request.session.get('days_interval', 0))
+    days_interval = int(request.session.get('days_interval', 30))
     print('days_interval', days_interval)
 
     gateway_obj = get_gateway_obj(request, name='name', network_id='network_id')
@@ -373,7 +376,7 @@ def alarm_sensor_list(request):
 
         return render(request, 'GWS/alarm_sensor_list.html', locals())
 
-
+@permissions.check_permission
 @login_required
 @csrf_exempt
 def export_data(request):
@@ -429,7 +432,7 @@ def export_data(request):
 
 
 @login_required
-@check_click_method
+@csrf_exempt
 def sensor_data_info(request, network_id):
     """
     传感器数据详情
@@ -673,7 +676,7 @@ def corrosion_rate_json_report(request):
     corrosion_rate = 0
     try:
         # 计算腐蚀速率
-        corrosion_rate = handle_func.corrosion_rate(network_id)
+        corrosion_rate = handle_func.corrosion_rate(network_id, 90)
 
     except Exception as e:
         print(e)
@@ -751,19 +754,23 @@ def judge_sensor_ntid_exist_json(request):
     response = {'status': 0, 'msg': ''}
     network_id = request.POST.get('network_id')
     previous_network_id = request.POST.get('previous_network_id')
+    # 验证网关网络号
+    gw_network_id = network_id.rsplit('.', 1)[0] + '.0'
+    if models.Gateway.objects.filter(network_id=gw_network_id).exists():
+        # 验证network_id是否合法
+        validity_of_network_id = handle_func.verify_the_validity_of_network_id(network_id)
+        if validity_of_network_id:
+            if network_id == previous_network_id:  # 判断是否修改了传感器network_id
+                network_id_is_exist = None
+            else:
+                network_id_is_exist = models.Sensor.objects.filter(network_id=network_id).exists()
 
-    # 验证network_id是否合法
-    validity_of_network_id = handle_func.verify_the_validity_of_network_id(network_id)
-    if validity_of_network_id:
-        if network_id == previous_network_id:  # 判断是否修改了传感器network_id
-            network_id_is_exist = None
+            if network_id_is_exist:
+                response = {'status': 1, 'msg': '此传感器网络号已存在！'}
         else:
-            network_id_is_exist = models.Sensor.objects.filter(network_id=network_id).exists()
-
-        if network_id_is_exist:
-            response = {'status': 1, 'msg': '此传感器网络号已存在！'}
+            response = {'status': 2, 'msg': '此传感器网络号格式有误！'}
     else:
-        response = {'status': 2, 'msg': '此传感器网络号格式有误！'}
+        response = {'status': 2, 'msg': '此传感器网络号有误！'}
 
     return HttpResponse(json.dumps(response))
 
@@ -831,12 +838,15 @@ def set_gateway_json(request):
     # print('gateway_data', gateway_data)  # {'Enterprise': '中石油', 'name': '中石油1号网关', 'network_id': '0.0.1.0', 'gw_status': '1'}
     if gateway_obj:
         send_data = {'id': 'server', 'header': 'update_gateway', 'gateway_data': gateway_data, 'user': str(request.user)}
+        print('send_data', send_data)
         topic = gateway_data['network_id']
         client.publish(topic, json.dumps(send_data), 2)
         update_gw_start_time = time.time()
         # 接收到网关处理好的结果，用于把操作返回的信息展示到页面
         while (time.time() - update_gw_start_time) < 3:
             if handle_func.update_gw_payload:
+                print(handle_func.update_gw_payload['gateway_data']['network_id'])
+                print(gateway_data['network_id'])
                 msg = handle_func.update_gw_payload['msg']
                 status = handle_func.update_gw_payload['status']
                 response = {'status': status, 'msg': msg}
@@ -940,11 +950,38 @@ def heart_ping():
 
 # 每分钟执行一次心跳
 try:
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.bind(("127.0.0.1", 47200))
+except socket.error:
+    print("!!!scheduler already started, DO NOTHING")
+else:
+    heart_sche = BackgroundScheduler()
     heart_sche.add_job(heart_ping, 'interval', minutes=settings.heart_time['minutes'],
                        seconds=settings.heart_time['seconds'], id="heart_ping")
     heart_sche.start()
-except Exception as e:
-    print(e)
-    heart_sche.shutdown()
+    print("scheduler started")
+
+# try:
+#     heart_sche.add_job(heart_ping, 'interval', minutes=settings.heart_time['minutes'],
+#                        seconds=settings.heart_time['seconds'], id="heart_ping")
+#     heart_sche.start()
+# except Exception as e:
+#     print(e)
+#     heart_sche.shutdown()
+
+#####################################################################
 
 
+def test(request):
+
+    return render(request, "test.html")
+
+
+def test_json(request):
+
+    # r = requests.get(url='http://121.36.220.210/', data=json.dumps(UPLOAD_DATA))
+    # print(r.status_code)
+    # print(r.text)
+
+
+    return HttpResponse('...')

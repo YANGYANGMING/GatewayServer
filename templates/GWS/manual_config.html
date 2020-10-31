@@ -89,20 +89,12 @@
                             <th>温&nbsp;度&nbsp;&nbsp;</th>
                             <th>增&nbsp;益&nbsp;&nbsp;</th>
                             <th>厚&nbsp;度&nbsp;值&nbsp;&nbsp;</th>
-                            <th>数&nbsp;据&nbsp;详&nbsp;情&nbsp;</th>
+                            <th>数&nbsp;据&nbsp;详&nbsp;情&nbsp;&nbsp;</th>
                         </tr>
                     </thead>
                 <tbody>
                     {% for row in latest_data %}
                         <tr>
-{#                            <td><p style="width: 50px;">{{ row.network_id__alias }}</p></td>#}
-{#                            <td style="display: none">{{ row.id }}</td>#}
-{#                            <td><p style="width: 75px;">{{ row.time_tamp }}</p></td>#}
-{#                            <td><p style="width: 50px;">{{ row.battery }}</p></td>#}
-{#                            <td><p style="width: 50px;">{{ row.temperature }}</p></td>#}
-{#                            <td><p style="width: 50px;">{{ row.gain }}</p></td>#}
-{#                            <td><p style="width: 60px;">{{ row.thickness }}</p></td>#}
-{#                            <td><a href="javascript:;" onclick="GetData(this);"><p style="width: 80px;"><i class="fa fa-pencil"></i> 数据详情</p></a></td>#}
                             <td>{{ row.network_id__alias }}</td>
                             <td style="display: none">{{ row.id }}</td>
                             <td>{{ row.time_tamp }}</td>
@@ -194,75 +186,73 @@
 
     //初始化heightchart
     function GetData(ths) {
-        var config = {
-            chart: {
-                type: 'spline',
-                shadow: true,
-                zoomType: 'x',
-                panning: true,
-                panKey: 'shift',
-            },
-            title: {
-                text: null
-            },
-            xAxis: {
-                type: 'linear'
-            },
-            yAxis: {
-                endOnTick: false, //对数Y轴不强制结束于标线
-                title: {
-                    text: null,
-                },
-            },
-            plotOptions: {
-                series: {
-                    lineWidth: 1.5,
-                }
-            },
-            tooltip: {
-                followTouchMove: true,
-                formatter: function () {
-                    return '<b>' + this.series.name + '</b><br/>' +
-                            Highcharts.numberFormat(this.x) + '<br/>' +
-                            Highcharts.numberFormat(this.y, 2);
-                }
-            },
-            legend: {
-                enabled: false
-            },
-            lang:{
-               contextButtonTitle:"图表导出菜单",
-               downloadJPEG:"下载JPEG图片",
-               downloadPDF:"下载PDF文件",
-               downloadPNG:"下载PNG文件",
-               downloadSVG:"下载SVG文件",
-               printChart:"打印图表",
-               resetZoom:"恢复缩放",
-               resetZoomTitle:"恢复图表",
-            },
-            exporting: {
-                enabled: true
-            },
-            series: [
-                {
-                    name: '',
-                    data: [
-                    ]
-                },
-            ]
-        };
-        {#$('#container').highcharts(config);#}
         // 数据库中获取
         var nid = $(ths).parent().parent().children().eq(1).text();
-        console.log(nid);
         $.ajax({
             url: '/GWS/data-json-report-'+nid,
             type:'GET',
             dataType: 'JSON',
             success:function(arg){
-                config['series'] = arg;
-                config['title']['text'] = arg[0]['name'];
-                $('#container').highcharts(config);
+
+                var config = Highcharts.chart('container', {
+                    chart: {
+                        type: 'spline',
+                        shadow: true,
+                        zoomType: 'x',
+                        panning: true,
+                        panKey: 'shift',
+                     },
+                    title: {
+                        text: arg[0]['name']
+                    },
+                    xAxis: {
+                        type: 'linear'
+                    },
+                    yAxis: {
+                        endOnTick: false, //对数Y轴不强制结束于标线
+                        title: {
+                            text: null,
+                        },
+                    },
+                    plotOptions: {
+                        series: {
+                            lineWidth: 1.5,
+                        }
+                    },
+                    tooltip: {
+                        followTouchMove: true,
+                        formatter: function () {
+                            return '<b>' + this.series.name + '</b><br/>' +
+                                    Highcharts.numberFormat(this.x) + '<br/>' +
+                                    Highcharts.numberFormat(this.y, 2);
+                        }
+                    },
+                    legend: {
+                        enabled: false
+                    },
+                    lang:{
+                       contextButtonTitle:"图表导出菜单",
+                       downloadJPEG:"下载JPEG图片",
+                       downloadPDF:"下载PDF文件",
+                       downloadPNG:"下载PNG文件",
+                       downloadSVG:"下载SVG文件",
+                       printChart:"打印图表",
+                       resetZoom:"恢复缩放",
+                       resetZoomTitle:"恢复图表",
+                    },
+                    exporting: {
+                        enabled: true
+                    },
+                    series: arg
+                });
+
+                    {#config.series[0].data[253].select();#}
+
+                {#config['series'] = arg;#}
+                {#config['title']['text'] = arg[0]['name'];#}
+                {#config.series[0].data[200].select();#}
+                {#console.log(config.series[0].data[200]);#}
+                {#$('#container').highcharts(config);#}
             }
          })
     }
