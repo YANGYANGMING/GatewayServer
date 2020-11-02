@@ -228,16 +228,20 @@
                 $('#gateway').select2("val", ["{{ gwntid }}"])
             }
 
-            // 重新添加传感器的时候不会触发JudgeSensorNetworkIDExist()
+            // 重新添加传感器的时候不触发JudgeSensorNetworkIDExist()
              sensor_sensor_id_exist = false;
              sensor_alias_exist = false;
-             sensor_network_id_exist = false;
+            if ("{{ network_id }}" === 'new'){
+                sensor_network_id_exist = 2;
+            }else{
+                sensor_network_id_exist = false;
+            }
 
 
         });
 
         function AddSave() {
-            {#ShowLoading();#}
+            ShowLoading();
             {# $('#add_sensor').html('命令已加入队列，请稍等...');#}
 
             var fd = new FormData();
@@ -303,6 +307,7 @@
                     }
                 })
             }
+            $('#loading').busyLoad("hide");
         }
 
         function JudgeSensorIDExist() {

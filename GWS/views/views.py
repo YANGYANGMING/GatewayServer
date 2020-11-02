@@ -340,7 +340,6 @@ def add_sensor(request, network_id):
     :return:
     """
     gateway_obj = get_gateway_obj(request, name='name', network_id='network_id')
-
     sensor_obj = models.Sensor.objects.first()
     sensor_type = {'ETM-100': 0}
     Importance = {'一般': 0, '重要': 1}
