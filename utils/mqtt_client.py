@@ -32,7 +32,8 @@ class MQTTClient(object):
     def on_message(self, client, userdata, msg):
         payload = json.loads(msg.payload.decode())
         if payload['id'] == 'client':
-            print('payload............', payload)
+            if payload['header'] != 'heart_ping':
+                print('payload............', payload)
             handle_func.handle_recv_gwdata(payload)
 
     # 在断开连接时callback，打印消息主题和内容

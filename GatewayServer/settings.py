@@ -80,8 +80,8 @@ WSGI_APPLICATION = 'GatewayServer.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': os.path.join(BASE_DIR, 'db_upload.sqlite3'),
-        'NAME': os.path.join(BASE_DIR, 'db_delete_test.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, 'db24.sqlite3'),
+        # 'NAME': os.path.join(BASE_DIR, 'db_delete_test.sqlite3'),
     }
 }
 
@@ -148,6 +148,7 @@ LOGIN_URL = '/login/'
 
 
 heart_time = {'minutes': 0, 'seconds': 30}
+backup_waveforms_time = {'days': 1}
 
 # EMQ X SETTINGS
 MQTT_HOST = "121.36.220.210"

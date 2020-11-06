@@ -176,8 +176,8 @@ from queue import PriorityQueue
 # plt.legend(loc='upper left')
 # plt.show()
 
-# # interval_val = 0.03
-# #
+# interval_val = 0.03
+#
 # w_obj = list(models.Waveforms.objects.values('id').filter(network_id='0.0.2.1'))
 # thickness = 10.087
 # interval = 0.0005
@@ -556,264 +556,46 @@ from queue import PriorityQueue
 #
 # models.Sensor.objects.filter(id=1).exists()
 
-# add sensor
-send_data = {
-    'receive_data': {
-        'received_time_data': {'days': '1', 'hours': '0', 'minutes': '0'},
-        'sensor_id': '10010001201906018002',
-        'alias': '2号传感器',
-        'network_id': '0.0.1.2',
-        'choice': 'add',
-        'sensor_type': '0',
-        'Importance': '0',
-        'material': '2',
-        'area': '',
-        'location': '',
-        'latitude': '0.0',
-        'longitude': '0.0',
-        'assembly_crewman': '',
-        'description': '',
-        'location_img_json': '',
-        'location_img_path': ''
-    },
-    'network_id_list': ['0.0.1.2'],
-    'Enterprise': '零声科技（苏州）有限公司',
-    'level': 2,
-    'true_header': 'add_sensor'
-}
 
-response = {
-    'status': True,
-    'msg': '添加传感器成功',
-    'receive_data': {
-        'received_time_data': {'days': '1', 'hours': '0', 'minutes': '0'},
-        'sensor_id': '10010001201906018002',
-        'alias': '2号传感器',
-        'network_id': '0.0.1.2',
-        'sensor_type': '0',
-        'Importance': '0',
-        'material': '2',
-        'area': '',
-        'location': '',
-        'latitude': '0.0',
-        'longitude': '0.0',
-        'assembly_crewman': '',
-        'description': '',
-        'location_img_path': '',
-        'location_img_json': ''
-    },
-    'user': None,
-    'header': 'add_sensor',
-    'id': 'client'
-}
+# data_obj = models.Waveforms.objects.values('network_id', 'data', 'time_tamp', 'gain', 'temperature', 'battery', 'thickness').filter(network_id='0.0.2.1', id__lte=1325)
+# with open('false_data.txt', 'w') as f:
+#     for item in data_obj:
+#         f.write(item['network_id'] + '\t' + item['data'] + '\t' + item['time_tamp'] + '\t' + str(item['gain']) + '\t' + str(item['temperature']) + '\t' + str(item['battery']) + '\t' + str(item['thickness']) + '\n')
+# print(data_obj.count())
+# ntid_obj = models.Sensor.objects.get(network_id='0.0.1.1')
+# with open('false_data.txt', 'r') as f:
+#     for i in range(data_obj.count()):
+#         datas = f.readline().strip('\n').split('\t')
+#         data_dict = {'network_id': ntid_obj, 'data': datas[1], 'time_tamp': datas[2], 'gain': datas[3], 'temperature': datas[4], 'battery': datas[5], 'thickness': datas[6], 'data_len': 2048, 'com_version': 'emat_com 0.1'}
+#         models.Waveforms.objects.create(**data_dict)
+
+# with open('false_data.txt', 'r') as f:
+#     with open('false_data2.txt', 'w') as f2:
+#         for i in range(48):
+#             data1 = f.readline().strip('\n').split('\t')
+#             month = data1[2].replace('04', '07', 1)
+#             data1[2] = month
+#             new_data1 = '\t'.join(data1)
+#             f2.write(new_data1 + '\n')
+#         for i in range(48, 110):
+#             data2 = f.readline().strip('\n').split('\t')
+#             month = data2[2].replace('05', '08', 1)
+#             data2[2] = month
+#             new_data2 = '\t'.join(data2)
+#             f2.write(new_data2 + '\n')
+#         for i in range(110, 154):
+#             data3 = f.readline().strip('\n').split('\t')
+#             month = data3[2].replace('06', '09', 1)
+#             data3[2] = month
+#             new_data3 = '\t'.join(data3)
+#             f2.write(new_data3 + '\n')
+
+print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+
+with open('start_waveforms_id.txt', 'r') as fr:
+    num = fr.read()
+    print('num', num)
 
 
-# update sensor
-send_data = {
-    'id': 'server',
-    'header': 'update_sensor',
-    'data': {
-        'received_time_data': {'days': '1', 'hours': '0', 'minutes': '0'},
-        'sensor_id': '10010001201906018001',
-        'alias': '1号传感器',
-        'network_id': '0.0.1.1',
-        'choice': 'update',
-        'sensor_type': '0',
-        'Importance': '0',
-        'material': '2',
-        'date_of_installation': '2020-10-27',
-        'area': '',
-        'location': '',
-        'latitude': '0.0',
-        'longitude': '0.0',
-        'assembly_crewman': '',
-        'description': '',
-        'location_img_json': '',
-        'location_img_path': 'static/location_imgs_0.0.1.0/None'
-    },
-    'user': 'Orisonic'
-}
-
-response = {
-    'status': True,
-    'msg': '更新传感器成功',
-    'receive_data': {
-        'received_time_data': {'days': '1', 'hours': '0', 'minutes': '0'},
-        'alias': '1号传感器',
-        'network_id': '0.0.1.1',
-        'sensor_type': '0',
-        'Importance': '0',
-        'material': '2',
-        'date_of_installation': '2020-10-27',
-        'area': '',
-        'location': '',
-        'latitude': '0.0',
-        'longitude': '0.0',
-        'assembly_crewman': '',
-        'description': '',
-        'location_img_path': 'static/location_imgs_0.0.1.0/None',
-        'location_img_json': ''
-    },
-    'user': 'Orisonic',
-    'header': 'update_sensor',
-    'id': 'client'
-}
-
-
-# delete
-send_data = {
-    'id': 'server',
-    'header': 'remove_sensor',
-    'data': {
-        'sensor_id': '10010001201906018002',
-        'network_id': '0.0.1.2',
-        'choice': 'remove',
-        'forcedelete': False,
-        'location_img_json': '',
-        'location_img_path': ''
-    },
-    'user': 'Orisonic'
-}
-
-response = {
-    'status': True,
-    'msg': '删除传感器成功',
-    'receive_data': {
-        'sensor_id': '10010001201906018002',
-        'network_id': '0.0.1.2',
-        'forcedelete': False,
-        'location_img_path' : ''
-    },
-    'user': 'Orisonic',
-    'header': 'remove_sensor',
-    'id': 'client'
-}
-
-# set params
-send_data = {
-    'val_dict': {
-        'alias': '1号传感器',
-        'cHz': '2',
-        'gain': '72',
-        'avg_time': '4',
-        'Hz': '4',
-        'Sample_depth': '0',
-        'Sample_Hz': '500'
-    },
-    'network_id_list': ['0.0.1.1'],
-    'Enterprise': '零声科技（苏州）有限公司',
-    'level': 4,
-    'true_header': 'set_sensor_params'
-}
-
-response = {
-    'status': True,
-    'network_id': '0.0.1.1',
-    'msg': '[1号传感器]设置参数成功',
-    'params_dict': {
-        'alias': '1号传感器',
-        'cHz': '2',
-        'gain': '72',
-        'avg_time': '4',
-        'Hz': '4',
-        'Sample_depth': '0',
-        'Sample_Hz': '500'
-    },
-    'header': 'set_sensor_params',
-    'id': 'client'
-}
-
-
-# gwdata
-send_data = {
-    'network_id_list': ['0.0.1.1'],
-    'Enterprise': '零声科技（苏州）有限公司',
-    'level': 6,
-    'true_header': 'gwdata'
-}
-
-response = {
-    'network_id': '0.0.2.1',
-    'id': 'client',
-    'msg': '[一号测试试块]获取成功',
-    'header': 'gwdata',
-    'status': True,
-    'gwData': {
-        'temperature': 22,
-        'data': [1933, 1140, 0, 0, 3585, ..., 2053, 2108],
-        'thickness': 10.015,
-        'network_id': '0.0.2.1',
-        'data_len': 2048,
-        'battery': 100,
-        'gain': 65,
-        'time_tamp': '2020-10-28 15:07:26',
-        'com_version': 'emat_com 0.1'
-    }
-}
-
-# update alarm sensor
-send_data = {
-    'id': 'server',
-    'header': 'update_sensor',
-    'data': {
-        'sensor_id': '10010001201906018001',
-        'alias': '1号传感器',
-        'network_id': '0.0.1.1',
-        'choice': 'update',
-        'initial_thickness': '10.0',
-        'alarm_thickness': '8.0',
-        'alarm_battery': '50.0',
-        'alarm_temperature': '310.0',
-        'alarm_corrosion': '0.3',
-        'location_img_json': '',
-        'location_img_path': 'static/location_imgs_0.0.1.0/None'
-    },
-    'user': 'Orisonic'
-}
-
-response = {
-    'status': True,
-    'msg': '更新传感器成功',
-    'receive_data': {
-        'alias': '1号传感器',
-        'network_id': '0.0.1.1',
-        'initial_thickness': '10.0',
-        'alarm_thickness': '8.0',
-        'alarm_battery': '50.0',
-        'alarm_temperature': '310.0',
-        'alarm_corrosion': '0.3',
-        'location_img_path': 'static/location_imgs_0.0.1.0/None',
-        'location_img_json': ''
-    },
-    'user': 'Orisonic',
-    'header': 'update_sensor',
-    'id': 'client'
-}
-
-# update gateway
-send_data = {
-    'id': 'server',
-    'header': 'update_gateway',
-    'gateway_data': {
-        'Enterprise': '零声科技（苏州）有限公司',
-        'name': '零声科技1号测试网关',
-        'network_id': '0.0.1.0',
-        'gw_status': '1'},
-    'user': 'Orisonic'
-}
-
-response = {
-    'status': True,
-    'msg': '更新网关成功',
-    'gateway_data': {
-        'Enterprise': '零声科技（苏州）有限公司',
-        'name': '零声科技1号测试网关',
-        'network_id': '0.0.1.0',
-        'gw_status': '1'
-    },
-    'user': 'Orisonic',
-    'header': 'update_gateway',
-    'id': 'client'
-}
 
 

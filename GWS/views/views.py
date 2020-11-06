@@ -235,7 +235,6 @@ def all_data_report(request):
         order_column_rule = request.POST.get('order[0][dir]')  # 排序规则：ase/desc
 
         # 查找当前用户所拥有的网关和传感器
-
         gateway_obj = get_gateway_obj(request, name='name', network_id='network_id')
 
         all_sensor_list = []
@@ -960,13 +959,54 @@ else:
     heart_sche.start()
     print("scheduler started")
 
-# try:
-#     heart_sche.add_job(heart_ping, 'interval', minutes=settings.heart_time['minutes'],
-#                        seconds=settings.heart_time['seconds'], id="heart_ping")
-#     heart_sche.start()
-# except Exception as e:
-#     print(e)
-#     heart_sche.shutdown()
+
+def backup_waveforms():
+    """
+    备份数据
+    :return:
+    """
+    try:
+        # 读取上一次备份的最后的id
+        with open('start_waveforms_id.txt', 'r') as fr:
+            num = fr.read()
+            if num == '':
+                start_id = 0
+            else:
+                start_id = int(num)
+        # 查找上次备份到现在增加的数据
+        data_obj = models.Waveforms.objects.values\
+            (
+                'id',
+                'network_id',
+                'data',
+                'time_tamp',
+                'gain',
+                'temperature',
+                'battery',
+                'thickness',
+                'data_len'
+            ).filter(id__gt=start_id)
+        if data_obj:
+            # 写入数据进行备份
+            # with open('/root/project/pgdata_backup_waveforms/backup_data.txt', 'a') as fa:
+            with open('backup_data.txt', 'a') as fa:
+                for item in data_obj:
+                    fa.write(str(item['network_id']) + '\t' + item['time_tamp'] + '\t' + str(item['gain']) + '\t' + str(item['temperature']) + '\t' + str(item['battery']) + '\t' + str(item['thickness']) + '\t' + str(item['data_len']) + '\t' + item['data'] + '\n')
+            # 更新备份后最新的数据id
+            with open('start_waveforms_id.txt', 'w') as fw:
+                next_start_id = data_obj.values('id').last()['id']
+                fw.write(str(next_start_id))
+    except Exception as e:
+        print(e)
+
+# 定时备份
+try:
+    backup_sche = BackgroundScheduler()
+    backup_sche.add_job(backup_waveforms, 'interval', days=settings.backup_waveforms_time['days'], id="backup_waveforms")
+    backup_sche.start()
+except Exception as e:
+    print(e)
+    backup_sche.shutdown()
 
 #####################################################################
 

@@ -849,21 +849,18 @@ def verify_the_validity_of_network_id(network_id):
     :param network_id:
     :return:
     """
-    network_item_list = network_id.split('.')
-    if len(network_item_list) == 4:
-        for item in network_item_list:
-            try:
-                int(item)
-            except:
-                return False
-        if int(network_item_list[0]) >= 0 \
-            and int(network_item_list[1]) >= 0 \
-            and int(network_item_list[2]) >= 0 \
-            and int(network_item_list[3]) > 0:
+    try:
+        ntid_split_list = network_id.split('.')
+        a = ntid_split_list[0]
+        b = ntid_split_list[1]
+        c = ntid_split_list[2]
+        d = ntid_split_list[3]
+        if 0 <= int(a) <= 255 and 0 <= int(b) <= 255 and 0 <= int(c) <= 255 and 0 < int(d) <= 255 and len(
+                ntid_split_list) == 4:
             return True
         else:
             return False
-    else:
+    except:
         return False
 
 
