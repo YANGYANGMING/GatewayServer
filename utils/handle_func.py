@@ -295,12 +295,18 @@ class HandleFunc(object):
         name = payload['name']
         gateway_exist = payload['gateway_exist']
         old_gateway_name = payload['old_gateway_name']
-        if gateway_exist:  # 是更新网关名称
-            GW_alias_is_exist = models.Gateway.objects.filter(name=name).exclude(name=old_gateway_name).exists()
-        else:
-            GW_alias_is_exist = models.Gateway.objects.filter(name=name).exists()
-        result = {'id': 'server', 'header': 'check_GW_alias', 'GW_alias_is_exist': GW_alias_is_exist}
-        client.publish(topic, json.dumps(result), 2)
+        try:
+            if gateway_exist:  # 是更新网关名称
+                GW_alias_is_exist = models.Gateway.objects.filter(name=name).exclude(name=old_gateway_name).exists()
+                GW_network_id_is_exist = False
+            else:
+                GW_alias_is_exist = models.Gateway.objects.filter(name=name).exists()
+                GW_network_id_is_exist = models.Gateway.objects.filter(network_id=topic).exists()
+            result = {'id': 'server', 'header': 'check_GW_alias', 'GW_alias_is_exist': GW_alias_is_exist,
+                      'GW_network_id_is_exist': GW_network_id_is_exist}
+            client.publish(topic, json.dumps(result), 2)
+        except Exception as e:
+            print(e)
 
     def set_sensor_params(self, payload):
         """

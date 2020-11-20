@@ -206,6 +206,8 @@
 
             ShowOriginData();
 
+            update_sensor_alias_exist = false;
+
         });
 
         //刷新页面保留上次数据
@@ -280,7 +282,9 @@
                 $('#update_sensor').html('时间不能小于12小时！');
             } else if (alias === ""){
                 $('#update_sensor').html('传感器名称不能为空！');
-            } else{
+            }  else if(update_sensor_alias_exist){
+                $('#update_sensor').html('传感器名称已存在！');
+            }  else{
                 {#var gwntid = network_id.split('.').slice(0, 3).join('.') + '.0';#}
                 {#SetTimeToShowTimeOutMSG("update_sensor", gwntid);#}
 
@@ -306,7 +310,8 @@
                 type: 'POST',
                 dataType: 'JSON',
                 success: function (arg) {
-                    $('#alias-msg').html(arg.msg)
+                    update_sensor_alias_exist = arg.status;
+                    $('#alias-msg').html(arg.msg);
                 }
             })
         }

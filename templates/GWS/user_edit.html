@@ -52,6 +52,14 @@
                                 <p id="user-permissions-msg" style="color: red;"></p>
                             </div>
                         </div>
+                        {% if not gateway_obj %}
+                            <div class="col-xs-12 col-md-6 col-md-offset-1">
+                                <div class="form-group">
+                                    <label for="company">所在公司</label>
+                                    <input type="text" class="form-control" name="company" id="company" value=""  onblur="GetGateway()">
+                                </div>
+                            </div>
+                        {% endif %}
                         <div  class="col-xs-12 col-md-6 col-md-offset-1">
                             <div class="form-group">
                                 <label for="gateway">网关</label>
@@ -149,6 +157,20 @@
                 $('#name-msg').html(arg.msg)
             }
         })
+    }
+
+    function GetGateway() {
+        var company_name = $("#company").val();
+        $.ajax({
+            url: '/GWS/get-gateways-json',
+            data: {'company_name': company_name},
+            type: 'POST',
+            dataType: 'JSON',
+            success: function (arg) {
+                $('#gateway').html(arg);
+
+            }
+        });
     }
 
     // 判断是否有未填写的选项

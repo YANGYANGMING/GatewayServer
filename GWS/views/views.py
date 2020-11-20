@@ -180,7 +180,6 @@ def gateway_manage(request):
     """
     if request.method == 'GET':
         gateway_obj = get_gateway_obj(request)
-        print(gateway_obj)
         gw_status = {'在线': 1, '离线': 0}
 
     return render(request, 'GWS/gateway_manage.html', locals())

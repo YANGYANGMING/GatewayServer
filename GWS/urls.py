@@ -40,6 +40,7 @@ urlpatterns = [
     re_path(r'^check-role$', account.check_role),
 
     re_path(r'^get-user-permissions-json$', account.get_user_permissions_json),
+    re_path(r'^get-gateways-json$', account.get_gateways_json),
 
     re_path(r'^data-json-report-(.*)$', views.data_json_report),
     re_path(r'^sensor-data-info-(.*)$', views.sensor_data_info),
