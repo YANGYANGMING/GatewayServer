@@ -176,11 +176,6 @@
     // 判断是否有未填写的选项
     function JudgeNotNULL(ths) {
 
-        if ($('#name').val()[0]){
-            $('#name-msg').html("");
-        }else{
-            $('#name-msg').html("姓名不能为空！");
-        }
         if ($('#role').val()[0]){
             $('#role-msg').html("");
         }else{
@@ -196,23 +191,22 @@
         }else{
             $('#gateway-msg').html("网关不能为空！");
         }
-        {#if ($('#user-permissions').val()[0]){#}
-        {#    $('#user-permissions-msg').html("");#}
-        {# }else{#}
-        {#    $('#user-permissions-msg').html("用户权限不能为空！");#}
-        {# }#}
 
         if (name_exist_edit){
             $('#name-msg').html("此用户名已存在！");
         }else{
-            $('#name-msg').html("");
+            console.log($('#name').val())
+            if ($('#name').val()[0]){
+                $('#name-msg').html("");
+            }else{
+                $('#name-msg').html("用户名不能为空！");
+            }
         }
 
         if ($('#name').val()[0] &&
             $('#role').val()[0] &&
             $('#groups').val()[0] &&
             $('#gateway').val()[0] &&
-            {#$('#user-permissions').val()[0] &&#}
             name_exist_edit === false
         ){
             $(ths).attr('type', 'submit');
