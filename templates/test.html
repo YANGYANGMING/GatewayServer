@@ -6,5 +6,40 @@
 </head>
 <body>
 
+<button type="submit" onclick="GetResponse();">提交</button>
+
+
+
+<script src="/static/GWS/bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
+<script>
+
+    {#function GetResponse() {#}
+    {#    $.ajax({#}
+    {#        url: "http://www.yymit.cn/",#}
+    {#        type: "GET",#}
+    {#        dataType: "jsonp",#}
+    {#        jsonp: "callback",#}
+    {#        jsonpCallback: 'list',#}
+    {#    })#}
+    {# }#}
+    {##}
+    {#function list(arg) {#}
+    {#    console.log(arg)#}
+    {# }#}
+
+    function GetResponse() {
+        $.ajax({
+            url: '/test-json',
+            type: 'GET',
+            success: function (arg) {
+                console.log(arg)
+            }
+
+        })
+    }
+
+
+</script>
+
 </body>
 </html>

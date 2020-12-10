@@ -703,19 +703,23 @@ def cal_alarm_val(sensor_item):
     alarm_corrosion = sensor_item['alarm_corrosion'] if sensor_item['alarm_corrosion'] else 50
     latest_vals = models.Waveforms.objects.values('thickness', 'temperature', 'battery', 'time_tamp').filter(network_id=sensor_item['network_id'])
     latest_corrosion = corrosion_rate(network_id, 90)
-
-    if latest_vals:
-        if not sensor_item['sensor_online_status']:
+    # 判断传感器在线
+    if not sensor_item['sensor_online_status']:
+        if latest_vals:
             alarm_stamp_time = struct_to_stamp(latest_vals.last()['time_tamp']) + 600  # 表示在最后一次取数10分钟后掉线
             alarm_struct_time = stamp_to_struct(alarm_stamp_time)
-            alarm_sensor_list.append(
-                {alias: {'报警信息：': '传感器离线！',
-                         '报警信息1：': '/',
-                         '报警信息2：': '/',
-                         '报警时间：': alarm_struct_time,
-                         'network_id': network_id}})
-            alarm_sensor_list2.append(
-                {alias: ['传感器离线！', '/', '/', alarm_struct_time, network_id]})
+        else:
+            alarm_struct_time = '/'
+        alarm_sensor_list.append(
+            {alias: {'报警信息：': '传感器离线！',
+                     '报警信息1：': '/',
+                     '报警信息2：': '/',
+                     '报警时间：': alarm_struct_time,
+                     'network_id': network_id}})
+        alarm_sensor_list2.append(
+            {alias: ['传感器离线！', '/', '/', alarm_struct_time, network_id]})
+
+    if latest_vals:
         if latest_vals.last()['thickness'] < alarm_thickness:
             alarm_sensor_list.append(
                 {alias: {'报警信息：': '厚度报警！（mm）',

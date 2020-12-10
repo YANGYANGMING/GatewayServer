@@ -3,30 +3,30 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <link rel="icon" href="/static/images/favicon.png" type="shortcut icon">
+  <link rel="icon" href="/static/GWS/images/favicon.png" type="shortcut icon">
   <title>零声科技</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Bootstrap 3.3.7 -->
-  <link rel="stylesheet" href="/static/bower_components/bootstrap/dist/css/bootstrap.min.css" media="all">
+  <link rel="stylesheet" href="/static/GWS/bower_components/bootstrap/dist/css/bootstrap.min.css" media="all">
   <!-- Font Awesome -->
-  <link rel="stylesheet" href="/static/bower_components/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/static/GWS/bower_components/font-awesome/css/font-awesome.min.css">
   <!-- Ionicons -->
-  <link rel="stylesheet" href="/static/bower_components/Ionicons/css/ionicons.min.css">
+  <link rel="stylesheet" href="/static/GWS/bower_components/Ionicons/css/ionicons.min.css">
   <!-- DataTables -->
-  <link rel="stylesheet" href="/static/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
+  <link rel="stylesheet" href="/static/GWS/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
   <!-- Select2 -->
-  <link rel="stylesheet" href="/static/bower_components/select2/dist/css/select2.min.css">
+  <link rel="stylesheet" href="/static/GWS/bower_components/select2/dist/css/select2.min.css">
   <!-- Theme style -->
-  <link rel="stylesheet" href="/static/dist/css/AdminLTE.min.css">
-  <link rel="stylesheet" href="/static/plugins/iCheck/all.css">
-  <link rel="stylesheet" href="/static/dist/css/skins/_all-skins.min.css">
-  <link href="/static/plugins/busy-load/app.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/static/GWS/dist/css/AdminLTE.min.css">
+  <link rel="stylesheet" href="/static/GWS/plugins/iCheck/all.css">
+  <link rel="stylesheet" href="/static/GWS/dist/css/skins/_all-skins.min.css">
+  <link href="/static/GWS/plugins/busy-load/app.min.css" rel="stylesheet">
   <!-- map -->
-  <link rel="stylesheet" href="/static/plugins/map/scanboard.css">
+  <link rel="stylesheet" href="/static/GWS/plugins/map/scanboard.css">
 
-  <link rel="stylesheet" href="/static/plugins/FixedColumns-3.3.1/css/fixedColumns.dataTables.css">
-  <link rel="stylesheet" href="/static/plugins/FixedColumns-3.3.1/css/fixedColumns.bootstrap.min.css">
+  <link rel="stylesheet" href="/static/GWS/plugins/FixedColumns-3.3.1/css/fixedColumns.dataTables.css">
+  <link rel="stylesheet" href="/static/GWS/plugins/FixedColumns-3.3.1/css/fixedColumns.bootstrap.min.css">
 
 </head>
 <body class="hold-transition skin-black sidebar-mini">
@@ -46,7 +46,7 @@
       <span class="logo-mini">ORS</span>
       <!-- logo for regular state and mobile devices -->
       <!-- <span class="logo-lg">ORISONIC</span> -->
-        <img style="width: 155px; height: 55px;" src="/static/images/logo.png" alt="">
+        <img style="width: 155px; height: 55px;" src="/static/GWS/images/logo.png" alt="">
     </a>
     <!-- Header Navbar: style can be found in header.less -->
     <nav class="navbar navbar-static-top">
@@ -57,19 +57,19 @@
       <div class="navbar-custom-menu">
         <ul class="nav navbar-nav">
           <!-- User Account: style can be found in dropdown.less -->
-            <li class="dropdown messages-menu">
-                <a href="javascript:;" id="upload-data-msg"></a>
+            <li class="dropdown messages-menu" style="background-color: #e2e9ee">
+                <a href="/DemoGWS/index">控制台</a>
           </li>
 
           <li class="dropdown user user-menu">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <img src="/static/images/avatar/default.png" class="user-image" alt="User Image">
+              <img src="/static/GWS/images/avatar/default.png" class="user-image" alt="User Image">
               <span id="user" class="hidden-xs">{{ user }}</span>
             </a>
               <ul class="dropdown-menu">
               <!-- User image -->
               <li class="user-header">
-                <img src="/static/images/avatar/default.png" class="img-circle" alt="User Image">
+                <img src="/static/GWS/images/avatar/default.png" class="img-circle" alt="User Image">
                 <p>
                   {{ user }}
                 </p>
@@ -114,11 +114,11 @@
             <section class="content">
               <!-- 设置调试时间 -->
               <div class="row">
-                <form action="/GWS/alarm-sensor-list" method="post">
-                    <input type="text" style="display: none" name="all_alarm_sensor_list2" value="{{ all_alarm_sensor_list2 }}">
+{#                <form action="/GWS/alarm-sensor-list" method="post">#}
+{#                    <input type="text" style="display: none" name="all_alarm_sensor_list2" value="{{ all_alarm_sensor_list2 }}">#}
                     <div class="col-lg-3 col-xs-6">
                       <!-- small box -->
-                      <a href="">
+                      <a href="/GWS/alarm-sensor-list">
                           <div class="small-box bg-red" style="position: relative">
                             <div class="inner">
                               <h4>报警信息：<p style="font-size: large; font-weight: bolder; display: inline">{{ all_alarm_sensor_count }}</p>条</h4>
@@ -129,12 +129,12 @@
                               <i class="ion ion-android-warning"></i>
                             </div>
                             <p class="small-box-footer">More info <i class="fa fa-arrow-circle-right"></i></p>
-                              <button type="submit" class="col-lg-12 col-xs-12" style="opacity: 0; height: 115px; position: absolute; top: 0; left: 0;"></button>
+                              <button type="submit" class="col-lg-12 col-xs-12" style="opacity: 0; height: 115px; position: absolute; top: 0; left: 0;">sdsds</button>
                           </div>
                         </a>
 
                     </div>
-                </form>
+{#                </form>#}
                 <!-- 全部数据 -->
                 <div class="col-lg-3 col-xs-6">
                   <!-- small box -->
@@ -354,7 +354,7 @@
         {% endblock %}
 
     </div>
-      <!-- /.content-wrapper -->
+    <!-- /.content-wrapper -->
      <footer class="main-footer">
         <div class="pull-right hidden-xs">
             <b>Version</b> 1.0
@@ -365,13 +365,12 @@
          <!-- 统计 -->
         <script type="text/javascript" src="//js.users.51.la/20970753.js"></script>
       </footer>
-
 </div>
 <input style="display: none" type="text" id="gw-network-id-list" value="{{ request.session.gw_network_id_list }}">
 <!-- jQuery 3 -->
-<script type="text/javascript" src="/static/bower_components/jquery/dist/jquery.min.js"></script>
+<script type="text/javascript" src="/static/GWS/bower_components/jquery/dist/jquery.min.js"></script>
 <!-- jQuery UI 1.11.4 -->
-<script src="/static/bower_components/jquery-ui/jquery-ui.min.js"></script>
+<script src="/static/GWS/bower_components/jquery-ui/jquery-ui.min.js"></script>
 <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
 <script>
     $.widget.bridge('uibutton', $.ui.button);
@@ -386,34 +385,33 @@
 {#<script type="text/babel" src="/static/plugins/mqtt/mqtt_client.js"></script>#}
 {#<script type="text/babel" src="/static/plugins/clear_msg.js"></script>#}
 <!-- mqtt -->
-<script src="/static/plugins/mqtt/mqtt.min.js"></script>
-<script src="/static/plugins/mqtt/mqtt_client.js"></script>
-<script src="/static/plugins/clear_msg.js"></script>
+<script src="/static/GWS/plugins/mqtt/mqtt.min.js"></script>
+<script src="/static/GWS/plugins/mqtt/mqtt_client.js"></script>
+<script src="/static/GWS/plugins/clear_msg.js"></script>
 <!-- Bootstrap 3.3.7 -->
-<script src="/static/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/static/GWS/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <!-- hightchart -->
-<script src="/static/plugins/highcharts/highcharts.js"></script>
-<script src="/static/plugins/highcharts/skies.js"></script>
-<script src="/static/plugins/highcharts/modules/exporting.js"></script>
+<script src="/static/GWS/plugins/highcharts/highcharts.js"></script>
+<script src="/static/GWS/plugins/highcharts/skies.js"></script>
+<script src="/static/GWS/plugins/highcharts/modules/exporting.js"></script>
 <!-- Slimscroll -->
-<script src="/static/bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+<script src="/static/GWS/bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>
 <!-- AdminLTE App -->
-<script src="/static/dist/js/adminlte.min.js"></script>
+<script src="/static/GWS/dist/js/adminlte.min.js"></script>
 <!-- Select2 -->
-<script src="/static/bower_components/select2/dist/js/select2.full.min.js"></script>
+<script src="/static/GWS/bower_components/select2/dist/js/select2.full.min.js"></script>
 <!-- DataTables -->
-<script src="/static/bower_components/datatables.net/js/jquery.dataTable.min.js"></script>
-<script src="/static/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<script src="/static/GWS/bower_components/datatables.net/js/jquery.dataTable.min.js"></script>
+<script src="/static/GWS/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
 <!-- busyLoad -->
-<script src="/static/plugins/busy-load/app.min.js"></script>
-<script src="/static/plugins/busy-load/loading.js"></script>
-<script src="/static/plugins/iCheck/icheck.min.js"></script>
+<script src="/static/GWS/plugins/busy-load/app.min.js"></script>
+<script src="/static/GWS/plugins/busy-load/loading.js"></script>
+<script src="/static/GWS/plugins/iCheck/icheck.min.js"></script>
 <!-- map -->
 <!-- <script src="/static/plugins/map/scanboard.js"></script> -->
-<script src="/static/plugins/map/map.js"></script>
+<script src="/static/GWS/plugins/map/map.js"></script>
 
-<script src="/static/plugins/FixedColumns-3.3.1/js/dataTables.fixedColumns.min.js"></script>
-
+<script src="/static/GWS/plugins/FixedColumns-3.3.1/js/dataTables.fixedColumns.min.js"></script>
 
 {% block script %}
     <script>
@@ -480,7 +478,7 @@
             var marker = new AMap.Marker({
                 position: point[i],
                 map: myMap,
-                icon:'/static/plugins/map/sensor.png',
+                icon:'/static/GWS/plugins/map/sensor.png',
             });
             marker.content='<p>名称：' + select_sensor_list[i].alias + '</p>'+
                     '<p>绑定网关：' + select_sensor_list[i].gateway__name + '</p>'+

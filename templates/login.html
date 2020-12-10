@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link href="/static/bower_components/bootstrap/dist/css/bootstrap.min.css" type="text/css" rel="stylesheet">
-<link href="/static/bower_components/font-awesome/css/font-awesome.min.css" type="text/javascript" rel="stylesheet">
-<link href="/static/login/css/bootsnav.css" type="text/css" rel="stylesheet">
-<link href="/static/login/css/normalize.css" type="text/css" rel="stylesheet">
-<link href="/static/login/css/css.css" rel="stylesheet" type="text/css">
-<link rel="stylesheet" href="/static/plugins/iCheck/all.css">
+<link href="/static/GWS/bower_components/bootstrap/dist/css/bootstrap.min.css" type="text/css" rel="stylesheet">
+<link href="/static/GWS/bower_components/font-awesome/css/font-awesome.min.css" type="text/javascript" rel="stylesheet">
+<link href="/static/GWS/login/css/bootsnav.css" type="text/css" rel="stylesheet">
+<link href="/static/GWS/login/css/normalize.css" type="text/css" rel="stylesheet">
+<link href="/static/GWS/login/css/css.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="/static/GWS/plugins/iCheck/all.css">
 <title>登录</title>
 </head>
 
@@ -18,7 +18,7 @@
   		<canvas id="demo-canvas" width="1590" height="711"></canvas>
   		<div class="login-form">
   			<div class="login-content">
-  				<h1 class="login-image"><img style="width: 250px; height: 80px;" src="/static/images/logo.png" alt=""></h1>
+  				<h1 class="login-image"><img style="width: 250px; height: 80px;" src="/static/GWS/images/logo.png" alt=""></h1>
   				<form method="post" role="form" id="form_login" class="login_padding">
 
                 <div class="form-group clearfix">
@@ -85,7 +85,7 @@
   		</div>
   	</div>
 
-    <!-- /.content-wrapper -->
+<!-- /.content-wrapper -->
      <footer class="main-footer">
         <div class="pull-right hidden-xs">
             <b>Version</b> 1.0
@@ -100,15 +100,15 @@
 </body>
 
 
-<script src="/static/bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
-<script src="/static/bower_components/bootstrap/dist/js/bootstrap.min.js" type="text/javascript"></script>
-<script src="/static/login/js/bootsnav.js" type="text/javascript"></script>
-<script src="/static/login/js/jquery.js" type="text/javascript"></script>
-<script src="/static/login/js/TweenLite/TweenLite.min.js"></script>
-<script src="/static/login/js/TweenLite/EasePack.min.js"></script>
-<script src="/static/login/js/TweenLite/rAF.js"></script>
-<script src="/static/login/js/TweenLite/demo-1.js"></script>
-<script src="/static/plugins/iCheck/icheck.min.js"></script>
+<script src="/static/GWS/bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
+<script src="/static/GWS/bower_components/bootstrap/dist/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="/static/GWS/login/js/bootsnav.js" type="text/javascript"></script>
+<script src="/static/GWS/login/js/jquery.js" type="text/javascript"></script>
+<script src="/static/GWS/login/js/TweenLite/TweenLite.min.js"></script>
+<script src="/static/GWS/login/js/TweenLite/EasePack.min.js"></script>
+<script src="/static/GWS/login/js/TweenLite/rAF.js"></script>
+<script src="/static/GWS/login/js/TweenLite/demo-1.js"></script>
+<script src="/static/GWS/plugins/iCheck/icheck.min.js"></script>
 
 <script>
 
@@ -156,7 +156,7 @@
                success: function (arg) {
                    console.log(arg);
                    $('#phone-num-error-msg').html(JSON.parse(arg).Message);
-                   if (JSON.parse(arg).status){
+                   if (arg.status){
                        setTime($("#get-sms-code"));
                    }
                }

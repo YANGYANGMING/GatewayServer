@@ -123,7 +123,7 @@
         </library>
       </libraries>
     </data-source>
-    <data-source source="LOCAL" name="db_delete_test" uuid="7154bb71-adb3-4194-9c81-2574a1eeb201">
+    <data-source source="LOCAL" name="db_delete_test" uuid="c82ff15c-c41b-49cd-808d-cbbc026c4115">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>

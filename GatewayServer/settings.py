@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'GWS.apps.GwsConfig',
+    'DemoGWS',
     # 'werkzeug_debugger_runserver',
     # 'django_extensions',
 ]
@@ -73,24 +74,21 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'GatewayServer.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': os.path.join(BASE_DIR, 'db24.sqlite3'),
-        'NAME': os.path.join(BASE_DIR, 'db_delete_test.sqlite3'),
-    }
+   'default': {
+       'ENGINE': 'django.db.backends.sqlite3',
+       'NAME': os.path.join(BASE_DIR, 'db_delete_test.sqlite3'),
+   }
 }
-
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'gws_test1',
+#         'NAME': 'orisonic_gws_db',
 #         'USER': 'postgres',
-#         'PASSWORD': '123456',
+#         'PASSWORD': 'ORISONIC2020GatewayServer',
 #         'HOST': '127.0.0.1',
 #         'PORT': '5432',
 #     }
@@ -137,38 +135,50 @@ USE_TZ = False
 AUTH_USER_MODEL = 'GWS.UserProfile'
 
 STATIC_URL = '/static/'
-
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
+# STATIC_ROOT = 'staticfiles'
 LOGIN_URL = '/login/'
 
+# CMD_header = {
+#     "get_data_manually": "get_data_manually",
+#     "gwdata": "gwdata",
+#     "gwntid": "gwntid",
+#     "sync_sensors": "sync_sensors",
+#     "update_sensor": "update_sensor",
+#     "add_sensor": "add_sensor",
+#     "remove_sensor": "remove_sensor",
+#     "server_status": "server_status",
+#     "update_gateway": "update_gateway",
+#     "add_gateway": "add_gateway",
+#     "heart_ping": "heart_ping",
+#     "pause_sensor": "pause_sensor",
+#     "resume_sensor": "resume_sensor",
+#
+# }
 
-heart_time = {'minutes': 0, 'seconds': 30}
+heart_time = {'minutes': 0, 'seconds': 10}
 backup_waveforms_time = {'days': 1}
 
+# EMQ X SETTINGS
 # EMQ X SETTINGS
 MQTT_HOST = "121.36.220.210"
 # MQTT_HOST = "127.0.0.1"
 MQTT_USERNAME = 'ORISONIC'
 MQTT_PASSWORD = 'ORISONIC2020'
 
-# crtPath = BASE_DIR + r"\crt_47.93.190.54"
 crtPath = BASE_DIR + r"\crt_192.168.0.44"
 
 ca_certs = "%s\ca\MyRootCA.pem" % crtPath
 certfile = "%s\client\MyClient1.pem" % crtPath
 keyfile = "%s\client\MyClient1.key" % crtPath
 
-
 # aliyunsdkcore
 accessKeyId = "accessKeyId"
 accessSecret = "accessSecret"
 TemplateCode = "TemplateCode"
-
 
 # 错误日志
 ERROR_LOG_FILE = os.path.join(BASE_DIR, "log", 'error.log')

@@ -24,7 +24,8 @@ from django.conf.urls import url ##新增
 
 urlpatterns = [
     re_path('^admin/', admin.site.urls),
-    re_path(r'^GWS/', include('GWS.urls')),
+    re_path(r'^GWS/', include('GWS.urls'), name='GWS'),
+    re_path(r'^DemoGWS/', include('DemoGWS.urls'), name='DemoGWS'),
     re_path(r'^login/$', account.acc_login),
     re_path(r'^logout/$', account.acc_logout, name='logout'),
 
@@ -34,7 +35,7 @@ urlpatterns = [
     # url(r'^static/(?P<path>.*)$', static.serve,
     #     {'document_root': settings.STATIC_ROOT}, name='static'),
 
-    re_path(r'^$', RedirectView.as_view(url='GWS/index')),
+    re_path(r'^$', RedirectView.as_view(url='DemoGWS/index')),
     re_path(r'\S', account.page_404),
 
 

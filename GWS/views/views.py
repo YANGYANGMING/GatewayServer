@@ -27,6 +27,7 @@ def index(request):
     :return:
     """
     all_sensor_count = 0
+    alarm_gw_list = []
     all_sensor_list = []
     all_alarm_sensor_list = []
     all_alarm_sensor_list2 = []
@@ -38,7 +39,7 @@ def index(request):
         sensor_count = models.Sensor.objects.filter(gateway=gw_item, delete_status=0).count()
         all_sensor_count += sensor_count
 
-    for gateway_item in gateway_obj.values('network_id', 'name'):
+    for gateway_item in gateway_obj.values('network_id', 'name', 'gw_status'):
         gw_network_id = gateway_item['network_id']
         gw_name = gateway_item['name']
         sensor_obj_list = list(models.Sensor.objects.filter(gateway__network_id=gw_network_id, delete_status=0).\
@@ -50,8 +51,18 @@ def index(request):
             alarm_sensor_list, alarm_sensor_list2 = handle_func.cal_alarm_val(sensor_item)
             all_alarm_sensor_list += alarm_sensor_list
             all_alarm_sensor_list2 += alarm_sensor_list2
-        all_alarm_sensor_count = len(all_alarm_sensor_list)
         all_sensor_list += sensor_obj_list
+
+        # 网关离线报警
+        if not gateway_item['gw_status']:
+            alarm_gw_list.append(
+                {gateway_item['name']: {'报警信息：': '网关离线！',
+                                        '报警信息1：': '/',
+                                        '报警信息2：': '/',
+                                        '报警时间：': '/',
+                                        'network_id': ''}})
+    all_alarm_sensor_list += alarm_gw_list
+    all_alarm_sensor_count = len(all_alarm_sensor_list)
     all_sensor_list_json = json.dumps(all_sensor_list)
 
     return render(request, 'index.html', locals())
@@ -368,10 +379,26 @@ def alarm_sensor_list(request):
     :param request:
     :return:
     """
-    if request.method == 'POST':
-        all_alarm_sensor_list2 = eval(request.POST.get('all_alarm_sensor_list2'))
+    alarm_gw_list = []
+    all_alarm_sensor_list2 = []
+    gateway_obj = get_gateway_obj(request)
 
-        return render(request, 'GWS/alarm_sensor_list.html', locals())
+    for gateway_item in gateway_obj.values('network_id', 'name', 'gw_status'):
+        gw_network_id = gateway_item['network_id']
+        sensor_obj_list = list(models.Sensor.objects.filter(gateway__network_id=gw_network_id, delete_status=0). \
+                               values('network_id', 'alias', 'sensor_online_status', 'alarm_thickness',
+                                      'alarm_battery', 'alarm_temperature', 'alarm_corrosion'))
+        for sensor_item in sensor_obj_list:
+            alarm_sensor_list, alarm_sensor_list2 = handle_func.cal_alarm_val(sensor_item)
+            all_alarm_sensor_list2 += alarm_sensor_list2
+
+        if not gateway_item['gw_status']:
+            alarm_gw_list.append(
+                {gateway_item['name']: ['网关离线！', '/', '/', '/', '']})
+            print('alarm_gw_list', alarm_gw_list)
+    all_alarm_sensor_list2 += alarm_gw_list
+
+    return render(request, 'GWS/alarm_sensor_list.html', locals())
 
 @permissions.check_permission
 @login_required

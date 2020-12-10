@@ -30,7 +30,7 @@
         console.log('连接失败:', error)
     });
     var gw_network_id_list = eval($('#gw-network-id-list').val());
-    console.log('gw_network_id_list', gw_network_id_list);
+    // console.log('gw_network_id_list', gw_network_id_list);
     // 订阅列表
     client.subscribe(gw_network_id_list, { qos: 2 });
     // 监听接收消息事件
@@ -44,11 +44,11 @@
 
         if (id === 'client') {
             // console.log('收到来自', topic, '的消息');
-            console.log(payload);
+            // console.log(payload);
 
             if (header === 'gwdata') {
                 var gwntid = rsplit(payload.network_id,'.');
-                console.log('gwntid-=====', gwntid);
+                // console.log('gwntid-=====', gwntid);
                 if (isInArray(gw_network_id_list, gwntid)){
                     $('#' + header).html(msg);
                 }
@@ -66,7 +66,7 @@
                 header === 'remove_sensor'
             ) {
                 var gwntid = rsplit(payload.network_id,'.');
-                console.log('gwntid-=====', gwntid);
+                // console.log('gwntid-=====', gwntid);
                 if (isInArray(gw_network_id_list, gwntid)){
                     $('#' + header).html(msg);
                 }
@@ -75,7 +75,7 @@
                 // }
             }else if (header === 'set_sensor_params') {
                 var gwntid = rsplit(payload.network_id,'.');
-                console.log('gwntid-=====', gwntid);
+                // console.log('gwntid-=====', gwntid);
                 if (isInArray(gw_network_id_list, gwntid)){
                     $('#' + header).html(msg);
                 }
